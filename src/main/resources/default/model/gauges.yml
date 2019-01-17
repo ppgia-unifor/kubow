@@ -1,0 +1,49 @@
+# Gauge Type and Gauge Instance Specifications # − time periods generally in milliseconds gauge−types :
+
+gauge-types:
+  ResponseTimeGaugeT:
+    commands:
+      end2endRespTime: ClientT.setResponseTime (float)
+    setupParams:
+      targetIP:
+        type: String
+        default: "localhost"
+      beaconPeriod:
+        type: long
+        default: 30000
+      javaClass:
+        type: String
+        default: "org.sa.rainbow.translator.znn.gauges.End2EndRespTimeGauge"
+    configParams:
+      samplingFrequency:
+        type:    long
+        default: 1000
+      targetProbeType:
+        type:    String
+        default: ~
+    comment: "ResponseTimeGaugeT measures and reports the end-to-end response time from a client or its proxy."
+
+gauge-instances:
+  EERTG1:
+    type: ResponseTimeGaugeT
+    model: "ZNewsSys:Acme"
+    commands:
+      "setResponseTime(${customize.system.target.lb})": Client0.setExperRespTime($<end2endRespTime>)
+    setupValues:
+      targetIP: "${customize.system.target.lb}"
+    configValues:
+      samplingFrequency: 1000
+      targetProbeType  : clientproxy@*
+    comment: "EERTG1 is associated with the client component of the System, ZNewsSys, defined as an Acme model"
+
+  EERTG2:
+    type: ResponseTimeGaugeT
+    model: "ZNewsSys:Acme"
+    commands:
+      "setResponseTime(${customize.system.target.lb})": Client1.setExperRespTime($<end2endRespTime>)
+    setupValues:
+      targetIP: "${customize.system.target.lb}"
+    configValues:
+      samplingFrequency: 1000
+      targetProbeType  : clientproxy@*
+    comment: "EERTG2 is associated with the client component of the System, ZNewsSys, defined as an Acme model"
