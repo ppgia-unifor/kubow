@@ -5,16 +5,17 @@ import org.sa.rainbow.gui.RainbowGUI;
 
 import java.nio.file.Paths;
 
-/**
- * @author Carlos Mendes (cmendesce@gmail.com)
- */
+/** @author Carlos Mendes (cmendesce@gmail.com) */
 public class ZnnApplication {
 
   public static void main(String[] args) {
     try {
 
       String target = "default";
-      String config = Paths.get(ZnnApplication.class.getClassLoader().getResource(target).getPath()).getParent().toString();
+      String config =
+          Paths.get(ZnnApplication.class.getClassLoader().getResource(target).getPath())
+              .getParent()
+              .toString();
 
       System.setProperty("rainbow.config", config);
       System.setProperty("rainbow.target", target);
@@ -28,7 +29,7 @@ public class ZnnApplication {
       delegate.start();
 
       RainbowGUI gui = new RainbowGUI(master);
-//      gui.display();
+      //      gui.display();
     } catch (RainbowException e) {
       e.printStackTrace();
     }

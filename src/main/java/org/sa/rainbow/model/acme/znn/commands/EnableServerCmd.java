@@ -37,62 +37,56 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A class representing the Acme command to enable a server in Znn. Currently, this is modeled by setting the property
- * "isArchEnabled" on the model.
- * 
- * @author Bradley Schmerl: schmerl
+ * A class representing the Acme command to enable a server in Znn. Currently, this is modeled by
+ * setting the property "isArchEnabled" on the model.
  *
+ * @author Bradley Schmerl: schmerl
  */
 public class EnableServerCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    // Target is the server to enable, enable is whether to set it as enabled or not "true" or "false"
-    public EnableServerCmd (AcmeModelInstance model, String target, String enable) {
-        super ("enableServer", model, target, enable);
+  // Target is the server to enable, enable is whether to set it as enabled or not "true" or "false"
+  public EnableServerCmd(AcmeModelInstance model, String target, String enable) {
+    super("enableServer", model, target, enable);
+  }
+
+  /**
+   * Constructs the list of commands for enabling the server by setting the isArchEnabled property
+   *
+   * @return the list of commands
+   * @throws RainbowModelException when the server cannot be found, is of the incorrect type, or the
+   *     argument is malformed.
+   */
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    List<IAcmeCommand<?>> cmds = new LinkedList<>();
+    IAcmeComponent server = getModelContext().resolveInModel(getTarget(), IAcmeComponent.class);
+    if (server == null)
+      throw new RainbowModelException(
+          MessageFormat.format("The server ''{0}'' could not be found in the model", getTarget()));
+    if (!server.declaresType("ArchElementT"))
+      throw new RainbowModelException(
+          MessageFormat.format(
+              "The server ''{0}'' is not of the right type. It does not have a property ''isArchEnabled''",
+              getTarget()));
+    IAcmeProperty property = server.getProperty("isArchEnabled");
+    try {
+      IAcmePropertyValue acmeVal = PropertyHelper.toAcmeVal(Boolean.valueOf(getParameters()[0]));
+      if (propertyValueChanging(property, acmeVal)) {
+        m_command = property.getCommandFactory().propertyValueSetCommand(property, acmeVal);
+        cmds.add(m_command);
+      }
+    } catch (IllegalArgumentException e) {
+      throw new RainbowModelException(e.getMessage(), e);
     }
+    return cmds;
+  }
 
-    /**
-     * Constructs the list of commands for enabling the server by setting the isArchEnabled property
-     * 
-     * @return the list of commands
-     * @throws RainbowModelException
-     *             when the server cannot be found, is of the incorrect type, or the argument is malformed.
-     */
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        List<IAcmeCommand<?>> cmds = new LinkedList<> ();
-        IAcmeComponent server = getModelContext ().resolveInModel (getTarget (), IAcmeComponent.class);
-        if (server == null)
-            throw new RainbowModelException (MessageFormat.format (
-                    "The server ''{0}'' could not be found in the model", getTarget ()));
-        if (!server.declaresType ("ArchElementT"))
-            throw new RainbowModelException (MessageFormat.format (
-                    "The server ''{0}'' is not of the right type. It does not have a property ''isArchEnabled''",
-                    getTarget ()));
-        IAcmeProperty property = server.getProperty ("isArchEnabled");
-        try {
-            IAcmePropertyValue acmeVal = PropertyHelper.toAcmeVal (Boolean.valueOf (getParameters ()[0]));
-            if (propertyValueChanging (property, acmeVal)) {
-                m_command = property.getCommandFactory ().propertyValueSetCommand (property,
-                        acmeVal);
-                cmds.add (m_command);
-            }
-        }
-        catch (IllegalArgumentException e) {
-            throw new RainbowModelException (e.getMessage (), e);
-        }
-        return cmds;
-
-    }
-
-
-    /**
-     * 
-     * @return the property after the command has been executed
-     * @throws IllegalStateException
-     */
-    @Override
-    public IAcmeProperty getResult () throws IllegalStateException {
-        return ((IAcmePropertyCommand )m_command).getProperty ();
-    }
-
+  /**
+   * @return the property after the command has been executed
+   * @throws IllegalStateException
+   */
+  @Override
+  public IAcmeProperty getResult() throws IllegalStateException {
+    return ((IAcmePropertyCommand) m_command).getProperty();
+  }
 }

@@ -37,34 +37,32 @@ import java.util.List;
 
 /**
  * This command sets whether a client has responded to an authentication request.
- * 
- * @author Bradley Schmerl: schmerl
  *
+ * @author Bradley Schmerl: schmerl
  */
 public class SetAuthenticationResponseCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    public SetAuthenticationResponseCmd (AcmeModelInstance modelInstance, String client, String response) {
-        super ("setAuthenticationResponse", modelInstance, client, response);
+  public SetAuthenticationResponseCmd(
+      AcmeModelInstance modelInstance, String client, String response) {
+    super("setAuthenticationResponse", modelInstance, client, response);
+  }
+
+  @Override
+  public IAcmeProperty getResult() throws IllegalStateException {
+    return ((IAcmePropertyCommand) m_command).getProperty();
+  }
+
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    IAcmeComponent client = getModelContext().resolveInModel(getTarget(), IAcmeComponent.class);
+    int response = Integer.valueOf(getParameters()[0]);
+    IAcmeProperty property = client.getProperty("authenticate");
+    IAcmeIntValue acmeVal = PropertyHelper.toAcmeVal(response);
+    List<IAcmeCommand<?>> cmds = new LinkedList<>();
+    if (propertyValueChanging(property, acmeVal)) {
+      m_command = client.getCommandFactory().propertyValueSetCommand(property, acmeVal);
+      cmds.add(m_command);
     }
-
-    @Override
-    public IAcmeProperty getResult () throws IllegalStateException {
-        return ((IAcmePropertyCommand )m_command).getProperty ();
-    }
-
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        IAcmeComponent client = getModelContext ().resolveInModel (getTarget (), IAcmeComponent.class);
-        int response = Integer.valueOf (getParameters ()[0]);
-        IAcmeProperty property = client.getProperty ("authenticate");
-        IAcmeIntValue acmeVal = PropertyHelper.toAcmeVal (response);
-        List<IAcmeCommand<?>> cmds = new LinkedList<> ();
-        if (propertyValueChanging (property, acmeVal)) {
-            m_command = client.getCommandFactory ().propertyValueSetCommand (property, acmeVal);
-            cmds.add (m_command);
-        }
-        return cmds;
-    }
-
-
+    return cmds;
+  }
 }

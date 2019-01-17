@@ -6,9 +6,7 @@ import org.sa.rainbow.translator.effectors.IEffectorExecutionPort;
 
 import java.util.List;
 
-/**
- * @author Carlos Mendes (cmendesce@gmail.com)
- */
+/** @author Carlos Mendes (cmendesce@gmail.com) */
 public class LocalEffectorExecutionPort implements IEffectorExecutionPort {
 
   private final IEffector m_effector;

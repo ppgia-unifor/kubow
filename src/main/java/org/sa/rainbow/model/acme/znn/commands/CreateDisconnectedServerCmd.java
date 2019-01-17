@@ -10,29 +10,29 @@ import org.sa.rainbow.model.acme.AcmeModelInstance;
 
 import java.util.List;
 
-/**
- * Created by schmerl on 2/4/2016.
- */
+/** Created by schmerl on 2/4/2016. */
 public class CreateDisconnectedServerCmd extends ZNNAcmeModelCommand<IAcmeComponent> {
-    private String                      m_newName;
-    private IAcmeComponentCreateCommand m_cmd;
+  private String m_newName;
+  private IAcmeComponentCreateCommand m_cmd;
 
-    public CreateDisconnectedServerCmd (AcmeModelInstance model, String system, String newName) {
-        super ("createDisconnectedServer", model, system, newName);
-        m_newName = newName;
-    }
+  public CreateDisconnectedServerCmd(AcmeModelInstance model, String system, String newName) {
+    super("createDisconnectedServer", model, system, newName);
+    m_newName = newName;
+  }
 
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        m_newName = ModelHelper.getUniqueName (getModel (), m_newName);
-        m_cmd = getModel ().getCommandFactory ()
-                .componentCreateCommand (getModel (), m_newName, ZNNConstants.SERVER_TYPE,
-                                         ZNNConstants.SERVER_TYPE);
-        return Collections.singletonList (m_cmd);
-    }
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    m_newName = ModelHelper.getUniqueName(getModel(), m_newName);
+    m_cmd =
+        getModel()
+            .getCommandFactory()
+            .componentCreateCommand(
+                getModel(), m_newName, ZNNConstants.SERVER_TYPE, ZNNConstants.SERVER_TYPE);
+    return Collections.singletonList(m_cmd);
+  }
 
-    @Override
-    public IAcmeComponent getResult () throws IllegalStateException {
-        return m_cmd.getComponent ();
-    }
+  @Override
+  public IAcmeComponent getResult() throws IllegalStateException {
+    return m_cmd.getComponent();
+  }
 }

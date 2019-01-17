@@ -33,18 +33,17 @@ import java.util.List;
 
 public class ForceReauthenticationCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    public ForceReauthenticationCmd (AcmeModelInstance model, String target) {
-        super ("forceReauthentication", model, target);
-    }
+  public ForceReauthenticationCmd(AcmeModelInstance model, String target) {
+    super("forceReauthentication", model, target);
+  }
 
-    @Override
-    public IAcmeProperty getResult () throws IllegalStateException {
-        return null;
-    }
+  @Override
+  public IAcmeProperty getResult() throws IllegalStateException {
+    return null;
+  }
 
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        return Collections.emptyList ();
-    }
-
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    return Collections.emptyList();
+  }
 }

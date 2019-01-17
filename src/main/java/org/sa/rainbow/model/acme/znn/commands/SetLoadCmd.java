@@ -36,29 +36,29 @@ import java.util.List;
 
 public class SetLoadCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    private String m_server;
-    private float          m_load;
+  private String m_server;
+  private float m_load;
 
-    public SetLoadCmd (AcmeModelInstance model, String server, String load) {
-        super ("setLoad", model, server, load);
-        m_server = server;
-        m_load = Float.valueOf (load);
-    }
+  public SetLoadCmd(AcmeModelInstance model, String server, String load) {
+    super("setLoad", model, server, load);
+    m_server = server;
+    m_load = Float.valueOf(load);
+  }
 
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        IAcmeComponent server = getModelContext ().resolveInModel (m_server, IAcmeComponent.class);
-        m_command = server.getCommandFactory ().propertyValueSetCommand (server.getProperty ("load"),
-                PropertyHelper.toAcmeVal (m_load));
-        List<IAcmeCommand<?>> cmds = new LinkedList<> ();
-        cmds.add (m_command);
-        return cmds;
-    }
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    IAcmeComponent server = getModelContext().resolveInModel(m_server, IAcmeComponent.class);
+    m_command =
+        server
+            .getCommandFactory()
+            .propertyValueSetCommand(server.getProperty("load"), PropertyHelper.toAcmeVal(m_load));
+    List<IAcmeCommand<?>> cmds = new LinkedList<>();
+    cmds.add(m_command);
+    return cmds;
+  }
 
-    @Override
-    public IAcmeProperty getResult () {
-        return ((IAcmePropertyCommand )m_command).getProperty ();
-    }
-
-
+  @Override
+  public IAcmeProperty getResult() {
+    return ((IAcmePropertyCommand) m_command).getProperty();
+  }
 }

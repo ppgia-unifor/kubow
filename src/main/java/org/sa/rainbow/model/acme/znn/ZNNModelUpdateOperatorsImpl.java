@@ -29,31 +29,28 @@ import org.sa.rainbow.model.acme.znn.commands.ZNNCommandFactory;
 
 /**
  * An Acme model that embodies the ZNN architecture and the associated style-specific operations
- * 
- * @author Bradley Schmerl: schmerl
  *
+ * @author Bradley Schmerl: schmerl
  */
 public class ZNNModelUpdateOperatorsImpl extends AcmeModelInstance {
 
-    private ZNNCommandFactory m_commandFactory;
+  private ZNNCommandFactory m_commandFactory;
 
-    public ZNNModelUpdateOperatorsImpl (IAcmeSystem system, String source) {
-        super (system, source);
-        // Make sure it is the right family
+  public ZNNModelUpdateOperatorsImpl(IAcmeSystem system, String source) {
+    super(system, source);
+    // Make sure it is the right family
+  }
+
+  @Override
+  public ZNNCommandFactory getCommandFactory() {
+    if (m_commandFactory == null) {
+      m_commandFactory = new ZNNCommandFactory(this);
     }
+    return m_commandFactory;
+  }
 
-    @Override
-    public ZNNCommandFactory getCommandFactory () {
-        if (m_commandFactory == null) {
-            m_commandFactory = new ZNNCommandFactory (this);
-        }
-        return m_commandFactory;
-    }
-
-    @Override
-    protected AcmeModelInstance generateInstance (IAcmeSystem sys) {
-        return new ZNNModelUpdateOperatorsImpl (sys, getOriginalSource ());
-    }
-
-
+  @Override
+  protected AcmeModelInstance generateInstance(IAcmeSystem sys) {
+    return new ZNNModelUpdateOperatorsImpl(sys, getOriginalSource());
+  }
 }

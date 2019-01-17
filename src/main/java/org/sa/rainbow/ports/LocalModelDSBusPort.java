@@ -6,15 +6,12 @@ import org.sa.rainbow.core.models.commands.IRainbowOperation;
 import org.sa.rainbow.core.ports.IModelDSBusPublisherPort;
 import org.sa.rainbow.core.ports.IModelDSBusSubscriberPort;
 
-/**
- * @author Carlos Mendes (cmendesce@gmail.com)
- */
+/** @author Carlos Mendes (cmendesce@gmail.com) */
 public class LocalModelDSBusPort implements IModelDSBusPublisherPort, IModelDSBusSubscriberPort {
 
   private IModelDSBusPublisherPort m_callback;
 
-  public LocalModelDSBusPort() {
-  }
+  public LocalModelDSBusPort() {}
 
   @Override
   public OperationResult publishOperation(IRainbowOperation cmd) {
@@ -35,9 +32,7 @@ public class LocalModelDSBusPort implements IModelDSBusPublisherPort, IModelDSBu
   }
 
   @Override
-  public void dispose() {
-
-  }
+  public void dispose() {}
 
   @Override
   public IRainbowMessage createMessage() {

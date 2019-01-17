@@ -40,38 +40,38 @@ import java.util.List;
 
 public class SetThrottledCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    public SetThrottledCmd (AcmeModelInstance model, String target, String parameters) {
-        super ("setThrottled", model, target, parameters);
-    }
+  public SetThrottledCmd(AcmeModelInstance model, String target, String parameters) {
+    super("setThrottled", model, target, parameters);
+  }
 
-    @Override
-    public IAcmeProperty getResult () throws IllegalStateException {
-        return ((IAcmePropertyCommand )m_command).getProperty ();
-    }
+  @Override
+  public IAcmeProperty getResult() throws IllegalStateException {
+    return ((IAcmePropertyCommand) m_command).getProperty();
+  }
 
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        IAcmeComponent server = getModelContext ().resolveInModel (getTarget (), IAcmeComponent.class);
-        if (server == null)
-            throw new RainbowModelException (MessageFormat.format (
-                    "The server ''{0}'' could not be found in the model", getTarget ()));
-        if (!server.declaresType ("ThrottlerT"))
-            throw new RainbowModelException (MessageFormat.format (
-                    "The server ''{0}'' is not of the right type. It does not have a property ''throttled''",
-                    getTarget ()));
-        String[] ips = getParameters ()[0].split (",");
-        HashSet<String> ipSet = new HashSet<> ();
-        if (!getParameters ()[0].isEmpty ()) {
-            ipSet.addAll (Arrays.asList (ips));
-        }
-        List<IAcmeCommand<?>> cmds = new LinkedList<> ();
-        IAcmeProperty property = server.getProperty ("throttled");
-        IAcmePropertyValue acmeVal = PropertyHelper.toAcmeVal (ipSet);
-        if (propertyValueChanging (property, acmeVal)) {
-            m_command = server.getCommandFactory ().propertyValueSetCommand (property, acmeVal);
-            cmds.add (m_command);
-        }
-        return cmds;
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    IAcmeComponent server = getModelContext().resolveInModel(getTarget(), IAcmeComponent.class);
+    if (server == null)
+      throw new RainbowModelException(
+          MessageFormat.format("The server ''{0}'' could not be found in the model", getTarget()));
+    if (!server.declaresType("ThrottlerT"))
+      throw new RainbowModelException(
+          MessageFormat.format(
+              "The server ''{0}'' is not of the right type. It does not have a property ''throttled''",
+              getTarget()));
+    String[] ips = getParameters()[0].split(",");
+    HashSet<String> ipSet = new HashSet<>();
+    if (!getParameters()[0].isEmpty()) {
+      ipSet.addAll(Arrays.asList(ips));
     }
-
+    List<IAcmeCommand<?>> cmds = new LinkedList<>();
+    IAcmeProperty property = server.getProperty("throttled");
+    IAcmePropertyValue acmeVal = PropertyHelper.toAcmeVal(ipSet);
+    if (propertyValueChanging(property, acmeVal)) {
+      m_command = server.getCommandFactory().propertyValueSetCommand(property, acmeVal);
+      cmds.add(m_command);
+    }
+    return cmds;
+  }
 }

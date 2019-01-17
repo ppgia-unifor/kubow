@@ -21,9 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * Created November 1, 2006.
- */
+/** Created November 1, 2006. */
 package org.sa.rainbow.translator.znn.gauges;
 
 import org.sa.rainbow.core.error.RainbowException;
@@ -38,86 +36,93 @@ import java.util.regex.Pattern;
 
 /**
  * Gauge for consuming CPU load monitoring output.
- * 
+ *
  * @author Shang-Wen Cheng (zensoul@cs.cmu.edu)
  */
 public class CpuLoadGauge extends RegularPatternGauge {
 
-    public static final String NAME = "G - CPU Load";
-    /** Sample window to compute an average load */
-    public static final int AVG_SAMPLE_WINDOW = 10;
+  public static final String NAME = "G - CPU Load";
+  /** Sample window to compute an average load */
+  public static final int AVG_SAMPLE_WINDOW = 10;
 
-    /** List of values reported by this Gauge */
-    private static final String[] valueNames = {
-            "load"
-    };
-    private static final String DEFAULT = "DEFAULT";
+  /** List of values reported by this Gauge */
+  private static final String[] valueNames = {"load"};
 
-    private Queue<Double> m_history = null;
-    private double m_cumulation = 0;
+  private static final String DEFAULT = "DEFAULT";
 
-    /**
-     * Main constructor.
-     * 
-     * @throws RainbowException
-     */
-    public CpuLoadGauge (String id, long beaconPeriod, TypedAttribute gaugeDesc, TypedAttribute modelDesc,
-            List<TypedAttributeWithValue> setupParams, Map<String, IRainbowOperation> mappings)
-                    throws RainbowException {
+  private Queue<Double> m_history = null;
+  private double m_cumulation = 0;
 
-        super(NAME, id, beaconPeriod, gaugeDesc, modelDesc, setupParams, mappings);
+  /**
+   * Main constructor.
+   *
+   * @throws RainbowException
+   */
+  public CpuLoadGauge(
+      String id,
+      long beaconPeriod,
+      TypedAttribute gaugeDesc,
+      TypedAttribute modelDesc,
+      List<TypedAttributeWithValue> setupParams,
+      Map<String, IRainbowOperation> mappings)
+      throws RainbowException {
 
-        m_history = new LinkedList<> ();
+    super(NAME, id, beaconPeriod, gaugeDesc, modelDesc, setupParams, mappings);
 
-        addPattern(DEFAULT, Pattern.compile("\\[(.+)\\]\\s+([0-9.]+)\\s+([0-9.]+)\\s+([0-9.]+)\\s+([0-9.]+)(\\s+([0-9.]+))?"));
+    m_history = new LinkedList<>();
 
-        Double initialLoad = getSetupValue ("initialLoad", Double.class);
-        if (initialLoad != null) {
-            m_cumulation = initialLoad;
-            m_history.offer (initialLoad);
-        }
+    addPattern(
+        DEFAULT,
+        Pattern.compile(
+            "\\[(.+)\\]\\s+([0-9.]+)\\s+([0-9.]+)\\s+([0-9.]+)\\s+([0-9.]+)(\\s+([0-9.]+))?"));
+
+    Double initialLoad = getSetupValue("initialLoad", Double.class);
+    if (initialLoad != null) {
+      m_cumulation = initialLoad;
+      m_history.offer(initialLoad);
     }
+  }
 
-    /* (non-Javadoc)
-     * @see org.sa.rainbow.translator.gauges.RegularPatternGauge#doMatch(java.lang.String, java.util.regex.Matcher)
-     */
-    @Override
-    protected void doMatch (String matchName, Matcher m) {
-        if (matchName == DEFAULT) {
-            // acquire the recent CPU load data
-//			String tstamp = m.group(1);
-            double userT = Double.parseDouble(m.group(2));
-            double niceT = Double.parseDouble(m.group(3));
-            double sysT = Double.parseDouble(m.group(4));
-            double idleT = Double.parseDouble(m.group(5));
-            double iowaitT = 0.0;
-            if (m.group(7) != null) {  // optional iowait element is present
-                iowaitT = Double.parseDouble(m.group(7));
-            }
-            double tLoad = userT + niceT + sysT + iowaitT;
-            // add value to cumulation and enqueue
-            m_cumulation += tLoad;
-            m_history.offer(tLoad);
-            if (m_history.size() > AVG_SAMPLE_WINDOW) {
-                // if queue size reached window size, then
-                //   dequeue and delete oldest value and report average
-                m_cumulation -= m_history.poll();
-            }
-            tLoad = m_cumulation / m_history.size();
-            if (idleT < 1.0) {
-                // update server comp in model with requests per sec
-                m_reportingPort.trace (getComponentType (), "Updating server prop using load = " + tLoad);
-                // ZNewsSys.s0.load
-                IRainbowOperation cmd = getCommand (valueNames[0]);
-                Map<String, String> pMap = new HashMap<> ();
-                pMap.put (cmd.getParameters ()[0], Double.toString (tLoad));
-                issueCommand (cmd, pMap);
-            }
-        }
+  /* (non-Javadoc)
+   * @see org.sa.rainbow.translator.gauges.RegularPatternGauge#doMatch(java.lang.String, java.util.regex.Matcher)
+   */
+  @Override
+  protected void doMatch(String matchName, Matcher m) {
+    if (matchName == DEFAULT) {
+      // acquire the recent CPU load data
+      //			String tstamp = m.group(1);
+      double userT = Double.parseDouble(m.group(2));
+      double niceT = Double.parseDouble(m.group(3));
+      double sysT = Double.parseDouble(m.group(4));
+      double idleT = Double.parseDouble(m.group(5));
+      double iowaitT = 0.0;
+      if (m.group(7) != null) { // optional iowait element is present
+        iowaitT = Double.parseDouble(m.group(7));
+      }
+      double tLoad = userT + niceT + sysT + iowaitT;
+      // add value to cumulation and enqueue
+      m_cumulation += tLoad;
+      m_history.offer(tLoad);
+      if (m_history.size() > AVG_SAMPLE_WINDOW) {
+        // if queue size reached window size, then
+        //   dequeue and delete oldest value and report average
+        m_cumulation -= m_history.poll();
+      }
+      tLoad = m_cumulation / m_history.size();
+      if (idleT < 1.0) {
+        // update server comp in model with requests per sec
+        m_reportingPort.trace(getComponentType(), "Updating server prop using load = " + tLoad);
+        // ZNewsSys.s0.load
+        IRainbowOperation cmd = getCommand(valueNames[0]);
+        Map<String, String> pMap = new HashMap<>();
+        pMap.put(cmd.getParameters()[0], Double.toString(tLoad));
+        issueCommand(cmd, pMap);
+      }
     }
+  }
 
-    @Override
-    protected void runAction () {
-        super.runAction ();
-    }
+  @Override
+  protected void runAction() {
+    super.runAction();
+  }
 }

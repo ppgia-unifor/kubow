@@ -7,9 +7,7 @@ import org.sa.rainbow.translator.effectors.IEffectorIdentifier;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Carlos Mendes (cmendesce@gmail.com)
- */
+/** @author Carlos Mendes (cmendesce@gmail.com) */
 public class EffectorExecutionRegister {
 
   private final Map<String, IEffectorExecutionPort> effectors;

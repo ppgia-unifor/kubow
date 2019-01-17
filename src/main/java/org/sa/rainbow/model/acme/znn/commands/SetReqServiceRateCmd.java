@@ -36,29 +36,30 @@ import java.util.List;
 
 public class SetReqServiceRateCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    private String m_server;
-    private Float  m_serviceRate;
+  private String m_server;
+  private Float m_serviceRate;
 
-    public SetReqServiceRateCmd (AcmeModelInstance model, String target, String serviceRate) {
-        super ("setReqServiceRate", model, target, serviceRate);
-        m_server = target;
-        m_serviceRate = Float.valueOf (serviceRate);
+  public SetReqServiceRateCmd(AcmeModelInstance model, String target, String serviceRate) {
+    super("setReqServiceRate", model, target, serviceRate);
+    m_server = target;
+    m_serviceRate = Float.valueOf(serviceRate);
+  }
 
-    }
+  @Override
+  public IAcmeProperty getResult() throws IllegalStateException {
+    return ((IAcmePropertyCommand) m_command).getProperty();
+  }
 
-    @Override
-    public IAcmeProperty getResult () throws IllegalStateException {
-        return ((IAcmePropertyCommand )m_command).getProperty ();
-    }
-
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        IAcmeComponent server = getModelContext ().resolveInModel (m_server, IAcmeComponent.class);
-        m_command = server.getCommandFactory ().propertyValueSetCommand (server.getProperty ("reqServiceRate"),
-                PropertyHelper.toAcmeVal (m_serviceRate));
-        List<IAcmeCommand<?>> cmds = new LinkedList<> ();
-        cmds.add (m_command);
-        return cmds;
-    }
-
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    IAcmeComponent server = getModelContext().resolveInModel(m_server, IAcmeComponent.class);
+    m_command =
+        server
+            .getCommandFactory()
+            .propertyValueSetCommand(
+                server.getProperty("reqServiceRate"), PropertyHelper.toAcmeVal(m_serviceRate));
+    List<IAcmeCommand<?>> cmds = new LinkedList<>();
+    cmds.add(m_command);
+    return cmds;
+  }
 }

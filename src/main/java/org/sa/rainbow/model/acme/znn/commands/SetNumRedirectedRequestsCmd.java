@@ -39,30 +39,30 @@ import java.util.List;
 
 public class SetNumRedirectedRequestsCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    private String m_server;
-    private float          m_requests;
+  private String m_server;
+  private float m_requests;
 
-    public SetNumRedirectedRequestsCmd (AcmeModelInstance model, String server,
-                                        String requests) {
-        super ("setNumRedirectedRequests", model, server, requests);
-        m_server = server;
-        m_requests = Integer.valueOf (requests);
-    }
+  public SetNumRedirectedRequestsCmd(AcmeModelInstance model, String server, String requests) {
+    super("setNumRedirectedRequests", model, server, requests);
+    m_server = server;
+    m_requests = Integer.valueOf(requests);
+  }
 
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        IAcmeConnector httpConn = getModelContext ().resolveInModel (m_server, IAcmeConnector.class);
-        m_command = httpConn.getCommandFactory ().propertyValueSetCommand (httpConn.getProperty ("numReqsRedirect"),
-                PropertyHelper.toAcmeVal (m_requests));
-        List<IAcmeCommand<?>> cmds = new LinkedList<> ();
-        cmds.add (m_command);
-        return cmds;
-    }
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    IAcmeConnector httpConn = getModelContext().resolveInModel(m_server, IAcmeConnector.class);
+    m_command =
+        httpConn
+            .getCommandFactory()
+            .propertyValueSetCommand(
+                httpConn.getProperty("numReqsRedirect"), PropertyHelper.toAcmeVal(m_requests));
+    List<IAcmeCommand<?>> cmds = new LinkedList<>();
+    cmds.add(m_command);
+    return cmds;
+  }
 
-    @Override
-    public IAcmeProperty getResult () {
-        return ((IAcmePropertyCommand )m_command).getProperty ();
-    }
-
-
+  @Override
+  public IAcmeProperty getResult() {
+    return ((IAcmePropertyCommand) m_command).getProperty();
+  }
 }

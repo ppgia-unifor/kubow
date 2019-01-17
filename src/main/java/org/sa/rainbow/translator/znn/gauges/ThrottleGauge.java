@@ -37,70 +37,72 @@ import java.util.regex.Pattern;
 
 public class ThrottleGauge extends RegularPatternGauge {
 
-    public static final String    NAME         = "G - Throttled Clients";
-    public static final String    NONE         = "NOTHROTTLE";
+  public static final String NAME = "G - Throttled Clients";
+  public static final String NONE = "NOTHROTTLE";
+  private static final String[] commandNames = {"setThrottled"};
+  private static final String DEFAULT = "DEFAULT";
+  public String lastReport = "";
 
-    public String                 lastReport   = "";
+  public ThrottleGauge(
+      String id,
+      long beaconPeriod,
+      TypedAttribute gaugeDesc,
+      TypedAttribute modelDesc,
+      List<TypedAttributeWithValue> setupParams,
+      Map<String, IRainbowOperation> mappings)
+      throws RainbowException {
+    super(NAME, id, beaconPeriod, gaugeDesc, modelDesc, setupParams, mappings);
 
-    private static final String[] commandNames = { "setThrottled" };
-    private static final String   DEFAULT      = "DEFAULT";
+    addPattern(
+        DEFAULT,
+        Pattern.compile("((?:\\d{1,3}\\.){3}\\d{1,3})(?:,\\s*((?:\\d{1,3}\\.){3}\\d{1,3}))*"));
+    addPattern(NONE, Pattern.compile("^none$"));
+  }
 
-    public ThrottleGauge (String id, long beaconPeriod, TypedAttribute gaugeDesc, TypedAttribute modelDesc,
-            List<TypedAttributeWithValue> setupParams, Map<String, IRainbowOperation> mappings)
-                    throws RainbowException {
-        super (NAME, id, beaconPeriod, gaugeDesc, modelDesc, setupParams, mappings);
+  @Override
+  protected void doMatch(String matchName, Matcher m) {
+    if (matchName == DEFAULT) {
 
-        addPattern (DEFAULT, Pattern.compile ("((?:\\d{1,3}\\.){3}\\d{1,3})(?:,\\s*((?:\\d{1,3}\\.){3}\\d{1,3}))*"));
-        addPattern (NONE, Pattern.compile ("^none$"));
+      // Send the list of attackers
+      int c = m.groupCount();
+      StringBuilder ips = new StringBuilder();
+      //          String[] ips = new String[c];
+      for (int i = 0; i < c; i++) {
+        //              ips[i] = m.group(i + 1);
+        ips.append(m.group(i + 1));
+        ips.append(",");
+      }
+      ips.deleteCharAt(ips.length() - 1);
+
+      if (doReport(ips.toString())) {
+        recordLastReport(ips.toString());
+        IRainbowOperation cmd = m_commands.values().iterator().next();
+        Map<String, String> pm = new HashMap<>();
+        pm.put(cmd.getParameters()[0], ips.toString());
+        issueCommand(cmd, pm);
+      }
+    } else if (matchName == NONE) {
+      // The probe reported "none" meaning that there is nothing blackholed
+      if (doReport("")) {
+        recordLastReport("");
+        IRainbowOperation cmd = m_commands.values().iterator().next();
+        Map<String, String> pm = new HashMap<>();
+        pm.put(cmd.getParameters()[0], "");
+        issueCommand(cmd, pm);
+      }
     }
+  }
 
-    @Override
-    protected void doMatch (String matchName, Matcher m) {
-        if (matchName == DEFAULT) {
+  private void recordLastReport(String report) {
+    lastReport = report;
+  }
 
-            // Send the list of attackers
-            int c = m.groupCount ();
-            StringBuilder ips = new StringBuilder ();
-//          String[] ips = new String[c];
-            for (int i = 0; i < c; i++) {
-//              ips[i] = m.group(i + 1);
-                ips.append (m.group (i + 1));
-                ips.append (",");
-            }
-            ips.deleteCharAt (ips.length () - 1);
-
-            if (doReport (ips.toString ())) {
-                recordLastReport (ips.toString ());
-                IRainbowOperation cmd = m_commands.values ().iterator ().next ();
-                Map<String, String> pm = new HashMap<> ();
-                pm.put (cmd.getParameters ()[0], ips.toString ());
-                issueCommand (cmd, pm);
-
-            }
-        }
-        else if (matchName == NONE) {
-            // The probe reported "none" meaning that there is nothing blackholed
-            if (doReport ("")) {
-                recordLastReport ("");
-                IRainbowOperation cmd = m_commands.values ().iterator ().next ();
-                Map<String, String> pm = new HashMap<> ();
-                pm.put (cmd.getParameters ()[0], "");
-                issueCommand (cmd, pm);
-            }
-        }
+  private boolean doReport(String report) {
+    boolean doReport;
+    synchronized (lastReport) {
+      doReport = !lastReport.equals(report);
     }
-
-    private void recordLastReport (String report) {
-            lastReport = report;
-    }
-
-    private boolean doReport (String report) {
-        boolean doReport;
-        synchronized (lastReport) {
-            doReport = !lastReport.equals (report);
-        }
-//      return doReport;
-        return true;
-    }
-
+    //      return doReport;
+    return true;
+  }
 }

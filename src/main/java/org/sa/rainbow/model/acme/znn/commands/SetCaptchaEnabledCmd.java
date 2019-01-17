@@ -41,54 +41,53 @@ import java.util.List;
 
 /**
  * This commands sets the model property indicating whether captcha is enabled.
- * 
- * @author Bradley Schmerl: schmerl
  *
+ * @author Bradley Schmerl: schmerl
  */
 public class SetCaptchaEnabledCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    /**
-     *  @param model
-     * @param target
-     *            The load balancer to set the property on
-     * @param enabled
-     */
-    public SetCaptchaEnabledCmd (AcmeModelInstance model, String target, String enabled) {
-        super ("setCaptchaEnabled", model, target, enabled);
+  /**
+   * @param model
+   * @param target The load balancer to set the property on
+   * @param enabled
+   */
+  public SetCaptchaEnabledCmd(AcmeModelInstance model, String target, String enabled) {
+    super("setCaptchaEnabled", model, target, enabled);
+  }
+
+  @Override
+  public IAcmeProperty getResult() throws IllegalStateException {
+    return ((IAcmePropertyCommand) m_command).getProperty();
+  }
+
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    IAcmeComponent lb = getModelContext().resolveInModel(getTarget(), IAcmeComponent.class);
+    if (lb == null)
+      throw new RainbowModelException(
+          MessageFormat.format(
+              "The load balancer ''{0}'' could not be found in the model", getTarget()));
+    if (!lb.declaresType("CaptchaRedirectT"))
+      throw new RainbowModelException(
+          MessageFormat.format(
+              "The server ''{0}'' is not of the right type. It does not have a property ''captchaEnabled''",
+              getTarget()));
+
+    List<IAcmeCommand<?>> cmds;
+    try {
+      boolean enabled = Boolean.valueOf(getParameters()[0]);
+      IAcmeProperty property = lb.getProperty("captchaEnabled");
+      IAcmeBooleanValue acmeVal = PropertyHelper.toAcmeVal(enabled);
+      cmds = new LinkedList<>();
+      if (propertyValueChanging(property, acmeVal)) {
+        m_command = lb.getCommandFactory().propertyValueSetCommand(property, acmeVal);
+        cmds.add(m_command);
+      }
+    } catch (Exception e) {
+      throw new RainbowModelException(
+          MessageFormat.format(
+              "The parameter ''{0}'' cannot be parsed as a boolean", getParameters()[0]));
     }
-
-    @Override
-    public IAcmeProperty getResult () throws IllegalStateException {
-        return ((IAcmePropertyCommand )m_command).getProperty ();
-    }
-
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        IAcmeComponent lb = getModelContext ().resolveInModel (getTarget (), IAcmeComponent.class);
-        if (lb == null)
-            throw new RainbowModelException (MessageFormat.format (
-                    "The load balancer ''{0}'' could not be found in the model", getTarget ()));
-        if (!lb.declaresType ("CaptchaRedirectT"))
-            throw new RainbowModelException (MessageFormat.format (
-                    "The server ''{0}'' is not of the right type. It does not have a property ''captchaEnabled''",
-                    getTarget ()));
-
-        List<IAcmeCommand<?>> cmds;
-        try {
-            boolean enabled = Boolean.valueOf (getParameters ()[0]);
-            IAcmeProperty property = lb.getProperty ("captchaEnabled");
-            IAcmeBooleanValue acmeVal = PropertyHelper.toAcmeVal (enabled);
-            cmds = new LinkedList<> ();
-            if (propertyValueChanging (property, acmeVal)) {
-                m_command = lb.getCommandFactory ().propertyValueSetCommand (property, acmeVal);
-                cmds.add (m_command);
-            }
-        }
-        catch (Exception e) {
-            throw new RainbowModelException (MessageFormat.format (
-                    "The parameter ''{0}'' cannot be parsed as a boolean", getParameters ()[0]));
-        }
-        return cmds;
-    }
-
+    return cmds;
+  }
 }

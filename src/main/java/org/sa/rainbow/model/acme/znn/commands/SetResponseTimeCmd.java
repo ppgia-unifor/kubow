@@ -37,37 +37,38 @@ import java.util.List;
 
 public class SetResponseTimeCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    private String m_client;
-    private float          m_responseTime;
+  private String m_client;
+  private float m_responseTime;
 
-    public SetResponseTimeCmd (AcmeModelInstance model, String client, String rt) {
-        super ("setResponseTime", model, client, rt);
-        m_client = client;
-        m_responseTime = Float.valueOf (rt);
-    }
+  public SetResponseTimeCmd(AcmeModelInstance model, String client, String rt) {
+    super("setResponseTime", model, client, rt);
+    m_client = client;
+    m_responseTime = Float.valueOf(rt);
+  }
 
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        IAcmeComponent client = getModelContext ().resolveInModel (m_client, IAcmeComponent.class);
-        if (client == null)
-            throw new RainbowModelException (MessageFormat.format (
-                    "The client ''{0}'' could not be found in the model", getTarget ()));
-        if (!client.declaresType ("ClientT"))
-            throw new RainbowModelException (MessageFormat.format (
-                    "The client ''{0}'' is not of the right type. It does not have a property ''experRespTime''",
-                    getTarget ()));
-        IAcmeProperty expRT = client.getProperty ("experRespTime");
-        m_command = client.getCommandFactory ().propertyValueSetCommand (expRT,
-                PropertyHelper.toAcmeVal (m_responseTime));
-        List<IAcmeCommand<?>> cmds = new LinkedList<> ();
-        cmds.add (m_command);
-        return cmds;
-    }
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    IAcmeComponent client = getModelContext().resolveInModel(m_client, IAcmeComponent.class);
+    if (client == null)
+      throw new RainbowModelException(
+          MessageFormat.format("The client ''{0}'' could not be found in the model", getTarget()));
+    if (!client.declaresType("ClientT"))
+      throw new RainbowModelException(
+          MessageFormat.format(
+              "The client ''{0}'' is not of the right type. It does not have a property ''experRespTime''",
+              getTarget()));
+    IAcmeProperty expRT = client.getProperty("experRespTime");
+    m_command =
+        client
+            .getCommandFactory()
+            .propertyValueSetCommand(expRT, PropertyHelper.toAcmeVal(m_responseTime));
+    List<IAcmeCommand<?>> cmds = new LinkedList<>();
+    cmds.add(m_command);
+    return cmds;
+  }
 
-    @Override
-    public IAcmeProperty getResult () {
-        return ((IAcmePropertyCommand )m_command).getProperty ();
-    }
-
-
+  @Override
+  public IAcmeProperty getResult() {
+    return ((IAcmePropertyCommand) m_command).getProperty();
+  }
 }

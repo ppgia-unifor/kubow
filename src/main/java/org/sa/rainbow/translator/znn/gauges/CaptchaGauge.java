@@ -38,50 +38,53 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CaptchaGauge extends RegularPatternGauge {
-    public static final String    NAME       = "G - Captcha Enablement";
+  public static final String NAME = "G - Captcha Enablement";
 
-    private static final String   OFF        = "off";
-    private static final String   ON         = "on";
+  private static final String OFF = "off";
+  private static final String ON = "on";
 
-    /** List of values reported by this Gauge */
-    private static final String[] valueNames = { "enablement" };
+  /** List of values reported by this Gauge */
+  private static final String[] valueNames = {"enablement"};
 
-    public CaptchaGauge (String id, long beaconPeriod, TypedAttribute gaugeDesc, TypedAttribute modelDesc,
-            List<TypedAttributeWithValue> setupParams, Map<String, IRainbowOperation> mappings)
-                    throws RainbowException {
-        super (NAME, id, beaconPeriod, gaugeDesc, modelDesc, setupParams, mappings);
-        addPattern (ON, Pattern.compile ("^on$"));
-        addPattern (OFF, Pattern.compile ("^off$"));
-    }
+  public CaptchaGauge(
+      String id,
+      long beaconPeriod,
+      TypedAttribute gaugeDesc,
+      TypedAttribute modelDesc,
+      List<TypedAttributeWithValue> setupParams,
+      Map<String, IRainbowOperation> mappings)
+      throws RainbowException {
+    super(NAME, id, beaconPeriod, gaugeDesc, modelDesc, setupParams, mappings);
+    addPattern(ON, Pattern.compile("^on$"));
+    addPattern(OFF, Pattern.compile("^off$"));
+  }
 
-    @Override
-    protected void doMatch (String matchName, Matcher m) {
-        boolean captchaOn = ON.equals (matchName);
-        IRainbowOperation cmd = m_commands.get (valueNames[0]);
-        Map<String, String> pMap = new HashMap<> ();
-        pMap.put (cmd.getParameters ()[0], Boolean.toString (captchaOn));
-        if (captchaOn) {
-            issueCommand (cmd, pMap);
+  @Override
+  protected void doMatch(String matchName, Matcher m) {
+    boolean captchaOn = ON.equals(matchName);
+    IRainbowOperation cmd = m_commands.get(valueNames[0]);
+    Map<String, String> pMap = new HashMap<>();
+    pMap.put(cmd.getParameters()[0], Boolean.toString(captchaOn));
+    if (captchaOn) {
+      issueCommand(cmd, pMap);
+    } else {
+      List<IRainbowOperation> ops = new LinkedList<>();
+      List<Map<String, String>> params = new LinkedList<>();
+
+      ops.add(cmd);
+      params.add(pMap);
+
+      for (Entry<String, IRainbowOperation> entry : m_commands.entrySet()) {
+        if (entry.getKey().startsWith("clientMgmt(")) {
+          IRainbowOperation op = entry.getValue();
+          pMap = new HashMap<>();
+          pMap.put(op.getParameters()[0], "0");
+          ops.add(op);
+          params.add(pMap);
         }
-        else {
-            List<IRainbowOperation> ops = new LinkedList<> ();
-            List<Map<String, String>> params = new LinkedList<> ();
+      }
 
-            ops.add (cmd);
-            params.add (pMap);
-
-            for (Entry<String, IRainbowOperation> entry : m_commands.entrySet ()) {
-                if (entry.getKey ().startsWith ("clientMgmt(")) {
-                    IRainbowOperation op = entry.getValue ();
-                    pMap = new HashMap<> ();
-                    pMap.put (op.getParameters ()[0], "0");
-                    ops.add (op);
-                    params.add (pMap);
-                }
-            }
-
-            issueCommands (ops, params);
-        }
+      issueCommands(ops, params);
     }
-
+  }
 }

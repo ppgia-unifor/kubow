@@ -37,33 +37,30 @@ import java.util.List;
 
 public class SetByteServiceRateCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
-    private String m_server;
-    private Float  m_serviceRate;
+  private String m_server;
+  private Float m_serviceRate;
 
-    public SetByteServiceRateCmd (AcmeModelInstance model, String target, String serviceRate) {
-        super ("setByteServiceRate", model, target, serviceRate);
-        m_server = target;
-        m_serviceRate = Float.valueOf (serviceRate);
+  public SetByteServiceRateCmd(AcmeModelInstance model, String target, String serviceRate) {
+    super("setByteServiceRate", model, target, serviceRate);
+    m_server = target;
+    m_serviceRate = Float.valueOf(serviceRate);
+  }
 
+  @Override
+  public IAcmeProperty getResult() throws IllegalStateException {
+    return ((IAcmePropertyCommand) m_command).getProperty();
+  }
+
+  @Override
+  protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
+    IAcmeComponent server = getModelContext().resolveInModel(m_server, IAcmeComponent.class);
+    List<IAcmeCommand<?>> cmds = new LinkedList<>();
+    IAcmeProperty property = server.getProperty("byteServiceRate");
+    IAcmePropertyValue newVal = PropertyHelper.toAcmeVal(m_serviceRate);
+    if (propertyValueChanging(property, newVal)) {
+      m_command = server.getCommandFactory().propertyValueSetCommand(property, newVal);
+      cmds.add(m_command);
     }
-
-    @Override
-    public IAcmeProperty getResult () throws IllegalStateException {
-        return ((IAcmePropertyCommand )m_command).getProperty ();
-    }
-
-    @Override
-    protected List<IAcmeCommand<?>> doConstructCommand () throws RainbowModelException {
-        IAcmeComponent server = getModelContext ().resolveInModel (m_server, IAcmeComponent.class);
-        List<IAcmeCommand<?>> cmds = new LinkedList<> ();
-        IAcmeProperty property = server.getProperty ("byteServiceRate");
-        IAcmePropertyValue newVal = PropertyHelper.toAcmeVal (m_serviceRate);
-        if (propertyValueChanging (property, newVal)) {
-            m_command = server.getCommandFactory ().propertyValueSetCommand (property,
-                    newVal);
-            cmds.add (m_command);
-        }
-        return cmds;
-    }
-
+    return cmds;
+  }
 }

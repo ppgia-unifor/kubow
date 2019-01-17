@@ -36,24 +36,22 @@ import java.util.List;
 
 public class ESEBEffectorExecutionRequirerPort implements IESEBEffectorExecutionRemoteInterface {
 
-    private final IEffectorExecutionPort m_stub;
+  private final IEffectorExecutionPort m_stub;
 
-    public ESEBEffectorExecutionRequirerPort (EffectorExecutionRegister register, IEffectorIdentifier effector) {
-        m_stub = register.find(effector);
+  public ESEBEffectorExecutionRequirerPort(
+      EffectorExecutionRegister register, IEffectorIdentifier effector) {
+    m_stub = register.find(effector);
+  }
+
+  @Override
+  public Outcome execute(List<String> args) {
+    try {
+      return m_stub.execute(args);
+    } catch (OperationTimedOutException e) {
+      return Outcome.TIMEOUT;
     }
+  }
 
-    @Override
-    public Outcome execute (List<String> args) {
-        try {
-            return m_stub.execute (args);
-        }
-        catch (OperationTimedOutException e) {
-            return Outcome.TIMEOUT;
-        }
-    }
-
-    @Override
-    public void dispose() {
-
-    }
+  @Override
+  public void dispose() {}
 }

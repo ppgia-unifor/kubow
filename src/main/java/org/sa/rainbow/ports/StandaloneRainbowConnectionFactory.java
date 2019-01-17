@@ -26,311 +26,270 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * @author Carlos Mendes (cmendesce@gmail.com)
- */
+/** @author Carlos Mendes (cmendesce@gmail.com) */
 public class StandaloneRainbowConnectionFactory implements IRainbowConnectionPortFactory {
 
   private static StandaloneRainbowConnectionFactory m_instance;
+  private final Map<String, ESEBAdaptationQConnector> m_adaptationConnectors = new HashMap<>();
+  EffectorExecutionRegister register = new EffectorExecutionRegister();
+  private LocalModelDSBusPort modelDSPublishPort;
 
-  private StandaloneRainbowConnectionFactory () {
+  private StandaloneRainbowConnectionFactory() {}
 
-  }
-
-  @Override
-  public IDelegateMasterConnectionPort createDelegateSideConnectionPort (RainbowDelegate delegate) {
-    try {
-      return new ESEBDelegateConnectionPort(delegate);
-    }
-    catch (IOException e) {
-      return DisconnectedRainbowDelegateConnectionPort.instance ();
-    }
-
-  }
-
-  @Override
-  public IMasterConnectionPort createMasterSideConnectionPort (RainbowMaster rainbowMaster) {
-
-    try {
-      return new ESEBMasterConnectionPort(rainbowMaster);
-    }
-    catch (IOException e) {
-      return DisconnectedRainbowMasterConnectionPort.instance ();
-    }
-  }
-
-  @Override
-  public IDelegateManagementPort createDelegateSideManagementPort (RainbowDelegate delegate, String delegateID) {
-    try {
-      return new ESEBDelegateManagementPort(delegate);
-    }
-    catch (IOException e) {
-      return DisconnectedRainbowManagementPort.instance ();
-    }
-  }
-
-  @Override
-  public IDelegateManagementPort createMasterSideManagementPort (RainbowMaster rainbowMaster,
-                                                                 String delegateID,
-                                                                 Properties connectionProperties) {
-    try {
-      return new ESEBMasterSideManagementPort(rainbowMaster, delegateID, connectionProperties);
-    }
-    catch (Throwable t) {
-      return DisconnectedRainbowManagementPort.instance ();
-    }
-
-  }
-
-  public static IRainbowConnectionPortFactory getFactory () {
+  public static IRainbowConnectionPortFactory getFactory() {
     if (m_instance == null) {
-      m_instance = new StandaloneRainbowConnectionFactory ();
+      m_instance = new StandaloneRainbowConnectionFactory();
     }
     return m_instance;
   }
 
-
   @Override
-  public IModelUSBusPort createModelsManagerUSPort (IModelsManager m) throws RainbowConnectionException {
+  public IDelegateMasterConnectionPort createDelegateSideConnectionPort(RainbowDelegate delegate) {
     try {
-      return new ESEBModelManagerModelUpdatePort (m);
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      return new ESEBDelegateConnectionPort(delegate);
+    } catch (IOException e) {
+      return DisconnectedRainbowDelegateConnectionPort.instance();
     }
   }
 
-
   @Override
-  public IModelUSBusPort createModelsManagerClientUSPort (Identifiable client) throws RainbowConnectionException {
+  public IMasterConnectionPort createMasterSideConnectionPort(RainbowMaster rainbowMaster) {
+
     try {
-      return new ESEBGaugeModelUSBusPort (client);
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      return new ESEBMasterConnectionPort(rainbowMaster);
+    } catch (IOException e) {
+      return DisconnectedRainbowMasterConnectionPort.instance();
     }
   }
 
-
   @Override
-  public IGaugeLifecycleBusPort createGaugeSideLifecyclePort () throws RainbowConnectionException {
+  public IDelegateManagementPort createDelegateSideManagementPort(
+      RainbowDelegate delegate, String delegateID) {
     try {
-      return new ESEBGaugeSideLifecyclePort ();
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      return new ESEBDelegateManagementPort(delegate);
+    } catch (IOException e) {
+      return DisconnectedRainbowManagementPort.instance();
     }
   }
 
-
   @Override
-  public IModelChangeBusPort createChangeBusAnnouncePort () throws RainbowConnectionException {
+  public IDelegateManagementPort createMasterSideManagementPort(
+      RainbowMaster rainbowMaster, String delegateID, Properties connectionProperties) {
     try {
-      return new ESEBChangeBusAnnouncePort ();
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      return new ESEBMasterSideManagementPort(rainbowMaster, delegateID, connectionProperties);
+    } catch (Throwable t) {
+      return DisconnectedRainbowManagementPort.instance();
     }
   }
 
-
   @Override
-  public IGaugeLifecycleBusPort createManagerGaugeLifecyclePort (IGaugeLifecycleBusPort manager)
-    throws RainbowConnectionException {
+  public IModelUSBusPort createModelsManagerUSPort(IModelsManager m)
+      throws RainbowConnectionException {
     try {
-      return new ESEBReceiverSideGaugeLifecyclePort (manager);
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      return new ESEBModelManagerModelUpdatePort(m);
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
+  @Override
+  public IModelUSBusPort createModelsManagerClientUSPort(Identifiable client)
+      throws RainbowConnectionException {
+    try {
+      return new ESEBGaugeModelUSBusPort(client);
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
+    }
+  }
 
   @Override
-  public IGaugeConfigurationPort createGaugeConfigurationPortClient (IGaugeIdentifier gauge)
-    throws RainbowConnectionException {
+  public IGaugeLifecycleBusPort createGaugeSideLifecyclePort() throws RainbowConnectionException {
+    try {
+      return new ESEBGaugeSideLifecyclePort();
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
+    }
+  }
+
+  @Override
+  public IModelChangeBusPort createChangeBusAnnouncePort() throws RainbowConnectionException {
+    try {
+      return new ESEBChangeBusAnnouncePort();
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
+    }
+  }
+
+  @Override
+  public IGaugeLifecycleBusPort createManagerGaugeLifecyclePort(IGaugeLifecycleBusPort manager)
+      throws RainbowConnectionException {
+    try {
+      return new ESEBReceiverSideGaugeLifecyclePort(manager);
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
+    }
+  }
+
+  @Override
+  public IGaugeConfigurationPort createGaugeConfigurationPortClient(IGaugeIdentifier gauge)
+      throws RainbowConnectionException {
     try {
       return new ESEBGaugeConfigurationRequirerPort(gauge);
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IGaugeQueryPort createGaugeQueryPortClient (IGaugeIdentifier gauge) throws RainbowConnectionException {
+  public IGaugeQueryPort createGaugeQueryPortClient(IGaugeIdentifier gauge)
+      throws RainbowConnectionException {
     try {
       return new ESEBGaugeQueryRequirerPort(gauge);
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IGaugeConfigurationPort createGaugeConfigurationPort (IGauge gauge) throws RainbowConnectionException {
+  public IGaugeConfigurationPort createGaugeConfigurationPort(IGauge gauge)
+      throws RainbowConnectionException {
     try {
       return new ESEBGaugeConfigurationProviderPort(gauge);
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
-
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IGaugeQueryPort createGaugeQueryPort (IGauge gauge) throws RainbowConnectionException {
+  public IGaugeQueryPort createGaugeQueryPort(IGauge gauge) throws RainbowConnectionException {
     try {
       return new ESEBGaugeQueryProviderPort(gauge);
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
-
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IProbeReportPort createProbeReportingPortSender (IProbe probe) throws RainbowConnectionException {
+  public IProbeReportPort createProbeReportingPortSender(IProbe probe)
+      throws RainbowConnectionException {
     try {
-      return new ESEBProbeReportingPortSender (probe);
+      return new ESEBProbeReportingPortSender(probe);
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
-    }
-
   }
 
-
   @Override
-  public IProbeConfigurationPort createProbeConfigurationPort (Identifiable probe, IProbeConfigurationPort callback)
-    throws RainbowConnectionException {
+  public IProbeConfigurationPort createProbeConfigurationPort(
+      Identifiable probe, IProbeConfigurationPort callback) throws RainbowConnectionException {
     try {
       return new ESEBProbeConfigurationProviderPort(probe, callback);
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IDelegateConfigurationPort createDelegateConfigurationPort (RainbowDelegate rainbowDelegate)
-    throws RainbowConnectionException {
+  public IDelegateConfigurationPort createDelegateConfigurationPort(RainbowDelegate rainbowDelegate)
+      throws RainbowConnectionException {
     try {
-      return new ESEBDelegateConfigurationProviderPort (rainbowDelegate);
+      return new ESEBDelegateConfigurationProviderPort(rainbowDelegate);
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IDelegateConfigurationPort createDelegateConfigurationPortClient (String delegateID)
-    throws RainbowConnectionException {
+  public IDelegateConfigurationPort createDelegateConfigurationPortClient(String delegateID)
+      throws RainbowConnectionException {
     try {
-      return new ESEBDelegateConfigurationRequirerPort (delegateID);
+      return new ESEBDelegateConfigurationRequirerPort(delegateID);
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IProbeLifecyclePort createProbeManagementPort (IProbe probe) throws RainbowConnectionException {
+  public IProbeLifecyclePort createProbeManagementPort(IProbe probe)
+      throws RainbowConnectionException {
     try {
-      return new ESEBProbeLifecyclePort (probe);
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      return new ESEBProbeLifecyclePort(probe);
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IProbeReportSubscriberPort createProbeReportingPortSubscriber (IProbeReportPort callback)
-    throws RainbowConnectionException {
+  public IProbeReportSubscriberPort createProbeReportingPortSubscriber(IProbeReportPort callback)
+      throws RainbowConnectionException {
     try {
-      return new ESEBProbeReportSubscriberPort (callback);
+      return new ESEBProbeReportSubscriberPort(callback);
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
-    }
-
   }
 
-
   @Override
-  public IEffectorLifecycleBusPort createEffectorSideLifecyclePort () throws RainbowConnectionException {
+  public IEffectorLifecycleBusPort createEffectorSideLifecyclePort()
+      throws RainbowConnectionException {
     try {
-      return new ESEBEffectorSideLifecyclePort ();
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      return new ESEBEffectorSideLifecyclePort();
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IEffectorLifecycleBusPort createSubscriberSideEffectorLifecyclePort (IEffectorLifecycleBusPort delegate)
-    throws RainbowConnectionException {
+  public IEffectorLifecycleBusPort createSubscriberSideEffectorLifecyclePort(
+      IEffectorLifecycleBusPort delegate) throws RainbowConnectionException {
     try {
-      return new ESEBSubscriberSideEffectorLifecyclePort (delegate);
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      return new ESEBSubscriberSideEffectorLifecyclePort(delegate);
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-  EffectorExecutionRegister register = new EffectorExecutionRegister();
-
   @Override
-  public IEffectorExecutionPort createEffectorExecutionPort (IEffector effector) throws RainbowConnectionException {
+  public IEffectorExecutionPort createEffectorExecutionPort(IEffector effector)
+      throws RainbowConnectionException {
     return new LocalEffectorExecutionPort(register, effector);
   }
 
   @Override
-  public IEffectorExecutionPort createEffectorExecutionPort (IEffectorIdentifier effector)
-    throws RainbowConnectionException {
-    return new ESEBEffectorExecutionRequirerPort (register, effector);
+  public IEffectorExecutionPort createEffectorExecutionPort(IEffectorIdentifier effector)
+      throws RainbowConnectionException {
+    return new ESEBEffectorExecutionRequirerPort(register, effector);
   }
-
 
   @Override
-  public IRainbowReportingPort createMasterReportingPort () throws RainbowConnectionException {
+  public IRainbowReportingPort createMasterReportingPort() throws RainbowConnectionException {
     try {
-      return new ESEBMasterReportingPort ();
-    }
-    catch (Exception e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
-
+      return new ESEBMasterReportingPort();
+    } catch (Exception e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
-
 
   @Override
-  public IModelChangeBusSubscriberPort createModelChangeBusSubscriptionPort () throws RainbowConnectionException {
+  public IModelChangeBusSubscriberPort createModelChangeBusSubscriptionPort()
+      throws RainbowConnectionException {
     try {
-      return new ESEBModelChangeBusSubscriptionPort ();
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
-
+      return new ESEBModelChangeBusSubscriptionPort();
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
-
 
   @Override
-  public IRainbowReportingSubscriberPort createReportingSubscriberPort (IRainbowReportingSubscriberPort.IRainbowReportingSubscriberCallback reportTo)
-    throws RainbowConnectionException {
+  public IRainbowReportingSubscriberPort createReportingSubscriberPort(
+      IRainbowReportingSubscriberPort.IRainbowReportingSubscriberCallback reportTo)
+      throws RainbowConnectionException {
     try {
-      return new ESEBRainbowReportingSubscriberPort (reportTo);
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
-
+      return new ESEBRainbowReportingSubscriberPort(reportTo);
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
-
-  private LocalModelDSBusPort modelDSPublishPort;
 
   private LocalModelDSBusPort getModelDSPublishPort(Identifiable client) throws IOException {
     if (modelDSPublishPort == null) {
@@ -341,103 +300,92 @@ public class StandaloneRainbowConnectionFactory implements IRainbowConnectionPor
   }
 
   @Override
-  public IModelDSBusPublisherPort createModelDSPublishPort (Identifiable client) throws RainbowConnectionException {
+  public IModelDSBusPublisherPort createModelDSPublishPort(Identifiable client)
+      throws RainbowConnectionException {
     try {
       return getModelDSPublishPort(client);
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IModelDSBusSubscriberPort createModelDSubscribePort (Identifiable client) throws RainbowConnectionException {
+  public IModelDSBusSubscriberPort createModelDSubscribePort(Identifiable client)
+      throws RainbowConnectionException {
     try {
       return getModelDSPublishPort(client);
-    }
-    catch (IOException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
-
+    } catch (IOException e) {
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IModelsManagerPort createModelsManagerProviderPort (IModelsManager modelsManager)
-    throws RainbowConnectionException {
+  public IModelsManagerPort createModelsManagerProviderPort(IModelsManager modelsManager)
+      throws RainbowConnectionException {
     try {
-      return new ESEBModelsManagerProviderPort (modelsManager);
+      return new ESEBModelsManagerProviderPort(modelsManager);
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-
   @Override
-  public IModelsManagerPort createModeslManagerRequirerPort () throws RainbowConnectionException {
+  public IModelsManagerPort createModeslManagerRequirerPort() throws RainbowConnectionException {
     try {
-      return new ESEBModelsManagerRequirerPort ();
+      return new ESEBModelsManagerRequirerPort();
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
 
-  private final Map<String, ESEBAdaptationQConnector> m_adaptationConnectors = new HashMap<>();
-
   @Override
-  public <S extends IEvaluable> IRainbowAdaptationEnqueuePort<S> createAdaptationEnqueuePort (ModelReference model) {
-    return getAdaptationConnectorForModel (model);
+  public <S extends IEvaluable> IRainbowAdaptationEnqueuePort<S> createAdaptationEnqueuePort(
+      ModelReference model) {
+    return getAdaptationConnectorForModel(model);
   }
 
-  private <S extends IEvaluable> IRainbowAdaptationEnqueuePort<S>
-  getAdaptationConnectorForModel (ModelReference model) {
+  private <S extends IEvaluable> IRainbowAdaptationEnqueuePort<S> getAdaptationConnectorForModel(
+      ModelReference model) {
     synchronized (m_adaptationConnectors) {
-      ESEBAdaptationQConnector<S> conn = m_adaptationConnectors.get (model.toString ());
+      ESEBAdaptationQConnector<S> conn = m_adaptationConnectors.get(model.toString());
       if (conn == null) {
-        conn = new ESEBAdaptationQConnector<> ();
-        m_adaptationConnectors.put (model.toString (), conn);
+        conn = new ESEBAdaptationQConnector<>();
+        m_adaptationConnectors.put(model.toString(), conn);
       }
       return conn;
     }
   }
 
   @Override
-  public <S extends IEvaluable> IRainbowAdaptationDequeuePort<S> createAdaptationDequeuePort (ModelReference model) {
+  public <S extends IEvaluable> IRainbowAdaptationDequeuePort<S> createAdaptationDequeuePort(
+      ModelReference model) {
     synchronized (m_adaptationConnectors) {
-
-      ESEBAdaptationQConnector<S> conn = m_adaptationConnectors.get (model.toString ());
+      ESEBAdaptationQConnector<S> conn = m_adaptationConnectors.get(model.toString());
       if (conn == null) {
-        conn = new ESEBAdaptationQConnector<> ();
-        m_adaptationConnectors.put (model.toString (), conn);
+        conn = new ESEBAdaptationQConnector<>();
+        m_adaptationConnectors.put(model.toString(), conn);
       }
       return conn;
     }
   }
 
-
   @Override
-  public IMasterCommandPort createMasterCommandProviderPort (RainbowMaster rainbowMaster)
-    throws RainbowConnectionException {
+  public IMasterCommandPort createMasterCommandProviderPort(RainbowMaster rainbowMaster)
+      throws RainbowConnectionException {
     try {
-      return new ESEBMasterCommandProviderPort (rainbowMaster);
+      return new ESEBMasterCommandProviderPort(rainbowMaster);
     } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
-
 
   @Override
-  public IMasterCommandPort createMasterCommandRequirerPort () throws RainbowConnectionException {
+  public IMasterCommandPort createMasterCommandRequirerPort() throws RainbowConnectionException {
     try {
-      return new ESEBMasterCommandRequirerPort ();
-    } catch (IOException |
+      return new ESEBMasterCommandRequirerPort();
+    } catch (IOException | ParticipantException e) {
 
-      ParticipantException e)
-
-    {
-      throw new RainbowConnectionException ("Failed to connect", e);
+      throw new RainbowConnectionException("Failed to connect", e);
     }
   }
-
 }
