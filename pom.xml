@@ -71,7 +71,7 @@
         <repository>
             <id>able.maven.repository</id>
             <url>
-                dav:http://acme.able.cs.cmu.edu/maven-repository
+                http://acme.able.cs.cmu.edu/maven-repository
             </url>
         </repository>
     </repositories>
