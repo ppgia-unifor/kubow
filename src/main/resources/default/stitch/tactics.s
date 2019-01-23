@@ -4,46 +4,34 @@ import model "ZNewsSys:Acme" { ZNewsSys as M, ZNewsFam as T};
 import op "org.sa.rainbow.stitch.lib.*";
 import op "org.sa.rainbow.model.acme.znn.ZNN";
 
-/**
- * Lowers fidelity by integral steps for percent of requests.
- * Utility: [v] R; [v] C; [v] F
- */
-tactic lowerFidelity () {
+tactic decreaseFidelity (step) {
     condition {
-        // some client should be experiencing high response time
-        exists c : T.ClientT in M.components | c.experRespTime > M.MAX_RESPTIME;
-        // exists server with fidelity to lower
-        exists s : T.ServerT in M.components | s.fidelity > step;
+        exists c : T.ClientT in M.components | c.experRespTime > 2;
+        exists s : T.ServerT in M.components | s.fidelity > 20;
     }
     action {
-        // retrieve set of servers who still have enough fidelity grade to lower
-        set servers =  select s : T.ServerT in M.components | s.fidelity > 2;
+        set servers = select s : T.ServerT in M.components | s.fidelity > step;
         for (T.ServerT server : servers) {
-            M.setFidelity(server, 2);
+            M.setFidelity(server, step);
         }
     }
     effect {
-        // response time decreasing below threshold should result
         forall c : T.ClientT in M.components | c.experRespTime <= M.MAX_RESPTIME;
     }
 }
 
-tactic highFidelity () {
+tactic increaseFidelity (step) {
     condition {
-        // some client should be experiencing low response time
-        exists c : T.ClientT in M.components | c.experRespTime < M.MAX_RESPTIME;
-        // exists server with fidelity to lower
-        exists s : T.ServerT in M.components | s.fidelity > 5;
+        exists c : T.ClientT in M.components | c.experRespTime <= 3;
+        exists s : T.ServerT in M.components | s.fidelity < 30;
     }
     action {
-        // retrieve set of servers who still have enough fidelity grade to lower
-        set servers =  select s : T.ServerT in M.components | s.fidelity <= 2;
+        set servers = select s : T.ServerT in M.components | s.fidelity < step;
         for (T.ServerT server : servers) {
-            M.setFidelity(server, 5);
+            M.setFidelity(server, step);
         }
     }
     effect {
-        // still NO client with high response time
         forall c : T.ClientT in M.components | c.experRespTime <= M.MAX_RESPTIME;
 
     }

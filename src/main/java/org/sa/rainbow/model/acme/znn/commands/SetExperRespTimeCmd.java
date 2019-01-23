@@ -23,6 +23,7 @@
  */
 package org.sa.rainbow.model.acme.znn.commands;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.acmestudio.acme.PropertyHelper;
 import org.acmestudio.acme.element.IAcmeComponent;
 import org.acmestudio.acme.element.property.IAcmeProperty;
@@ -31,32 +32,38 @@ import org.acmestudio.acme.model.command.IAcmePropertyCommand;
 import org.sa.rainbow.core.error.RainbowModelException;
 import org.sa.rainbow.model.acme.AcmeModelInstance;
 
-import java.text.MessageFormat;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+
+import static java.text.MessageFormat.format;
 
 public class SetExperRespTimeCmd extends ZNNAcmeModelCommand<IAcmeProperty> {
 
   private String m_client;
   private float m_responseTime;
 
-  public SetExperRespTimeCmd(AcmeModelInstance model, String client, String rt) {
-    super("setExperRespTime", model, client, rt);
+  public SetExperRespTimeCmd(AcmeModelInstance model, String client, String deploymentInfo)
+      throws IOException {
+    super("setExperRespTime", model, client, deploymentInfo);
     m_client = client;
-    m_responseTime = Float.valueOf(rt);
+    var mapper = new ObjectMapper();
+    m_responseTime = (float) mapper.readTree(deploymentInfo).get("response_time").asDouble(0d);
   }
 
   @Override
   protected List<IAcmeCommand<?>> doConstructCommand() throws RainbowModelException {
     IAcmeComponent client = getModelContext().resolveInModel(m_client, IAcmeComponent.class);
-    if (client == null)
+    if (client == null) {
       throw new RainbowModelException(
-          MessageFormat.format("The client ''{0}'' could not be found in the model", getTarget()));
-    if (!client.declaresType("ClientT"))
+          format("The client ''{0}'' could not be found in the model", getTarget()));
+    }
+    if (!client.declaresType("ClientT")) {
       throw new RainbowModelException(
-          MessageFormat.format(
+          format(
               "The client ''{0}'' is not of the right type. It does not have a property ''experRespTime''",
               getTarget()));
+    }
     IAcmeProperty expRT = client.getProperty("experRespTime");
     m_command =
         client

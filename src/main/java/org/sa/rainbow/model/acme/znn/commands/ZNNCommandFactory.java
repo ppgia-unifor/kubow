@@ -32,6 +32,7 @@ import org.sa.rainbow.core.models.ModelsManager;
 import org.sa.rainbow.model.acme.AcmeModelCommandFactory;
 import org.sa.rainbow.model.acme.AcmeModelInstance;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 
@@ -119,13 +120,13 @@ public class ZNNCommandFactory extends AcmeModelCommandFactory {
         Boolean.toString(aboveMalicious));
   }
 
-  public SetExperRespTimeCmd setExperRespTime(IAcmeComponent client, float rt) {
+  public SetExperRespTimeCmd setExperRespTime(IAcmeComponent client, String rt) throws IOException {
     assert client.declaresType("ClientT");
     if (ModelHelper.getAcmeSystem(client) != m_modelInstance.getModelInstance())
       throw new IllegalArgumentException(
           "Cannot create a command for a component that is not part of the system");
     return new SetExperRespTimeCmd(
-        (AcmeModelInstance) m_modelInstance, client.getQualifiedName(), Float.toString(rt));
+        (AcmeModelInstance) m_modelInstance, client.getQualifiedName(), rt);
   }
 
   public SetResponseTimeCmd setResponseTimeCmd(IAcmeComponent client, float rt) {

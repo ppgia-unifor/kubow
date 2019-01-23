@@ -45,6 +45,7 @@ import org.sa.rainbow.core.ports.IModelChangeBusSubscriberPort.IRainbowModelChan
 import org.sa.rainbow.model.acme.AcmeModelInstance;
 import org.sa.rainbow.model.acme.AcmeRainbowOperationEvent.CommandEventT;
 import org.sa.rainbow.stitch.Ohana;
+import org.sa.rainbow.stitch.core.Expression;
 import org.sa.rainbow.stitch.core.Strategy;
 import org.sa.rainbow.stitch.core.Tactic;
 import org.sa.rainbow.stitch.error.DummyStitchProblemHandler;
@@ -450,6 +451,18 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     defineAttributes(stitch, attrVectorMap);
   }
 
+  public boolean isApplicable (Strategy strategy) {
+    boolean applicable = false;
+    var expression = strategy.getRootNode().getCondExpr();
+    expression.evaluate(null);
+
+    if (expression.getResult () != null && expression.getResult () instanceof Boolean) {
+      applicable = (Boolean) expression.getResult ();
+    }
+
+    return true;
+  }
+
   /*
    * Algorithm: - Iterate through repertoire searching for enabled strategies,
    * where "enabled" means applicable to current system condition NOTE: A
@@ -486,8 +499,9 @@ public final class AdaptationManager extends AbstractRainbowRunnable
         Map<String, Object> moreVars = new HashMap<String, Object>();
         moreVars.put("_dur_", dur);
         // check condition of Strategy applicability
-        if (strategy.isApplicable(moreVars)) {
+        if (isApplicable(strategy)) {
           appSubsetByName.put(strategy.getName(), strategy);
+          return strategy;
         }
       }
     }

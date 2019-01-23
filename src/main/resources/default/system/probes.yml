@@ -1,24 +1,38 @@
 vars:
   _probes.commonPath: "opt/rainbow/target/znn/system/probes"
   
-probes: 
+probes:
 
-  ClientProxyProbe0:
-    alias: clientproxy
+  DeploymentProbeZnn:
+    alias: deployment-response_time-probe
     location: 127.0.0.1
     type: java
     javaInfo:
-      class: org.sa.rainbow.translator.znn.probes.ClientProxyProbe
-      period: 10000
-      args.length: 1
-      args.0: "http://${customize.system.target.lb}:1081/news.php"
+      class: org.sa.rainbow.translator.znn.probes.DeploymentProbe
+      period: 2000
+      args.length: 5
+      args.0: "default"
+      args.1: "znn"
+      args.2: "znn"
+      args.3: "caddy_http_request_duration_seconds_sum"
+      args.4: "response_time"
 
-  ClientProxyProbe1:
-    alias: clientproxy
-    location: 127.0.0.1
-    type: java
-    javaInfo:
-      class: org.sa.rainbow.translator.znn.probes.ClientProxyProbe
-      period: 10000
-      args.length: 1
-      args.0: "http://${customize.system.target.lb}:1081/news.php"
+#  ClientProxyProbe0:
+#    alias: clientproxy
+#    location: 127.0.0.1
+#    type: java
+#    javaInfo:
+#      class: org.sa.rainbow.translator.znn.probes.ClientProxyProbe
+#      period: 10000
+#      args.length: 1
+#      args.0: "http://${customize.system.target.lb}/news.php"
+#
+#  ClientProxyProbe1:
+#    alias: clientproxy
+#    location: 127.0.0.1
+#    type: java
+#    javaInfo:
+#      class: org.sa.rainbow.translator.znn.probes.ClientProxyProbe
+#      period: 10000
+#      args.length: 1
+#      args.0: "http://${customize.system.target.lb}/news.php"

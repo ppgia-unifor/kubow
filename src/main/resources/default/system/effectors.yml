@@ -1,18 +1,8 @@
-# Created January 30, 2007 (Shang-Wen Cheng)
-#
-# Effector descriptions.
-#
-# History:
-# - [SWC 2007.01.30] Created file, populated ZNews effector descriptions.
-# - [SWC 2007.04.10] Modified descriptions for different target locations.
-#
 vars:
-#  _effectors.commonPath: "${rainbow.path}/system/effectors"
 # @ZNN_HOME will be replaced by the rainbow-install script
 #  _effectors.commonPath: "@ZNN_HOME/effectors"
-  _effectors.commonPath: "/opt/znn/effectors" 
-  
-  
+  _effectors.commonPath: "/Users/carlosmendes/unifor/kube-rainbow/src/main/resources/default/system/effectors/"
+
 effector-types:
 
 effectors:
@@ -22,21 +12,21 @@ effectors:
     command: "${customize.system.target.lb}.setFidelity($<fidelity>)"
     type: script
     scriptInfo:
-      path    : "${_effectors.commonPath}/changeFidelity.sh"
-      argument: "{0} /tmp/znn-fidelity-${customize.system.target.web0.httpPort}"
+      path    : "${_effectors.commonPath}/fidelity-rollout.sh"
+      argument: "{0}"
       
   setFidelity-web1:
     location: "${customize.system.target.web2}"
     command: "${customize.system.target.lb}.setFidelity($<fidelity>)"
     type: script
     scriptInfo:
-      path    : "${_effectors.commonPath}/changeFidelity.sh"
-      argument: "{0} /tmp/znn-fidelity-${customize.system.target.web1.httpPort}"
+      path    : "${_effectors.commonPath}/fidelity-rollout.sh"
+      argument: "{0}"
 
   setFidelity-web2:
     location: "${customize.system.target.web1}"
     command: "${customize.system.target.lb}.setFidelity($<fidelity>)"
     type: script
     scriptInfo:
-      path    : "${_effectors.commonPath}/changeFidelity.sh"
-      argument: "{0} /tmp/znn-fidelity-${customize.system.target.web2.httpPort}"
+      path    : "${_effectors.commonPath}/fidelity-rollout.sh"
+      argument: "{0}"

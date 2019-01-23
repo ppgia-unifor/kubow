@@ -7,13 +7,13 @@ gauge-types:
     setupParams:
       targetIP:
         type: String
-        default: "localhost"
+        default: "127.0.0.1"
       beaconPeriod:
         type: long
         default: 30000
       javaClass:
         type: String
-        default: "org.sa.rainbow.translator.znn.gauges.End2EndRespTimeGauge"
+        default: "org.sa.rainbow.translator.znn.gauges.DeploymentGauge"
     configParams:
       samplingFrequency:
         type:    long
@@ -33,7 +33,7 @@ gauge-instances:
       targetIP: "${customize.system.target.lb}"
     configValues:
       samplingFrequency: 1000
-      targetProbeType  : clientproxy@*
+      targetProbeType  : deployment-response_time-probe@*
     comment: "EERTG1 is associated with the client component of the System, ZNewsSys, defined as an Acme model"
 
   EERTG2:
@@ -45,5 +45,5 @@ gauge-instances:
       targetIP: "${customize.system.target.lb}"
     configValues:
       samplingFrequency: 1000
-      targetProbeType  : clientproxy@*
+      targetProbeType  : deployment-response_time-probe@*
     comment: "EERTG2 is associated with the client component of the System, ZNewsSys, defined as an Acme model"
