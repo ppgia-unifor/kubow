@@ -1,9 +1,12 @@
 # Gauge Type and Gauge Instance Specifications # − time periods generally in milliseconds gauge−types :
 
 gauge-types:
-  ResponseTimeGaugeT:
+  KubeRainbowGaugeT:
     commands:
-      end2endRespTime: ClientT.setResponseTime (float)
+      setServiceProperty: Service.setServiceProperty (Object)
+      setDeploymentInfo: Deployment.setDeploymentInfo (Object)
+      setDeploymentProperty: Deployment.setDeploymentProperty (Object)
+      setContainers: Deployment.setContainers (Object)
     setupParams:
       targetIP:
         type: String
@@ -13,37 +16,54 @@ gauge-types:
         default: 30000
       javaClass:
         type: String
-        default: "org.sa.rainbow.translator.znn.gauges.DeploymentGauge"
+        default: "org.sa.rainbow.translator.gauges.KubeGauge"
     configParams:
-      samplingFrequency:
-        type:    long
-        default: 1000
       targetProbeType:
         type:    String
         default: ~
-    comment: "ResponseTimeGaugeT measures and reports the end-to-end response time from a client or its proxy."
+    comment: ""
 
 gauge-instances:
   EERTG1:
-    type: ResponseTimeGaugeT
+    type: KubeRainbowGaugeT
     model: "ZNewsSys:Acme"
     commands:
-      "setResponseTime(${customize.system.target.lb})": Client0.setExperRespTime($<end2endRespTime>)
+      "setServiceProperty()": "znn-service.setServiceProperty($<jsonValue>,<latency>)"
     setupValues:
-      targetIP: "${customize.system.target.lb}"
+      targetIP: "127.0.0.1"
     configValues:
-      samplingFrequency: 1000
-      targetProbeType  : deployment-response_time-probe@*
-    comment: "EERTG1 is associated with the client component of the System, ZNewsSys, defined as an Acme model"
+      targetProbeType: znn-latency-probe@*
+    comment: ""
 
-  EERTG2:
-    type: ResponseTimeGaugeT
+  DIG1:
+    type: KubeRainbowGaugeT
     model: "ZNewsSys:Acme"
     commands:
-      "setResponseTime(${customize.system.target.lb})": Client1.setExperRespTime($<end2endRespTime>)
+      "setDeploymentInfo()": znn.setDeploymentInfo($<jsonValue>)
     setupValues:
-      targetIP: "${customize.system.target.lb}"
+      targetIP: "127.0.0.1"
     configValues:
-      samplingFrequency: 1000
-      targetProbeType  : deployment-response_time-probe@*
-    comment: "EERTG2 is associated with the client component of the System, ZNewsSys, defined as an Acme model"
+      targetProbeType: deployments.default.znn.probe@*
+    comment: ""
+
+#  DIG2:
+#    type: KubeRainbowGaugeT
+#    model: "ZNewsSys:Acme"
+#    commands:
+#      "setDeploymentProperty()": "znn.setDeploymentProperty($<jsonValue>,<fidelity>)"
+#    setupValues:
+#      targetIP: "127.0.0.1"
+#    configValues:
+#      targetProbeType: deployments.default.znn.probe@*
+#    comment: ""
+
+  DIG3:
+    type: KubeRainbowGaugeT
+    model: "ZNewsSys:Acme"
+    commands:
+      "setContainers()": znn.setContainers($<jsonValue>)
+    setupValues:
+      targetIP: "127.0.0.1"
+    configValues:
+      targetProbeType: deployments.default.znn.probe@*
+    comment: ""

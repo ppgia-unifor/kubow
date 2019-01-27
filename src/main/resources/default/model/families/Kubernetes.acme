@@ -1,0 +1,29 @@
+Family Kubernetes = {
+
+    Component Type Deployment = {
+      Property namespace : string;
+      Property desiredReplicas : int;
+      Property currentReplicas : int << default : int = 0; >>;
+      Property availableReplicas : int;
+      Property minReplicas : int;
+      Property maxReplicas : int << default : int = 100000; >> ;
+      Property age : int;
+      
+      Property containers : Sequence<Container>;
+      
+      rule maxReplicasRule = invariant self.maxReplicas >= self.currentReplicas;
+    }
+    
+    Component Type Service = {
+      Property latency : float << default : float = 0.0; >> ;
+    }
+    
+    Connector Type GenericConnection = {
+      Role sender;
+      Role receiver;
+    }
+    
+    Property Type Container = Record [image : string; name : string;];
+}
+
+

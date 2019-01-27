@@ -3,36 +3,28 @@ vars:
   
 probes:
 
-  DeploymentProbeZnn:
-    alias: deployment-response_time-probe
+  DeploymentPropertiesProbe:
+    alias: deployments.default.znn.probe
     location: 127.0.0.1
     type: java
     javaInfo:
-      class: org.sa.rainbow.translator.znn.probes.DeploymentProbe
+      class: org.sa.rainbow.translator.probes.DeploymentInfoProbe
+      period: 2000
+      args.length: 3
+      args.0: "default"
+      args.1: "znn"
+      args.2: "app=znn"
+
+  ZnnPodProbe:
+    alias: znn-latency-probe
+    location: 127.0.0.1
+    type: java
+    javaInfo:
+      class: org.sa.rainbow.translator.probes.PodProbe
       period: 2000
       args.length: 5
       args.0: "default"
       args.1: "znn"
       args.2: "znn"
       args.3: "caddy_http_request_duration_seconds_sum"
-      args.4: "response_time"
-
-#  ClientProxyProbe0:
-#    alias: clientproxy
-#    location: 127.0.0.1
-#    type: java
-#    javaInfo:
-#      class: org.sa.rainbow.translator.znn.probes.ClientProxyProbe
-#      period: 10000
-#      args.length: 1
-#      args.0: "http://${customize.system.target.lb}/news.php"
-#
-#  ClientProxyProbe1:
-#    alias: clientproxy
-#    location: 127.0.0.1
-#    type: java
-#    javaInfo:
-#      class: org.sa.rainbow.translator.znn.probes.ClientProxyProbe
-#      period: 10000
-#      args.length: 1
-#      args.0: "http://${customize.system.target.lb}/news.php"
+      args.4: "latency"
