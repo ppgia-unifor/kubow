@@ -1,5 +1,7 @@
 package org.sa.rainbow.translator.gauges;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.sa.rainbow.core.error.RainbowException;
 import org.sa.rainbow.core.models.commands.IRainbowOperation;
 import org.sa.rainbow.core.util.TypedAttribute;
@@ -15,6 +17,8 @@ public class KubeGauge extends AbstractJsonGaugeWithProbes {
 
   private static final String NAME = "G - Kubernetes Gauge";
   private final Set<String> commands;
+  private String propertyPath = "";
+  private String propertyName = "";
 
   public KubeGauge(
       String id,
@@ -26,6 +30,14 @@ public class KubeGauge extends AbstractJsonGaugeWithProbes {
       throws RainbowException {
     super(NAME, id, beaconPeriod, gaugeDesc, modelDesc, setupParams, mappings);
     commands = mappings.keySet();
+    setupParams.stream()
+        .filter(p -> p.getName().equals("propertyPath"))
+        .findFirst()
+        .ifPresent(v -> propertyPath = v.getValue().toString());
+    setupParams.stream()
+            .filter(p -> p.getName().equals("propertyName"))
+            .findFirst()
+            .ifPresent(v -> propertyName = v.getValue().toString());
   }
 
   @Override
@@ -34,10 +46,13 @@ public class KubeGauge extends AbstractJsonGaugeWithProbes {
     while (messages().size() > 0 && maxUpdates-- > 0) {
       var item = messages().poll();
       if (item != null) {
-        String jsonItem = item.toString();
+        if (!propertyPath.isEmpty()) {
+          ObjectNode node = (ObjectNode) item;
+          node.put(propertyName, item.at(propertyPath).asText());
+        }
         for (var cmdName : commands) {
           var cmd = getCommand(cmdName);
-          var params = getParams(cmd, jsonItem);
+          var params = getParams(cmd, item.toString());
           issueCommand(cmd, params);
         }
       }

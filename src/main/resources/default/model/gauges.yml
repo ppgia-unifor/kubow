@@ -11,6 +11,12 @@ gauge-types:
       targetIP:
         type: String
         default: "127.0.0.1"
+      propertyPath:
+        type: String
+        default: ""
+      propertyName:
+        type: String
+        default: ""
       beaconPeriod:
         type: long
         default: 30000
@@ -19,7 +25,7 @@ gauge-types:
         default: "org.sa.rainbow.translator.gauges.KubeGauge"
     configParams:
       targetProbeType:
-        type:    String
+        type: String
         default: ~
     comment: ""
 
@@ -46,16 +52,18 @@ gauge-instances:
       targetProbeType: deployments.default.znn.probe@*
     comment: ""
 
-#  DIG2:
-#    type: KubeRainbowGaugeT
-#    model: "ZNewsSys:Acme"
-#    commands:
-#      "setDeploymentProperty()": "znn.setDeploymentProperty($<jsonValue>,<fidelity>)"
-#    setupValues:
-#      targetIP: "127.0.0.1"
-#    configValues:
-#      targetProbeType: deployments.default.znn.probe@*
-#    comment: ""
+  DIG2:
+    type: KubeRainbowGaugeT
+    model: "ZNewsSys:Acme"
+    commands:
+      "setDeploymentProperty()": "znn.setDeploymentProperty($<jsonValue>,<fidelity>)"
+    setupValues:
+      targetIP: "127.0.0.1"
+      propertyName: "fidelity"
+      propertyPath: "/containers/znn"
+    configValues:
+      targetProbeType: deployments.default.znn.probe@*
+    comment: ""
 
   DIG3:
     type: KubeRainbowGaugeT

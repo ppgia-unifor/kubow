@@ -35,7 +35,7 @@ System ZNewsSys : Kubernetes = new Kubernetes extended with {
         }
 
         Property namespace = "default";
-        Property fidelity = 5;
+        Property fidelity = "cmendes/znn:high";
 
     }
 
