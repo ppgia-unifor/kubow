@@ -11,7 +11,7 @@ public class ZnnApplication {
   public static void main(String[] args) {
     try {
 
-      String target = "default";
+      String target = "znn";
       String config =
           Paths.get(ZnnApplication.class.getClassLoader().getResource(target).getPath())
               .getParent()

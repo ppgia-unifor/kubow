@@ -1,0 +1,16 @@
+vars:
+# @ZNN_HOME will be replaced by the rainbow-install script
+#  _effectors.commonPath: "@ZNN_HOME/effectors"
+  _effectors.commonPath: "/Users/carlosmendes/unifor/kube-rainbow/src/main/resources/znn/system/effectors"
+
+effector-types:
+
+effectors:
+
+  setFidelity:
+    location: "127.0.0.1"
+    command: "M.setFidelity($<step>)"
+    type: script
+    scriptInfo:
+      path    : "${_effectors.commonPath}/fidelity-rollout.sh"
+      argument: "{0}"

@@ -1,8 +1,0 @@
-setFidelity: changeState
-blackhole: changeState
-unblackhole: changeState
-enableCaptcha: changeState
-disableCaptcha: changeState
-activateServer: start
-deactivateServer: stop
-

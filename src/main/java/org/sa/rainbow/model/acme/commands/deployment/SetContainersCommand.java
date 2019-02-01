@@ -2,6 +2,7 @@ package org.sa.rainbow.model.acme.commands.deployment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.acmestudio.acme.element.property.IAcmePropertyValue;
+import org.acmestudio.acme.model.util.core.UMSequenceValue;
 import org.acmestudio.acme.model.util.core.UMSetValue;
 import org.sa.rainbow.model.acme.AcmeModelInstance;
 import org.sa.rainbow.model.acme.commands.KubePropertyCommand;
@@ -40,9 +41,9 @@ public class SetContainersCommand extends KubePropertyCommand {
   @Override
   protected IAcmePropertyValue getAcmeValue(Object value) {
     List<Map<String, String>> javaValue = (List<Map<String, String>>) value;
-    Set<IAcmePropertyValue> acmeValue = new HashSet<>();
+    List<IAcmePropertyValue> acmeValue = new ArrayList<>();
 
     javaValue.forEach(jv -> acmeValue.add(toAcmeRecord(jv)));
-    return new UMSetValue(acmeValue);
+    return new UMSequenceValue(acmeValue);
   }
 }

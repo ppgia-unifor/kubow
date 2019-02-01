@@ -1,6 +1,9 @@
 Family Kubernetes = {
 
+    Property Type Container = Record [image : string; name : string;];
+
     Component Type Deployment = {
+      Property name : string;
       Property namespace : string;
       Property desiredReplicas : int;
       Property currentReplicas : int << default : int = 0; >>;
@@ -8,6 +11,7 @@ Family Kubernetes = {
       Property minReplicas : int;
       Property maxReplicas : int << default : int = 100000; >> ;
       Property age : int;
+
       
       Property containers : Sequence<Container>;
       
@@ -15,6 +19,7 @@ Family Kubernetes = {
     }
     
     Component Type Service = {
+      Property name : string;
       Property latency : float << default : float = 0.0; >> ;
     }
     
@@ -22,8 +27,7 @@ Family Kubernetes = {
       Role sender;
       Role receiver;
     }
-    
-    Property Type Container = Record [image : string; name : string;];
+
 }
 
 

@@ -61,8 +61,8 @@ public class ZNN {
    * @return the number of services that are available.
    * @throws Exception
    */
-  public static int availableServices(
-          KubeModelUpdateOperatorsImpl model, IAcmeElementType<?, ?> elemType) throws Exception {
+  public static int setFidelity(
+          KubeModelUpdateOperatorsImpl model, IAcmeElementType<?, ?> elemType, int step) throws Exception {
     if (s_availableServicesExpr == null) {
       s_availableServicesExpr =
           StandaloneLanguagePackHelper.defaultLanguageHelper()

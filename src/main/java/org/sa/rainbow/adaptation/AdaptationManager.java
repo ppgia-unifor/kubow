@@ -22,7 +22,6 @@ import org.sa.rainbow.core.ports.IModelChangeBusSubscriberPort.IRainbowModelChan
 import org.sa.rainbow.model.acme.AcmeModelInstance;
 import org.sa.rainbow.model.acme.AcmeRainbowOperationEvent.CommandEventT;
 import org.sa.rainbow.stitch.Ohana;
-import org.sa.rainbow.stitch.core.Expression;
 import org.sa.rainbow.stitch.core.Strategy;
 import org.sa.rainbow.stitch.core.Tactic;
 import org.sa.rainbow.stitch.error.DummyStitchProblemHandler;
@@ -45,24 +44,22 @@ import java.util.concurrent.TimeUnit;
  * @author Shang-Wen Cheng (zensoul@cs.cmu.edu)
  */
 public final class AdaptationManager extends AbstractRainbowRunnable
-    implements IAdaptationManager<Strategy> /*
- * implements
- * IRainbowLearner
- */, IRainbowModelChangeCallback {
+    implements IAdaptationManager<Strategy>, IRainbowModelChangeCallback {
 
-  public static final String NAME = "Rainbow Adaptation Manager";
-  public static final double FAILURE_RATE_THRESHOLD = 0.95;
-  public static final double MIN_UTILITY_THRESHOLD = 0.40;
-  public static final long FAILURE_EFFECTIVE_WINDOW = 2000 /* ms */;
-  public static final long FAILURE_WINDOW_CHUNK = 1000 /* ms */;
+  private static final String NAME = "Rainbow Adaptation Manager";
+  private static final double FAILURE_RATE_THRESHOLD = 0.95;
+  private static final double MIN_UTILITY_THRESHOLD = 0.40;
+  private static final long FAILURE_EFFECTIVE_WINDOW = 2000 /* ms */;
+  private static final long FAILURE_WINDOW_CHUNK = 1000 /* ms */;
   /**
    * The prefix to be used by the strategy which takes a "leap" by achieving a similar adaptation
    * that would have taken multiple increments of the non-leap version, but at a potential "cost" in
    * non-dire scenarios.
    */
-  public static final String LEAP_STRATEGY_PREFIX = "Leap-";
+  private static final String LEAP_STRATEGY_PREFIX = "Leap-";
   /** The prefix to represent the corresponding multi-step strategy of the leap-version strategy. */
-  public static final String MULTI_STRATEGY_PREFIX = "Multi-";
+  private static final String MULTI_STRATEGY_PREFIX = "Multi-";
+
   private static final int SLEEP_TIME = 10000;
   private static final int I_RUN = 0;
   private static final int I_SUCCESS = 1;
@@ -71,24 +68,24 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   private static final int CNT_I = 4;
   private static double m_minUtilityThreshold = 0.0;
   /** For JUnit testing, used to set a stopwatch object used to time duration. */
-  StopWatch _stopWatchForTesting = null;
+  private StopWatch _stopWatchForTesting = null;
+
   private Mode m_mode = Mode.SERIAL;
   private AcmeModelInstance m_model = null;
   private boolean m_adaptNeeded = false; // treat as synonymous with
   // constraint being violated
   private boolean m_adaptEnabled = true; // by default, we adapt
-  private List<Stitch> m_repertoire = null;
-  private List<AdaptationTree<Strategy>> m_pendingStrategies = null;
+  private List<Stitch> m_repertoire;
+  private List<AdaptationTree<Strategy>> m_pendingStrategies;
   // track history
-  private String m_historyTrackUtilName = null;
+  private String m_historyTrackUtilName;
   private Map<String, int[]> m_historyCnt = null;
   private Map<String, Beacon> m_failTimer = null;
   private IRainbowAdaptationEnqueuePort<Strategy> m_enqueuePort = null;
   private IModelChangeBusSubscriberPort m_modelChangePort = null;
   private IModelsManagerPort m_modelsManagerPort = null;
   private String m_modelRef;
-  private FileChannel m_strategyLog = null;
-  private IRainbowChangeBusSubscription m_modelTypecheckingChanged =
+  private final IRainbowChangeBusSubscription m_modelTypecheckingChanged =
       new IRainbowChangeBusSubscription() {
 
         @Override
@@ -107,19 +104,20 @@ public final class AdaptationManager extends AbstractRainbowRunnable
           }
         }
       };
+  private FileChannel m_strategyLog = null;
   private UtilityPreferenceDescription m_utilityModel;
 
   /** Default constructor. */
   public AdaptationManager() {
     super(NAME);
 
-    m_repertoire = new ArrayList<Stitch>();
-    m_pendingStrategies = new ArrayList<AdaptationTree<Strategy>>();
+    m_repertoire = new ArrayList<>();
+    m_pendingStrategies = new ArrayList<>();
     m_historyTrackUtilName =
         Rainbow.instance().getProperty(RainbowConstants.PROPKEY_TRACK_STRATEGY);
     if (m_historyTrackUtilName != null) {
-      m_historyCnt = new HashMap<String, int[]>();
-      m_failTimer = new HashMap<String, Beacon>();
+      m_historyCnt = new HashMap<>();
+      m_failTimer = new HashMap<>();
     }
     String thresholdStr =
         Rainbow.instance().getProperty(RainbowConstants.PROPKEY_UTILITY_MINSCORE_THRESHOLD);
@@ -265,14 +263,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     m_adaptEnabled = enabled;
   }
 
-  public void setAdaptationEnabled(boolean b) {
-    m_adaptEnabled = b;
-  }
-
-  public boolean adaptationInProgress() {
-    return m_adaptNeeded;
-  }
-
   /**
    * Removes a Strategy from the list of pending strategies, marking it as being completed (doesn't
    * incorporate outcome).
@@ -320,7 +310,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     double[] conds = new double[m_utilityModel.getUtilityFunctions().size()];
     int i = 0;
     double score = 0.0;
-    for (String k : new ArrayList<String>(m_utilityModel.getUtilityFunctions().keySet())) {
+    for (String k : new ArrayList<>(m_utilityModel.getUtilityFunctions().keySet())) {
       double v = 0.0;
       // find the applicable utility function
       UtilityFunction u = m_utilityModel.getUtilityFunctions().get(k);
@@ -371,7 +361,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
         log(">> do strategy: " + selectedStrategy.getName());
         // strategy args removed...
         Object[] args = new Object[0];
-        AdaptationTree<Strategy> at = new AdaptationTree<Strategy>(selectedStrategy);
+        AdaptationTree<Strategy> at = new AdaptationTree<>(selectedStrategy);
         m_pendingStrategies.add(at);
         m_enqueuePort.offerAdaptation(at, null);
         String logMessage = selectedStrategy.getName();
@@ -402,44 +392,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     }
   }
 
-  /**
-   * For JUnit testing, allows fetching the strategy repertoire. NOT for public use!
-   *
-   * @return list of Stitch objects loaded at initialization from stitchState file.
-   */
-  List<Stitch> _retrieveRepertoireForTesting() {
-    return m_repertoire;
-  }
-
-  /**
-   * For JUnit testing, allows fetching the utility objects. NOT for public use!
-   *
-   * @return map of utility identifiers to functions.
-   */
-  Map<String, UtilityFunction> _retrieveUtilityProfilesForTesting() {
-    return m_utilityModel.getUtilityFunctions();
-  }
-
-  /**
-   * For JUnit testing, allows re-invoking defineAttributes to artificially increase the number of
-   * quality dimensions in tactic attribute vectors.
-   */
-  void _defineAttributesFromTester(Stitch stitch, Map<String, Map<String, Object>> attrVectorMap) {
-    defineAttributes(stitch, attrVectorMap);
-  }
-
-  public boolean isApplicable (Strategy strategy) {
-    boolean applicable = false;
-    var expression = strategy.getRootNode().getCondExpr();
-    expression.evaluate(null);
-
-    if (expression.getResult () != null && expression.getResult () instanceof Boolean) {
-      applicable = (Boolean) expression.getResult ();
-    }
-
-    return true;
-  }
-
   /*
    * Algorithm: - Iterate through repertoire searching for enabled strategies,
    * where "enabled" means applicable to current system condition NOTE: A
@@ -456,7 +408,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     }
 
     int availCnt = 0;
-    Map<String, Strategy> appSubsetByName = new HashMap<String, Strategy>();
+    Map<String, Strategy> appSubsetByName = new HashMap<>();
     for (Stitch stitch : m_repertoire) {
       if (!stitch.script.isApplicableForSystem(m_model)) {
         m_reportingPort.trace(getComponentType(), "x. skipping " + stitch.script.getName());
@@ -473,10 +425,10 @@ public final class AdaptationManager extends AbstractRainbowRunnable
         //                if (Rainbow.predictionEnabled ()) { // provide future duration
         //                    dur = strategy.estimateAvgTimeCost ();
         //                }
-        Map<String, Object> moreVars = new HashMap<String, Object>();
+        Map<String, Object> moreVars = new HashMap<>();
         moreVars.put("_dur_", dur);
         // check condition of Strategy applicability
-        if (isApplicable(strategy)) {
+        if (strategy.isApplicable(moreVars)) {
           appSubsetByName.put(strategy.getName(), strategy);
           return strategy;
         }
@@ -525,7 +477,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
             + (availCnt > 1 ? "ies" : "y"));
     SortedMap<Double, Strategy> scoredStrategies = scoreStrategies(appSubsetByName);
     if (Util.dataLogger().isInfoEnabled()) {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       buf.append("  [\n");
       for (Map.Entry<Double, Strategy> entry : scoredStrategies.entrySet()) {
         buf.append("   ").append(entry.getValue().getName()).append(":");
@@ -540,8 +492,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
       _stopWatchForTesting.stop();
     }
     if (scoredStrategies.size() > 0) {
-      Strategy selectedStrategy = scoredStrategies.get(scoredStrategies.lastKey());
-      return selectedStrategy;
+      return scoredStrategies.get(scoredStrategies.lastKey());
     } else {
       Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_END);
       log("<< NO applicable strategy, adaptation cycle ended.");
@@ -574,9 +525,10 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     return scoreForScenario(scenario, subset);
   }
 
-  SortedMap<Double, Strategy> scoreForScenario(String scenario, Map<String, Strategy> subset) {
+  private SortedMap<Double, Strategy> scoreForScenario(
+      String scenario, Map<String, Strategy> subset) {
     Map<String, Double> weights = m_utilityModel.weights.get(scenario);
-    SortedMap<Double, Strategy> scored = new TreeMap<Double, Strategy>();
+    SortedMap<Double, Strategy> scored = new TreeMap<>();
     boolean predictionEnabled =
         false; // Rainbow.predictionEnabled () && Rainbow.utilityPredictionDuration () > 0;
     double[] conds = null; // store the conditions to output for diagnosis
@@ -616,8 +568,8 @@ public final class AdaptationManager extends AbstractRainbowRunnable
           log("Error: attempting to calculate for not existent function: " + k);
           continue;
         }
-        Object condVal = null;
-        Object condValPred = null;
+        Object condVal;
+        Object condValPred;
         // add attribute value from CURRENT condition to accumulated agg
         // value
         condVal = m_model.getProperty(u.mapping());
@@ -641,36 +593,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
         utilityOfItem[i] = u.f(items[i]);
         currentUtility[i] = u.f(conds[i]);
         score += weights.get(k) * utilityOfItem[i];
-
-        // if applicable, process the same set of info using predicted
-        // values
-        if (predictionEnabled) {
-          // add attribute value from FUTURE condition to accumulated
-          // agg value
-          condValPred =
-              m_model.predictProperty(u.mapping(), 0L /*Rainbow.utilityPredictionDuration ()*/);
-          itemsPred[i] = v;
-          if (condValPred != null && condValPred instanceof Double) {
-            // if (m_logger.isTraceEnabled())
-            log("Avg value of predicted prop: " + u.mapping() + " == " + condValPred);
-            condsPred[i] = (Double) condValPred;
-            itemsPred[i] += condsPred[i];
-          }
-          // now compute the utility, apply weight, and accumulate to
-          // sum
-          scorePred += weights.get(k) * u.f(itemsPred[i]);
-        }
         ++i;
-      }
-
-      if (predictionEnabled) {
-        // compare and pick higher score
-        if (scorePred > .9 * score) { // score based on prediction
-          // prevails
-          log("cur-cond score " + score + " was lower, discarding: " + Arrays.toString(items));
-          score = scorePred;
-          items = itemsPred;
-        }
       }
 
       // log this
@@ -689,9 +612,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
       log("aggAtt': " + s);
     }
     log("cond   : " + Arrays.toString(conds));
-    if (predictionEnabled) {
-      log("condP! : " + Arrays.toString(condsPred));
-    }
+
     return scored;
   }
 
@@ -708,12 +629,8 @@ public final class AdaptationManager extends AbstractRainbowRunnable
       m_reportingPort.error(
           RainbowComponentT.ADAPTATION_MANAGER, "The stitchState path is not set!");
     } else if (stitchPath.exists() && stitchPath.isDirectory()) {
-      FilenameFilter ff = new FilenameFilter() { // find only ".s" files
-            @Override
-            public boolean accept(File dir, String name) {
-              return name.endsWith(".s");
-            }
-          };
+      // find only ".s" files
+      FilenameFilter ff = (dir, name) -> name.endsWith(".s");
       for (File f : stitchPath.listFiles(ff)) {
         try {
           // don't duplicate loading of script files
@@ -746,9 +663,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   }
 
   private void reportProblems(File f, DummyStitchProblemHandler sph) {
-
     Collection<IStitchProblem> problem = sph.getProblems();
-    boolean reported = !problem.isEmpty();
     if (!problem.isEmpty()) {
       log("Errors exist in strategy: " + f.getName() + ", or one of its included files");
     }
@@ -886,7 +801,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
       extends DefaultAdaptationExecutorVisitor<Strategy> {
     private final List<Strategy> m_strategiesExecuted;
 
-    public StrategyAdaptationResultsVisitor(
+    StrategyAdaptationResultsVisitor(
         AdaptationTree<Strategy> strategy,
         CountDownLatch countdownLatch,
         List<Strategy> strategiesExecuted) {

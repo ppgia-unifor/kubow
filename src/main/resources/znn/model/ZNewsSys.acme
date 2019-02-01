@@ -10,17 +10,20 @@ System ZNewsSys : Kubernetes = new Kubernetes extended with {
 
         }
 
+        Property name = "znn-db-service";
+
     }
     Component znn-db : Deployment = new Deployment extended with {
         Port sqlPort  = {
 
         }
-
+        Property name = "znn-db";
         Property namespace = "default";
 
     }
 
     Component znn-service : Service = new Service extended with {
+        Property name = "znn-service";
         Port apiPort  = {
 
         }
@@ -33,9 +36,9 @@ System ZNewsSys : Kubernetes = new Kubernetes extended with {
         Port sqlPort  = {
 
         }
-
+        Property name = "znn";
         Property namespace = "default";
-        Property fidelity = "cmendes/znn:high";
+        Property fidelity : int = 5;
 
     }
 

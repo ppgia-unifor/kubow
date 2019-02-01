@@ -48,11 +48,9 @@ public class PodProbe extends KubeAbstractProbe {
     try {
       var request = buildGetRequest(buildUrl(selector));
       var response = apiClient().getHttpClient().newCall(request).execute();
-
       if (response.isSuccessful()) {
         var elements = getMapper().readTree(response.body().string()).get("items").elements();
         var avg = stream(elements).mapToDouble(this::getValue).average();
-
         if (avg.isPresent()) {
           return ImmutableMap.of(
               metricAlias, avg.getAsDouble(), "namespace", namespace, "name", deploymentName);
@@ -71,11 +69,8 @@ public class PodProbe extends KubeAbstractProbe {
 
   Double getValue(JsonNode node) {
     var raw = node.get("value").asText();
-    var divisor = 1;
-    if (raw.contains("m")) {
-      divisor = 1000;
-    }
-    return Double.parseDouble(raw.replace("m", "")) / divisor;
+    // The m represents milli-units, so for example, 901m means 901 milli-requests
+    return Double.parseDouble(raw.replace("m", ""));
   }
 
   String buildUrl(String... selectors) {
