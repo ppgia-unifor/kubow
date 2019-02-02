@@ -13,7 +13,7 @@ import static org.sa.rainbow.translator.effectors.IEffectorExecutionPort.Outcome
 public class AcmeEffectorManager extends EffectorManager {
 
   public AcmeEffectorManager() {
-    super("Acme Global Effector Manager");
+    super("KubeRainbow Effector Manager");
   }
 
   /** This method is called when an event is published by the by a publisher */

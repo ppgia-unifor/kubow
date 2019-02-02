@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 public final class AdaptationManager extends AbstractRainbowRunnable
     implements IAdaptationManager<Strategy>, IRainbowModelChangeCallback {
 
-  private static final String NAME = "Rainbow Adaptation Manager";
+  private static final String NAME = "KubeRainbow Adaptation Manager";
   private static final double FAILURE_RATE_THRESHOLD = 0.95;
   private static final double MIN_UTILITY_THRESHOLD = 0.40;
   private static final long FAILURE_EFFECTIVE_WINDOW = 2000 /* ms */;
