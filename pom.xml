@@ -9,6 +9,7 @@
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <jib-maven-version>1.0.0</jib-maven-version>
     </properties>
 
     <developers>
@@ -109,4 +110,26 @@
             </url>
         </repository>
     </repositories>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib-maven-version}</version>
+                <configuration>
+                    <to>
+                        <image>registry.hub.docker.com/cmendes/kube-rainbow</image>
+                        <tags>
+                            <tag>latest</tag>
+                        </tags>
+                    </to>
+                    <from>
+                        <image>openjdk:11-jre-stretch</image>
+                    </from>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
