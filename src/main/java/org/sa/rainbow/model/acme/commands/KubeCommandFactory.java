@@ -6,9 +6,7 @@ import org.acmestudio.acme.element.IAcmeComponent;
 import org.sa.rainbow.core.models.ModelsManager;
 import org.sa.rainbow.model.acme.AcmeModelCommandFactory;
 import org.sa.rainbow.model.acme.AcmeModelInstance;
-import org.sa.rainbow.model.acme.commands.deployment.SetContainersCommand;
-import org.sa.rainbow.model.acme.commands.deployment.SetDeploymentInfoCommand;
-import org.sa.rainbow.model.acme.commands.deployment.SetDeploymentPropertyCommand;
+import org.sa.rainbow.model.acme.commands.deployment.*;
 import org.sa.rainbow.model.acme.commands.service.SetServicePropertyCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,21 +26,45 @@ public class KubeCommandFactory extends AcmeModelCommandFactory {
     return new KubeLoadModelCommand(modelName, modelsManager, stream, source);
   }
 
+  private void registerCommand(String name, Class clazz) {
+    m_commandMap.put(name.toLowerCase(), clazz);
+  }
+
   @Override
   protected void fillInCommandMap() {
     super.fillInCommandMap();
-    m_commandMap.put("setContainers".toLowerCase(), SetContainersCommand.class);
-    m_commandMap.put("setDeploymentInfo".toLowerCase(), SetDeploymentInfoCommand.class);
-    m_commandMap.put("setDeploymentProperty".toLowerCase(), SetDeploymentPropertyCommand.class);
-    m_commandMap.put("setServiceProperty".toLowerCase(), SetServicePropertyCommand.class);
-    m_commandMap.put("setFidelity".toLowerCase(), SetFidelityCommand.class);
+    registerCommand("setContainers", SetContainersCommand.class);
+    registerCommand("setDeploymentInfo", SetDeploymentInfoCommand.class);
+    registerCommand("setDeploymentProperty", SetDeploymentPropertyCommand.class);
+    registerCommand("setServiceProperty", SetServicePropertyCommand.class);
+    registerCommand("rollout", RolloutCommand.class);
+    registerCommand("scaleUp", ScaleUpCommand.class);
+    registerCommand("scaleDown", ScaleDownCommand.class);
   }
 
-  public SetFidelityCommand setFidelityCmd(IAcmeComponent znnService, int step) {
-    Ensure.is_true (znnService.declaresType ("Service"));
-    if (ModelHelper.getAcmeSystem (znnService) != m_modelInstance.getModelInstance ())
-      throw new IllegalArgumentException (
-              "Cannot create a command for a component that is not part of the system");
-    return new SetFidelityCommand ((AcmeModelInstance) m_modelInstance, znnService.getQualifiedName(), String.valueOf(step));
+  private void isDeployment(IAcmeComponent deployment) {
+    Ensure.is_true(deployment.declaresType("Deployment"));
+    if (ModelHelper.getAcmeSystem(deployment) != m_modelInstance.getModelInstance()) {
+      throw new IllegalArgumentException(
+          "Cannot create a command for a component that is not part of the system");
+    }
+  }
+
+  public RolloutCommand rolloutCmd(IAcmeComponent component, String container, String image) {
+    isDeployment(component);
+    return new RolloutCommand(
+        (AcmeModelInstance) m_modelInstance, component.getQualifiedName(), component.getName(), container, image);
+  }
+
+  public ScaleUpCommand scaleUpCmd(IAcmeComponent component, int replica) {
+    isDeployment(component);
+    return new ScaleUpCommand(
+        (AcmeModelInstance) m_modelInstance, component.getQualifiedName(), String.valueOf(replica));
+  }
+
+  public ScaleDownCommand scaleDownCmd(IAcmeComponent component, int replica) {
+    isDeployment(component);
+    return new ScaleDownCommand(
+        (AcmeModelInstance) m_modelInstance, component.getQualifiedName(), String.valueOf(replica));
   }
 }

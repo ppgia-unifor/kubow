@@ -1,19 +1,20 @@
-package org.sa.rainbow.model.acme.commands;
+package org.sa.rainbow.model.acme.commands.deployment;
 
 import org.acmestudio.acme.element.property.IAcmeProperty;
 import org.acmestudio.acme.model.command.IAcmeCommand;
 import org.sa.rainbow.core.error.RainbowModelException;
 import org.sa.rainbow.model.acme.AcmeModelInstance;
+import org.sa.rainbow.model.acme.commands.KubeAcmeModelCommand;
 
 import java.util.List;
 
 /**
  * @author Carlos Mendes (cmendesce@gmail.com)
  */
-public class SetFidelityCommand extends KubeAcmeModelCommand<IAcmeProperty> {
+public class ScaleUpCommand extends KubeAcmeModelCommand<IAcmeProperty> {
 
-  public SetFidelityCommand(AcmeModelInstance model, String target, String... parameters) {
-    super("setFidelity", model, target, parameters);
+  public ScaleUpCommand(AcmeModelInstance model, String target, String... parameters) {
+    super("scaleUp", model, target, parameters);
   }
 
   @Override

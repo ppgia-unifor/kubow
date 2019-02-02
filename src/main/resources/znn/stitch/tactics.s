@@ -5,15 +5,18 @@ import op "org.sa.rainbow.stitch.lib.*";
 
 tactic decreaseFidelity (int step) {
   condition {
-      M.znn-service.latency > 2000;
+    M.znn-service.latency > 2000;
   }
   action {
-      set lbs = {select l : K.Service in M.components | l.latency > 2000};
-	  for (K.Service l : lbs) {
-	      M.setFidelity(l, step);
-	  }
+    if (step == 3) {
+      M.rollout(M.znn, "znn", "cmendes/znn:low");
+    }
+
+    if (step == 1) {
+      M.rollout(M.znn, "znn", "cmendes/znn:text");
+    }
   }
   effect {
-      M.znn-service.latency < 2000;
+    M.znn-service.latency < 2000;
   }
 }

@@ -5,12 +5,15 @@ vars:
 
 effector-types:
 
-effectors:
-
-  setFidelity:
-    location: "127.0.0.1"
-    command: "M.setFidelity($<step>)"
+  Rollout:
+    command: "M.rollout ($<deployment>,$<container>,$<image>)"
     type: script
+    location: "127.0.0.1"
     scriptInfo:
-      path    : "${_effectors.commonPath}/fidelity-rollout.sh"
-      argument: "{0}"
+      path: "${_effectors.commonPath}/rollout.sh"
+      argument: "{0} {1} {2}"
+
+effectors:
+  rollout:
+    effector-type: Rollout
+    command: "M.rollout ($<deployment>,$<container>,$<image>)"
