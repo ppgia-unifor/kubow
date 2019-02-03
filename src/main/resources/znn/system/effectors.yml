@@ -1,19 +1,45 @@
 vars:
-# @ZNN_HOME will be replaced by the rainbow-install script
-#  _effectors.commonPath: "@ZNN_HOME/effectors"
-  _effectors.commonPath: "/Users/carlosmendes/unifor/kube-rainbow/src/main/resources/znn/system/effectors"
 
 effector-types:
 
-  Rollout:
-    command: "M.rollout ($<deployment>,$<container>,$<image>)"
-    type: script
+  RollOutT:
+    command: "M.rollOut ($<deployment>,$<container>,$<image>)"
     location: "127.0.0.1"
-    scriptInfo:
-      path: "${_effectors.commonPath}/rollout.sh"
-      argument: "{0} {1} {2}"
+    type: java
+    javaInfo:
+      class: org.sa.rainbow.translator.effectors.RollOutEffector
+
+  LoggerT:
+    command: "M.logger ($<args>)"
+    location: "127.0.0.1"
+    type: java
+    javaInfo:
+      class: org.sa.rainbow.translator.effectors.LoggerEffector
+
+  ScaleUpT:
+    command: "M.scaleUp ($<deployment>,$<desiredReplicas>)"
+    location: "127.0.0.1"
+    type: java
+    javaInfo:
+      class: org.sa.rainbow.translator.effectors.ScaleUpEffector
+
+  ScaleDownT:
+    command: "M.scaleDown ($<deployment>,$<desiredReplicas>)"
+    location: "127.0.0.1"
+    type: java
+    javaInfo:
+      class: org.sa.rainbow.translator.effectors.ScaleUpEffector
 
 effectors:
-  rollout:
-    effector-type: Rollout
-    command: "M.rollout ($<deployment>,$<container>,$<image>)"
+  rollOut:
+    effector-type: RollOutT
+    command: "M.rollOut ($<deployment>,$<container>,$<image>)"
+  logger:
+    effector-type: LoggerT
+    command: "M.logger ($<args>)"
+  scaleUp:
+    effector-type: ScaleUpT
+    command: "M.scaleUp ($<deployment>,$<desiredReplicas>)"
+  scaleDown:
+    effector-type: ScaleDownT
+    command: "M.scaleDown ($<deployment>,$<desiredReplicas>)"

@@ -10,10 +10,10 @@ import static java.text.MessageFormat.format;
 import static org.sa.rainbow.translator.effectors.IEffectorExecutionPort.Outcome.*;
 
 /** @author Carlos Mendes (cmendesce@gmail.com) */
-public class AcmeEffectorManager extends EffectorManager {
+public class KubeEffectorManager extends EffectorManager {
 
-  public AcmeEffectorManager() {
-    super("KubeRainbow Effector Manager");
+  public KubeEffectorManager() {
+    super("KubeRainbow RollOutEffector Manager");
   }
 
   /** This method is called when an event is published by the by a publisher */

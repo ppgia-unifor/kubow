@@ -43,7 +43,7 @@ public class KubeGauge extends AbstractJsonGaugeWithProbes {
   @Override
   protected void runAction() {
     int maxUpdates = MAX_UPDATES_PER_SLEEP;
-    while (messages().size() > 0 && maxUpdates-- > 0) {
+    while (!messages().isEmpty() && maxUpdates-- > 0) {
       var item = messages().poll();
       if (item != null) {
         if (!propertyPath.isEmpty()) {
