@@ -12,13 +12,13 @@ define boolean cHiRespTime = M.znn-service.latency > 2000;
 define boolean highMode = org.sa.rainbow.stitch.Operators.containerImage(M.znn, "znn", "cmendes/znn:high");
 
 strategy AddCapacity [cHiRespTime && !highMode] {
-  t0: (cHiRespTime) -> addReplicas(M.znn.desiredReplicas, 3) @[5000] {
+  t0: (cHiRespTime) -> addReplicas(1) @[5000] {
     t1: (!cHiRespTime) -> done;
   }
 }
 
 strategy SimpleReduceLatency [cHiRespTime && highMode] {
-  t0: (cHiRespTime) -> decreaseFidelity(3) @[5000] {
+  t0: (cHiRespTime) -> decreaseFidelity() @[5000] {
     t1: (!cHiRespTime) -> done;
   }
 }

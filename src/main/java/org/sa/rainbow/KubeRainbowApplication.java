@@ -1,5 +1,6 @@
 package org.sa.rainbow;
 
+import io.prometheus.client.exporter.HTTPServer;
 import org.sa.rainbow.core.RainbowDelegate;
 import org.sa.rainbow.core.RainbowMaster;
 import org.sa.rainbow.core.error.RainbowAbortException;
@@ -7,6 +8,7 @@ import org.sa.rainbow.core.error.RainbowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 
 import static java.text.MessageFormat.format;
@@ -16,7 +18,7 @@ public class KubeRainbowApplication {
 
   private static final Logger logger = LoggerFactory.getLogger(KubeRainbowApplication.class);
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     try {
 
       var target = System.getenv("TARGET");
@@ -42,6 +44,8 @@ public class KubeRainbowApplication {
       logger.info("Using target [{}] located in path [{}]", target, config);
       System.setProperty("rainbow.config", config);
       System.setProperty("rainbow.target", target);
+
+      var server = new HTTPServer(1002);
 
       RainbowMaster master = new RainbowMaster();
       master.initialize();

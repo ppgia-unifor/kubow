@@ -13,19 +13,19 @@ tactic addReplicas(int count) {
     M.znn-service.latency > 2000;
   }
   action {
-    int desiredReplicas = M.znn.desiredReplicas;
-    if ((desiredReplicas + count) < M.znn.maxReplicas) {
-      M.scaleUp(M.znn, desiredReplicas + count);
+    int futureReplicas = M.znn.desiredReplicas + count;
+    if (futureReplicas < M.znn.maxReplicas) {
+      M.scaleUp(M.znn, futureReplicas);
     } else {
       M.logger("Cannot add replicas. Reached out max replicas constraint");
     }
   }
   effect {
-    M.znn.desiredReplicas > desiredReplicas + count;
+    M.znn-service.latency < 2000;
   }
 }
 
-tactic decreaseFidelity (int step) {
+tactic decreaseFidelity () {
   condition {
     M.znn-service.latency > 2000;
   }

@@ -37,14 +37,25 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.String.valueOf;
+import static java.util.Optional.ofNullable;
 import static org.sa.rainbow.core.RainbowComponentT.ADAPTATION_MANAGER;
 
 public final class AdaptationManager extends AbstractRainbowRunnable
     implements IAdaptationManager<Strategy>, IRainbowModelChangeCallback {
 
-  private static final Counter adaptationsTotal = Counter.build().name("rainbow_adaptations_total").help("Total of completed adaptations").labelNames("success").register();
-  private static final Counter adaptationsCycles = Counter.build().name("rainbow_adaptations_cycles").help("Total of adaptation cycles.").register();
-
+  private static final Counter adaptationsTotal =
+      Counter.build()
+          .name("rainbow_adaptations_total")
+          .help("Total of completed adaptations")
+          .labelNames("success", "strategy")
+          .register();
+  private static final Counter adaptationsCycles =
+      Counter.build()
+          .name("rainbow_adaptations_cycles")
+          .help("Total of adaptation cycles.")
+          .labelNames("available_strategies", "applicable_strategies", "selected_strategy")
+          .register();
 
   private static final String NAME = "Kube Rainbow Adaptation Manager";
   private static final double FAILURE_RATE_THRESHOLD = 0.95;
@@ -67,6 +78,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   private static final int I_OTHER = 3;
   private static final int CNT_I = 4;
   private static double m_minUtilityThreshold = 0.0;
+  private final List<Strategy> availableStrategies;
   private AcmeModelInstance m_model;
   private boolean m_adaptNeeded;
   // constraint being violated
@@ -105,6 +117,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   /** Default constructor. */
   public AdaptationManager() {
     super(NAME);
+    availableStrategies = new ArrayList<>();
     m_adaptEnabled = true;
     m_repertoire = new ArrayList<>();
     m_pendingStrategies = new ArrayList<>();
@@ -210,7 +223,8 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   public void markStrategyExecuted(AdaptationTree<Strategy> strategy) {
     if (m_pendingStrategies.contains(strategy)) {
       m_pendingStrategies.remove(strategy);
-      adaptationsTotal.labels(Boolean.TRUE.toString()).inc();
+
+      adaptationsTotal.labels(Boolean.TRUE.toString(), strategy.getHead().getName()).inc();
       final List<Strategy> strategiesExecuted = new LinkedList<>();
       final CountDownLatch countdownLatch = new CountDownLatch(1);
       DefaultAdaptationExecutorVisitor<Strategy> resultCollector =
@@ -241,20 +255,18 @@ public final class AdaptationManager extends AbstractRainbowRunnable
 
   @Override
   protected void runAction() {
-    adaptationsCycles.inc();
-
     if (!canAdapt()) {
       return;
     }
     Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_SELECTION_BEGIN);
-    var selectedStrategy = selectAdaptation();
+    var selectedStrategy = selectStrategy();
     Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_SELECTION_END);
     if (selectedStrategy != null) {
       log(">> do strategy: " + selectedStrategy.getName());
 
-      var at = new AdaptationTree<>(selectedStrategy);
-      m_pendingStrategies.add(at);
-      m_enqueuePort.offerAdaptation(at, null);
+      var adaptation = new AdaptationTree<>(selectedStrategy);
+      m_pendingStrategies.add(adaptation);
+      m_enqueuePort.offerAdaptation(adaptation, null);
       String logMessage = selectedStrategy.getName();
       strategyLog(logMessage);
     }
@@ -281,31 +293,23 @@ public final class AdaptationManager extends AbstractRainbowRunnable
    * meta-information of the tactics in each strategy - Select and execute the
    * highest scoring strategy
    */
-  private Strategy selectAdaptation() {
-    log("Checking if adaptation is required.");
+  private Strategy selectStrategy() {
+    log("Checking if adaptation is required");
 
-    int availCnt = 0;
     Map<String, Strategy> appSubsetByName = new HashMap<>();
-    for (Stitch stitch : m_repertoire) {
-      if (!stitch.script.isApplicableForSystem(m_model)) {
-        m_reportingPort.trace(getComponentType(), "x. skipping " + stitch.script.getName());
-        continue; // skip checking this script
+    final Map<String, Object> params = Map.of();
+    for (Strategy strategy : availableStrategies) {
+      if (getFailureRate(strategy) > FAILURE_RATE_THRESHOLD) {
+        continue;
       }
-      for (Strategy strategy : stitch.script.strategies) {
-        ++availCnt;
-        // check first for prior failures
-        if (getFailureRate(strategy) > FAILURE_RATE_THRESHOLD) {
-          continue; // don't consider this Strategy
-        }
-
-        // check condition of Strategy applicability
-        if (strategy.isApplicable(Map.of())) {
-          appSubsetByName.put(strategy.getName(), strategy);
-        }
+      if (strategy.isApplicable(params)) {
+        appSubsetByName.put(strategy.getName(), strategy);
       }
     }
-    if (appSubsetByName.size() == 0) { // can't do adaptation
-      log("No applicable Strategies to do an adaptation!");
+
+    if (appSubsetByName.size() == 0) {
+      log("No applicable Strategies to do an adaptation");
+      adaptationsCycles.labels(valueOf(availableStrategies.size()), "0", "").inc();
       return null;
     }
 
@@ -333,17 +337,29 @@ public final class AdaptationManager extends AbstractRainbowRunnable
         multi.setName(MULTI_STRATEGY_PREFIX + strategy.getName());
         multi.multiples = factor;
         appSubsetByName.put(multi.getName(), multi);
-        ++availCnt;
       }
     }
-    log(
-        ">> repertoire: "
-            + appSubsetByName.size()
-            + " / "
-            + availCnt
-            + " strategy"
-            + (availCnt > 1 ? "ies" : "y"));
 
+    Optional<Strategy> selected;
+    if (Rainbow.instance().getProperty("customize.utility.enabled", false)) {
+      selected = ofNullable(selectByUtilityFunction(appSubsetByName));
+    } else {
+      selected = ofNullable(appSubsetByName.get(appSubsetByName.keySet().iterator().next()));
+    }
+    if (selected.isPresent()) {
+      adaptationsCycles
+          .labels(
+              valueOf(availableStrategies.size()),
+              valueOf(appSubsetByName.size()),
+              selected.get().getName())
+          .inc();
+      return selected.get();
+    }
+    adaptationsCycles.labels(valueOf(availableStrategies.size()), valueOf(appSubsetByName.size()), "").inc();
+    return null;
+  }
+
+  private Strategy selectByUtilityFunction(Map<String, Strategy> appSubsetByName) {
     SortedMap<Double, Strategy> scoredStrategies = scoreStrategies(appSubsetByName);
     if (Util.dataLogger().isInfoEnabled()) {
       StringBuilder buf = new StringBuilder();
@@ -489,8 +505,11 @@ public final class AdaptationManager extends AbstractRainbowRunnable
 
             // apply attribute vectors to tactics, if available
             defineAttributes(stitch, m_utilityModel.attributeVectors);
-            m_repertoire.add(stitch);
-            log("Parsed script " + stitch.path);
+            if (stitch.script.isApplicableForSystem(m_model)) {
+              m_repertoire.add(stitch);
+              availableStrategies.addAll(stitch.script.strategies);
+              log("Parsed script " + stitch.path);
+            }
           } else {
             log("Previously known script " + stitch.path);
           }

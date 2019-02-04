@@ -1,24 +1,25 @@
 package org.sa.rainbow.translator.effectors;
 
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import org.sa.rainbow.monitor.EffectorMonitor;
 
 import java.util.List;
 
 /** @author Carlos Mendes (cmendesce@gmail.com) */
-public class ScaleDownEffector extends AbstractEffector {
+public class ScaleDownEffector extends KubeEffector {
 
   public ScaleDownEffector(String refID, String name) {
-    super(refID, name, Kind.JAVA);
+    super(refID, name);
   }
 
   @Override
-  public Outcome execute(List<String> args) {
+  protected Outcome internalExecute(List<String> args) {
     var namespace = args.get(0);
     var deployment = args.get(1);
     var count = Integer.parseInt(args.get(2));
+    var timer = EffectorMonitor.latency().labels("scaleDown", namespace, deployment).startTimer();
 
     try (var client = new DefaultKubernetesClient()) {
-
       var replicas =
           client
               .apps()
@@ -43,8 +44,9 @@ public class ScaleDownEffector extends AbstractEffector {
         return Outcome.FAILURE;
       }
     } catch (Exception ex) {
-      ex.printStackTrace();
       return Outcome.FAILURE;
+    } finally {
+      timer.observeDuration();
     }
   }
 }
