@@ -1,5 +1,6 @@
 package org.sa.rainbow;
 
+import io.prometheus.client.exporter.HTTPServer;
 import org.sa.rainbow.core.RainbowDelegate;
 import org.sa.rainbow.core.RainbowMaster;
 import org.sa.rainbow.core.error.RainbowAbortException;
@@ -7,6 +8,7 @@ import org.sa.rainbow.core.error.RainbowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 
 import static java.text.MessageFormat.format;
@@ -16,24 +18,21 @@ public class KubeRainbowApplication {
 
   private static final Logger logger = LoggerFactory.getLogger(KubeRainbowApplication.class);
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     try {
 
       var target = System.getenv("TARGET");
       var config = System.getenv("TARGET_PATH");
 
       if (target == null) {
-        logger.warn("No TARGET configured. Using the built in target");
+        logger.warn("No TARGET configured. Set [default] as the target name");
         target = "default";
       }
 
       if (config == null) {
         var path = KubeRainbowApplication.class.getClassLoader().getResource(target);
         if (path == null) {
-          var message =
-              format(
-                  "Target [{0}] does not exists in [{1}]",
-                  target, KubeRainbowApplication.class.getClassLoader().getResource(".").getPath());
+          var message = format("Target [{0}] does not exists in [{1}]", target, config);
           throw new RainbowAbortException(message);
         }
         config = Paths.get(path.getPath()).getParent().toString();
@@ -42,6 +41,8 @@ public class KubeRainbowApplication {
       logger.info("Using target [{}] located in path [{}]", target, config);
       System.setProperty("rainbow.config", config);
       System.setProperty("rainbow.target", target);
+
+      startPrometheus();
 
       RainbowMaster master = new RainbowMaster();
       master.initialize();
@@ -53,5 +54,13 @@ public class KubeRainbowApplication {
     } catch (RainbowException e) {
       logger.error("Cannot start rainbow.", e);
     }
+  }
+
+  static void startPrometheus() throws IOException {
+    var prometheusPort = System.getenv("PROMETHEUS_PORT");
+    if (prometheusPort == null) {
+      prometheusPort = "1002";
+    }
+    new HTTPServer(Integer.parseInt(prometheusPort));
   }
 }

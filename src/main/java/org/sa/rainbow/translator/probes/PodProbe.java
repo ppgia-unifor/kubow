@@ -64,7 +64,7 @@ public class PodProbe extends KubeAbstractProbe {
           e.getMessage());
     }
 
-    return ImmutableMap.of();
+    return null;
   }
 
   Double getValue(JsonNode node) {
