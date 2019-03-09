@@ -30,6 +30,13 @@ effector-types:
     javaInfo:
       class: org.sa.rainbow.translator.effectors.ScaleDownEffector
 
+  UpdateConfigT:
+    command: "M.updateConfig ($<namespace>,$<configmap>,$<values>)"
+    location: "127.0.0.1"
+    type: java
+    javaInfo:
+      class: org.sa.rainbow.translator.effectors.UpdateConfigEffector
+
 effectors:
   rollOut:
     effector-type: RollOutT
@@ -43,3 +50,6 @@ effectors:
   scaleDown:
     effector-type: ScaleDownT
     command: "M.scaleDown ($<deployment>,$<desiredReplicas>)"
+  updateConfig:
+    effector-type: UpdateConfigT
+    command: "M.updateConfig ($<namespace>,$<configmap>,$<values>)"
