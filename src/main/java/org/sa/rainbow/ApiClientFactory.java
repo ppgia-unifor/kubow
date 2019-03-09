@@ -13,13 +13,12 @@ public class ApiClientFactory {
   private static Logger logger = LoggerFactory.getLogger(ApiClientFactory.class);
 
   public static ApiClient defaultClient() {
+    ApiClient apiClient = null;
     try {
-      var apiClient = Config.defaultClient();
-      logger.debug("K8s api client initialized: " + apiClient.getBasePath());
-      return apiClient;
+      apiClient = Config.defaultClient();
     } catch (IOException e) {
-      logger.error("Could not initialize the K8s api client. Reason: " + e.getMessage(), e);
-      return null;
+      e.printStackTrace();
     }
+    return apiClient;
   }
 }

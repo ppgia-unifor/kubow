@@ -30,15 +30,16 @@ public class ScaleDownEffector extends KubeEffector {
               .getStatus()
               .getReplicas();
 
+      var newReplicas = replicas - count;
       var response =
           client
               .apps()
               .deployments()
               .inNamespace(namespace)
               .withName(deployment)
-              .scale(count * -1, true);
+              .scale(newReplicas, true);
 
-      if ((replicas - count) == response.getStatus().getReplicas()) {
+      if (response.getStatus().getReplicas().equals(newReplicas)) {
         return Outcome.SUCCESS;
       } else {
         return Outcome.FAILURE;

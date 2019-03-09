@@ -28,7 +28,7 @@ effector-types:
     location: "127.0.0.1"
     type: java
     javaInfo:
-      class: org.sa.rainbow.translator.effectors.ScaleUpEffector
+      class: org.sa.rainbow.translator.effectors.ScaleDownEffector
 
 effectors:
   rollOut:

@@ -25,17 +25,14 @@ public class KubeRainbowApplication {
       var config = System.getenv("TARGET_PATH");
 
       if (target == null) {
-        logger.warn("No TARGET configured. Using the built in target");
+        logger.warn("No TARGET configured. Set [default] as the target name");
         target = "default";
       }
 
       if (config == null) {
         var path = KubeRainbowApplication.class.getClassLoader().getResource(target);
         if (path == null) {
-          var message =
-              format(
-                  "Target [{0}] does not exists in [{1}]",
-                  target, KubeRainbowApplication.class.getClassLoader().getResource(".").getPath());
+          var message = format("Target [{0}] does not exists in [{1}]", target, config);
           throw new RainbowAbortException(message);
         }
         config = Paths.get(path.getPath()).getParent().toString();
@@ -45,7 +42,7 @@ public class KubeRainbowApplication {
       System.setProperty("rainbow.config", config);
       System.setProperty("rainbow.target", target);
 
-      var server = new HTTPServer(1002);
+      startPrometheus();
 
       RainbowMaster master = new RainbowMaster();
       master.initialize();
@@ -57,5 +54,13 @@ public class KubeRainbowApplication {
     } catch (RainbowException e) {
       logger.error("Cannot start rainbow.", e);
     }
+  }
+
+  static void startPrometheus() throws IOException {
+    var prometheusPort = System.getenv("PROMETHEUS_PORT");
+    if (prometheusPort == null) {
+      prometheusPort = "1002";
+    }
+    new HTTPServer(Integer.parseInt(prometheusPort));
   }
 }

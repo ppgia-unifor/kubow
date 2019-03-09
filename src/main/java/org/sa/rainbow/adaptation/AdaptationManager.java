@@ -243,7 +243,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
         tallyStrategyOutcome(str);
       }
     }
-    if (m_pendingStrategies.size() == 0) {
+    if (m_pendingStrategies.isEmpty()) {
       Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_END);
       m_adaptNeeded = false;
     }

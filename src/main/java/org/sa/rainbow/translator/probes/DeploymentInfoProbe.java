@@ -27,7 +27,6 @@ public class DeploymentInfoProbe extends KubeAbstractProbe {
   private final AppsV1Api appsV1Api;
   private final String namespace;
   private final String deploymentName;
-  private final String selector;
 
   public DeploymentInfoProbe(String id, long sleepTime, String[] args) {
     super(
@@ -35,14 +34,13 @@ public class DeploymentInfoProbe extends KubeAbstractProbe {
     appsV1Api = new AppsV1Api(apiClient());
     namespace = args[0];
     deploymentName = args[1];
-    selector = args[2];
   }
 
   @Override
   protected Map<String, Object> collect() {
     var deployment = getDeployment();
-    Map<String, Object> values = new HashMap<>();
     if (deployment.isPresent()) {
+      Map<String, Object> values = new HashMap<>();
       var d = deployment.get();
       values.put("name", d.getMetadata().getName());
       values.put("namespace", d.getMetadata().getName());
@@ -54,16 +52,17 @@ public class DeploymentInfoProbe extends KubeAbstractProbe {
           d.getSpec().getTemplate().getSpec().getContainers().stream()
               .collect(toMap(V1Container::getName, V1Container::getImage)));
       values.put("labels", d.getMetadata().getLabels());
+      return values;
     }
-    return values;
+    return null;
   }
 
   protected Optional<V1Deployment> getDeployment() {
     try {
       return of(appsV1Api.readNamespacedDeployment(deploymentName, namespace, null, false, false));
     } catch (ApiException ex) {
-      logger.info(
-          "An error occurred whe try to collect data from {}.{}", namespace, deploymentName);
+      logger.error(
+          "An error occurred whe try to collect data from {}.{}", namespace, deploymentName, ex);
       return empty();
     }
   }

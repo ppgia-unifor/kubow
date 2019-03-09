@@ -1,6 +1,5 @@
 package org.sa.rainbow.translator.gauges;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.sa.rainbow.core.error.RainbowException;
 import org.sa.rainbow.core.models.commands.IRainbowOperation;
@@ -35,9 +34,9 @@ public class KubeGauge extends AbstractJsonGaugeWithProbes {
         .findFirst()
         .ifPresent(v -> propertyPath = v.getValue().toString());
     setupParams.stream()
-            .filter(p -> p.getName().equals("propertyName"))
-            .findFirst()
-            .ifPresent(v -> propertyName = v.getValue().toString());
+        .filter(p -> p.getName().equals("propertyName"))
+        .findFirst()
+        .ifPresent(v -> propertyName = v.getValue().toString());
   }
 
   @Override

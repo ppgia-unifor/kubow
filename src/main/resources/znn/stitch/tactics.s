@@ -10,7 +10,7 @@ define boolean highMode = org.sa.rainbow.stitch.Operators.containerImage(M.znn, 
 
 tactic addReplicas(int count) {
   condition {
-    M.znn-service.latency > 2000;
+    M.znn-service.latency > 1000;
   }
   action {
     int futureReplicas = M.znn.desiredReplicas + count;
@@ -21,7 +21,20 @@ tactic addReplicas(int count) {
     }
   }
   effect {
-    M.znn-service.latency < 2000;
+    M.znn-service.latency < 1000;
+  }
+}
+
+tactic removeReplicas(int count) {
+  condition {
+    M.znn-service.latency < 1000;
+  }
+  action {
+    int futureReplicas = M.znn.desiredReplicas - count;
+    M.scaleDown(M.znn, futureReplicas);
+  }
+  effect {
+    M.znn-service.latency < 1000;
   }
 }
 
