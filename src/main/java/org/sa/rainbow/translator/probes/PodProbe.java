@@ -49,7 +49,7 @@ public class PodProbe extends KubeAbstractProbe {
       var request = buildGetRequest(buildUrl(selector));
       var response = apiClient().getHttpClient().newCall(request).execute();
       if (response.isSuccessful()) {
-        var elements = getMapper().readTree(response.body().string()).get("items").elements();
+        var elements = objectReader().readTree(response.body().string()).get("items").elements();
         var avg = stream(elements).mapToDouble(this::getValue).average();
         if (avg.isPresent()) {
           return ImmutableMap.of(

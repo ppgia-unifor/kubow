@@ -2,6 +2,8 @@ package org.sa.rainbow.translator.probes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -16,11 +18,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 public abstract class AbstractRunnableJsonProbe extends AbstractRunnableProbe {
 
   private static final Logger logger = getLogger(AbstractRunnableJsonProbe.class);
-  private final ObjectMapper mapper;
+  private final ObjectWriter objectWriter;
+  private final ObjectReader objectReader;
 
   public AbstractRunnableJsonProbe(String id, String type, long sleepTime, String[] args) {
     super(id, type, Kind.JAVA, sleepTime);
-    mapper = new ObjectMapper();
+    var mapper = new ObjectMapper();
+    objectWriter = mapper.writerFor(Map.class);
+    objectReader = mapper.reader();
   }
 
   @Override
@@ -38,8 +43,12 @@ public abstract class AbstractRunnableJsonProbe extends AbstractRunnableProbe {
     }
   }
 
-  ObjectMapper getMapper() {
-    return mapper;
+  protected ObjectWriter objectWriter() {
+    return objectWriter;
+  }
+
+  protected ObjectReader objectReader() {
+    return objectReader;
   }
 
   /**
@@ -49,7 +58,7 @@ public abstract class AbstractRunnableJsonProbe extends AbstractRunnableProbe {
    */
   protected void reportData(Map<String, Object> data) {
     try {
-      reportData(getMapper().writeValueAsString(data));
+      reportData(objectWriter.writeValueAsString(data));
     } catch (JsonProcessingException e) {
       logger.error("Probe {} can't send data. Reason: {}", this.name(), e.getMessage(), e);
     }

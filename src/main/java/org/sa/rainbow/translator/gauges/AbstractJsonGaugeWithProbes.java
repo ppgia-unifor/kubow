@@ -2,6 +2,7 @@ package org.sa.rainbow.translator.gauges;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import org.sa.rainbow.core.error.RainbowException;
 import org.sa.rainbow.core.gauges.AbstractGaugeWithProbes;
 import org.sa.rainbow.core.models.commands.IRainbowOperation;
@@ -25,6 +26,7 @@ import java.util.Queue;
 public class AbstractJsonGaugeWithProbes extends AbstractGaugeWithProbes {
 
   private final Queue<JsonNode> messages;
+  private final ObjectReader objectReader;
   private final Logger logger = LoggerFactory.getLogger(AbstractJsonGaugeWithProbes.class);
 
   protected AbstractJsonGaugeWithProbes(
@@ -38,13 +40,13 @@ public class AbstractJsonGaugeWithProbes extends AbstractGaugeWithProbes {
       throws RainbowException {
     super(threadName, id, beaconPeriod, gaugeDesc, modelDesc, setupParams, mappings);
     messages = new LinkedList<>();
+    objectReader = new ObjectMapper().readerFor(String.class);
   }
 
   @Override
   public void reportFromProbe(IProbeIdentifier probe, String data) {
-    var objectMapper = new ObjectMapper();
     try {
-      messages.add(objectMapper.readTree(data));
+      messages.add(objectReader.readTree(data));
     } catch (IOException e) {
       logger.error(String.format("Impossible to parse json object %s", data), e);
     }
