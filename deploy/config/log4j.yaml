@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: log4j
+data:
+  log4j.properties: |
+    log4j.rootLogger=INFO,CONSOLE
+    log4j.logger.DataLogger=INFO,file
+    log4j.logger.org.sa.rainbow.stitch2.util.Ohana2=DEBUG,CONSOLE
+    log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+    log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.CONSOLE.layout.ConversionPattern=%-5p %c{1} - %m%n

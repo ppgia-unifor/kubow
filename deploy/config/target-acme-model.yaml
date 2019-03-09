@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: target-acme-model
+data:
+  target-acme-model.acme: |
+    import Kubernetes.acme;
+
+    System ZNewsSys : Kubernetes = new Kubernetes extended with {
+
+        Component znn-db-service : Service  = new Service extended with {
+            Port sqlPort  = {
+
+            }
+            Port connectionSqlPort  = {
+
+            }
+
+            Property name = "znn-db-service";
+
+        }
+        Component znn-db : Deployment = new Deployment extended with {
+            Port sqlPort  = {
+
+            }
+            Property name = "znn-db";
+            Property namespace = "default";
+
+        }
+
+        Component znn-service : Service = new Service extended with {
+            Property name = "znn-service";
+            Port apiPort  = {
+
+            }
+
+        }
+        Component znn : Deployment  = new Deployment extended with {
+            Port apiPort  = {
+
+            }
+            Port sqlPort  = {
+
+            }
+            Property name = "znn";
+            Property namespace = "default";
+        }
+
+        Connector znn_to_znn-db  = new GenericConnection extended with {
+
+        }
+        Connector znn-service_to_znn  = new GenericConnection extended with {
+
+        }
+        Connector znn-db-service_to_znn-db  = new GenericConnection extended with {
+
+        }
+        Attachment znn-db-service.sqlPort to znn-db-service_to_znn-db.sender;
+        Attachment znn-db.sqlPort to znn-db-service_to_znn-db.receiver;
+        Attachment znn-service.apiPort to znn-service_to_znn.sender;
+        Attachment znn.apiPort to znn-service_to_znn.receiver;
+        Attachment znn-db-service.connectionSqlPort to znn_to_znn-db.receiver;
+        Attachment znn.sqlPort to znn_to_znn-db.sender;
+    }

@@ -1,0 +1,8 @@
+version: '3.3'
+
+services:
+  kubow:
+    image: cmendes/kubow:1.0.0-SNAPSHOT
+    environment:
+      TARGET: "znn"
+      TARGET_PATH: "/etc/targets/"
