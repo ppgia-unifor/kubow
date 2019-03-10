@@ -1,7 +1,7 @@
 package org.sa.rainbow.model.acme.commands.service;
 
 import org.sa.rainbow.model.acme.AcmeModelInstance;
-import org.sa.rainbow.model.acme.commands.KubePropertyCommand;
+import org.sa.rainbow.model.acme.commands.KubowPropertyCommand;
 
 import java.io.IOException;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
  *
  * @author Carlos Mendes (cmendesce@gmail.com)
  * */
-public class SetServicePropertyCommand extends KubePropertyCommand {
+public class SetServicePropertyCommand extends KubowPropertyCommand {
 
   public SetServicePropertyCommand(
       AcmeModelInstance model, String target, String params, String propertyName)

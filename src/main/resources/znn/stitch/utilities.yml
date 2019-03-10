@@ -7,7 +7,7 @@
 # - [JC 2013.10.22] Created file, defined utilities for Dos Attack Demo.
 # - [JC 2013.11.1] Added user annoyance to the utility profile.
 model:
-  name: ZNewsSys
+  name: KubeZnnSystem
   type: Acme
 utilities:
   uR:

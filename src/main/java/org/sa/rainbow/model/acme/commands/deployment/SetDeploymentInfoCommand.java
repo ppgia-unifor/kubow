@@ -2,6 +2,7 @@ package org.sa.rainbow.model.acme.commands.deployment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import org.acmestudio.acme.element.IAcmeComponent;
 import org.acmestudio.acme.element.property.IAcmeProperty;
 import org.acmestudio.acme.element.property.IAcmePropertyValue;
@@ -26,11 +27,12 @@ public class SetDeploymentInfoCommand extends KubeAcmeModelCommand<IAcmeProperty
   private static final String CURRENT_REPLICAS = "currentReplicas";
   private static final String CONTAINERS = "containers";
   private final JsonNode rawValue;
+  private static ObjectReader reader = new ObjectMapper().reader();
 
   public SetDeploymentInfoCommand(AcmeModelInstance model, String target, String value)
       throws IOException {
     super("setDeploymentInfo", model, target, value);
-    rawValue = new ObjectMapper().readTree(value);
+    rawValue = reader.readTree(value);
   }
 
   @Override
@@ -40,7 +42,7 @@ public class SetDeploymentInfoCommand extends KubeAcmeModelCommand<IAcmeProperty
       throw new RainbowModelException(
           format("The deployment ''{0}'' could not be found in the model", getTarget()));
     }
-    if (!target.declaresType("Deployment")) {
+    if (!target.declaresType("DeploymentT")) {
       throw new RainbowModelException(
           format("The deployment ''{0}'' is not of the right type.", getTarget()));
     }

@@ -71,7 +71,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   /** The prefix to represent the corresponding multi-step strategy of the leap-version strategy. */
   private static final String MULTI_STRATEGY_PREFIX = "Multi-";
 
-  private static final int SLEEP_TIME = 10000;
+  private static final int SLEEP_TIME = Rainbow.instance().getProperty("customize.adaptation.cycletime", 10000);
   private static final int I_RUN = 0;
   private static final int I_SUCCESS = 1;
   private static final int I_FAIL = 2;

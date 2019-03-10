@@ -47,14 +47,16 @@ public class DeploymentInfoProbe extends KubeAbstractProbe {
       values.put("desiredReplicas", d.getSpec().getReplicas());
       values.put("currentReplicas", d.getStatus().getReplicas());
       values.put("availableReplicas", d.getStatus().getAvailableReplicas());
-      values.put(
-          "containers",
-          d.getSpec().getTemplate().getSpec().getContainers().stream()
-              .collect(toMap(V1Container::getName, V1Container::getImage)));
+      values.put("containers", extractContainers(d));
       values.put("labels", d.getMetadata().getLabels());
       return values;
     }
     return null;
+  }
+
+  private Map<String, String> extractContainers(V1Deployment deployment) {
+    return deployment.getSpec().getTemplate().getSpec().getContainers().stream()
+        .collect(toMap(V1Container::getName, V1Container::getImage));
   }
 
   protected Optional<V1Deployment> getDeployment() {

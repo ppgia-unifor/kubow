@@ -13,6 +13,6 @@ public abstract class KubeAcmeModelCommand<T> extends AcmeModelOperation<T> {
 
   @Override
   protected boolean checkModelValidForCommand(IAcmeSystem model) {
-    return model.declaresType("Kubernetes");
+    return model.declaresType("KubernetesFam");
   }
 }

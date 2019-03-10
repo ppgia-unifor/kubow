@@ -1,6 +1,6 @@
 module newssite.tactics;
 
-import model "ZNewsSys:Acme" { ZNewsSys as M, Kubernetes as K};
+import model "KubeZnnSystem:Acme" { KubeZnnSystem as M, Kubernetes as K};
 import op "org.sa.rainbow.stitch.lib.*";
 
 

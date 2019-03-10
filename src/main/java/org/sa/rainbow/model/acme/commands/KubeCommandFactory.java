@@ -38,11 +38,12 @@ public class KubeCommandFactory extends AcmeModelCommandFactory {
     registerCommand("rollOut", RollOutCommand.class);
     registerCommand("scaleUp", ScaleUpCommand.class);
     registerCommand("scaleDown", ScaleDownCommand.class);
+    registerCommand("updateConfig", UpdateConfigCommand.class);
     registerCommand("logger", ScaleDownCommand.class);
   }
 
   private void isDeployment(IAcmeComponent deployment) {
-    Ensure.is_true(deployment.declaresType("Deployment"));
+    Ensure.is_true(deployment.declaresType("DeploymentT"));
     if (ModelHelper.getAcmeSystem(deployment) != m_modelInstance.getModelInstance()) {
       throw new IllegalArgumentException(
           "Cannot create a command for a component that is not part of the system");
@@ -97,5 +98,16 @@ public class KubeCommandFactory extends AcmeModelCommandFactory {
   public LoggerCommand loggerCmd(IAcmeComponent component, String... params) {
     return new LoggerCommand(
         (AcmeModelInstance) m_modelInstance, component.getQualifiedName(), params);
+  }
+
+  public UpdateConfigCommand updateConfigCmd(
+      IAcmeComponent component, String namespace, String configmap, String values) {
+
+    return new UpdateConfigCommand(
+        (AcmeModelInstance) m_modelInstance,
+        component.getQualifiedName(),
+        namespace,
+        configmap,
+        values);
   }
 }

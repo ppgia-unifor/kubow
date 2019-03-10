@@ -20,14 +20,14 @@ import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 
 /** @author Carlos Mendes (cmendesce@gmail.com) */
-public abstract class KubePropertyCommand extends KubeAcmeModelCommand<IAcmeProperty> {
+public abstract class KubowPropertyCommand extends KubeAcmeModelCommand<IAcmeProperty> {
 
   private final String componentType;
   private final String propertyName;
   private final ObjectMapper mapper;
   private final JsonNode rawValue;
 
-  public KubePropertyCommand(
+  public KubowPropertyCommand(
       String componentType,
       String propertyName,
       AcmeModelInstance model,

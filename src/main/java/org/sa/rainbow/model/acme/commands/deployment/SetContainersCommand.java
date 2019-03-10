@@ -3,9 +3,8 @@ package org.sa.rainbow.model.acme.commands.deployment;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.acmestudio.acme.element.property.IAcmePropertyValue;
 import org.acmestudio.acme.model.util.core.UMSequenceValue;
-import org.acmestudio.acme.model.util.core.UMSetValue;
 import org.sa.rainbow.model.acme.AcmeModelInstance;
-import org.sa.rainbow.model.acme.commands.KubePropertyCommand;
+import org.sa.rainbow.model.acme.commands.KubowPropertyCommand;
 
 import java.io.IOException;
 import java.util.*;
@@ -13,11 +12,11 @@ import java.util.*;
 import static org.acmestudio.acme.PropertyHelper.toAcmeRecord;
 
 /** @author Carlos Mendes (cmendesce@gmail.com) */
-public class SetContainersCommand extends KubePropertyCommand {
+public class SetContainersCommand extends KubowPropertyCommand {
 
   public SetContainersCommand(AcmeModelInstance model, String target, String value)
       throws IOException {
-    super("Deployment", "<containers>", model, target, value);
+    super("DeploymentT", "<containers>", model, target, value);
   }
 
   @Override

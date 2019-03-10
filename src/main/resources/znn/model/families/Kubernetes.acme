@@ -1,33 +1,40 @@
-Family Kubernetes = {
+Family KubernetesFam = {
+  Property Type ContainerT = Record [image : string; name : string;];
+  Property Type SelectorT = Record [name : string; value : string;];
 
-    Property Type Container = Record [image : string; name : string;];
+  Connector Type LabelSelectorConnectorT = {
+    Role caller;
+    Role callee;
+    Property selectors : Sequence<SelectorT>;
+  }
 
-    Component Type Deployment = {
-      Property name : string;
-      Property namespace : string;
-      Property desiredReplicas : int;
-      Property currentReplicas : int << default : int = 0; >>;
-      Property availableReplicas : int;
-      Property minReplicas : int;
-      Property maxReplicas : int << default : int = 100000; >> ;
-      Property age : int;
+  Connector Type ServiceConnectorT = {
+    Role selector;
+    Role selectee;
+    Property namespace : string;
+    Property name : string;
+  }
 
-      
-      Property containers : Sequence<Container>;
-      
-      rule maxReplicasRule = invariant self.maxReplicas >= self.currentReplicas;
-    }
-    
-    Component Type Service = {
-      Property name : string;
-      Property latency : float << default : float = 0.0; >> ;
-    }
-    
-    Connector Type GenericConnection = {
-      Role sender;
-      Role receiver;
-    }
+  Component Type DeploymentT = {
+    Property name : string;
+    Property namespace : string;
+    Property desiredReplicas : int << default : int = 1; >>;
+    Property currentReplicas : int << default : int = 0; >>;
+    Property availableReplicas : int;
+    Property minReplicas : int << default : int = 1; >>;
+    Property maxReplicas : int << default : int = 100000; >> ;
+    Property containers : Sequence<ContainerT>;
+    Property hasAlternativeImages : boolean << default : boolean = false; >> ;
+    Property alternativeImages : Sequence<string>;
+    rule maxReplicasRule = invariant self.maxReplicas >= self.desiredReplicas;
+    rule minReplicasRule = invariant self.minReplicas <= self.desiredReplicas;
+  }
 
+  Component Type ServiceT = {
+    Property name : string;
+    Property latency : float << default : float = 0.0; >> ;
+    Property traffic : float << default : float = 0.0; >> ;
+    Property errors : float << default : float = 0.0; >> ;
+    Property saturation : float << default : float = 0.0; >> ;
+  }
 }
-
-
