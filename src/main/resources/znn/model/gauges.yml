@@ -29,16 +29,16 @@ gauge-types:
     comment: ""
 
 gauge-instances:
-#
-#  G1:
-#    type: KubeRainbowGaugeT
-#    model: "KubeZnnSystem:Acme"
-#    commands:
-#      "setServiceProperty()": "znn-service.setServiceProperty($<jsonValue>,<latency>)"
-#    setupValues:
-#      targetIP: "127.0.0.1"
-#    configValues:
-#      targetProbeType: default-znn-latency@*
+
+  G1:
+    type: KubeRainbowGaugeT
+    model: "KubeZnnSystem:Acme"
+    commands:
+      "setServiceProperty()": "kubeZnnS.setServiceProperty($<jsonValue>,<latency>)"
+    setupValues:
+      targetIP: "127.0.0.1"
+    configValues:
+      targetProbeType: kube-znn.latency.probe@*
 
 
   G2:

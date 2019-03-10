@@ -10,18 +10,13 @@ define boolean highMode = org.sa.rainbow.stitch.Operators.containerImage(M.znn, 
 
 tactic addReplicas(int count) {
   condition {
-    M.znn-service.latency > 1000;
+    M.kubeZnnD.maxReplicas >= M.kubeZnnD.desiredReplicas + count;
   }
   action {
-    int futureReplicas = M.znn.desiredReplicas + count;
-    if (futureReplicas < M.znn.maxReplicas) {
-      M.scaleUp(M.znn, futureReplicas);
-    } else {
-      M.logger("Cannot add replicas. Reached out max replicas constraint");
-    }
+     M.scaleIn(M.kubeZnn, count);
   }
   effect {
-    M.znn-service.latency < 1000;
+    M.kubeZnnD.maxReplicas >= M.kubeZnnD.desiredReplicas;
   }
 }
 
@@ -38,21 +33,20 @@ tactic removeReplicas(int count) {
   }
 }
 
-tactic decreaseFidelity () {
+tactic lowerFidelity () {
   condition {
-    M.znn-service.latency > 2000;
+    lowMode || highMode;
   }
   action {
-
     if (highMode) {
-      M.rollOut(M.znn, "znn", "cmendes/znn:low");
+      M.rollOut(M.kubeZnn, "znn", "cmendes/znn:low");
     }
 
     if (lowMode) {
-      M.rollOut(M.znn, "znn", "cmendes/znn:text");
+      M.rollOut(M.kubeZnn, "znn", "cmendes/znn:text");
     }
   }
   effect {
-    M.znn-service.latency < 2000;
+    !highMode;
   }
 }

@@ -15,6 +15,6 @@ public class SetServicePropertyCommand extends KubowPropertyCommand {
   public SetServicePropertyCommand(
       AcmeModelInstance model, String target, String params, String propertyName)
       throws IOException {
-    super("Service", propertyName, model, target, params);
+    super("ServiceT", propertyName, model, target, params);
   }
 }

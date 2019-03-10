@@ -3,19 +3,19 @@ vars:
   
 probes:
 
-#  CustomMetricsProbe:
-#    alias: deployments.default.znn.customMetric
-#    location: 127.0.0.1
-#    type: java
-#    javaInfo:
-#      class: org.sa.rainbow.translator.probes.CustomMetricProbe
-#      period: 2000
-#      args.length: 5
-#      args.0: default
-#      args.1: kube-znn
-#      args.2: selector?app=kube-znn
-#      args.3: caddy_http_request_duration_seconds_bucket
-#      args.4: latency
+  CustomMetricsProbe:
+    alias: kube-znn.latency.probe
+    location: 127.0.0.1
+    type: java
+    javaInfo:
+      class: org.sa.rainbow.translator.probes.CustomMetricProbe
+      period: 2000
+      args.length: 5
+      args.0: default
+      args.1: kube-znn
+      args.2: selector?app=kube-znn
+      args.3: caddy_http_request_duration_seconds_bucket
+      args.4: latency
 
   DeploymentPropertiesProbe:
     alias: deployments.default.kube-znn.probe

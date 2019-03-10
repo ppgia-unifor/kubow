@@ -71,5 +71,7 @@ System KubeZnnSystem : KubernetesFam = new KubernetesFam extended with {
     Attachment kubeZnnD.sqlPort to kubeZnnServiceConnector.caller;
     Attachment kubeZnnD.apiPort to dbConnection.selectee;
     Attachment kubeZnnS.apiPort to dbConnection.selector;
+
+    Property MAX_RESPTIME : float <<  default : float = 2000; >> ;
 }
 
