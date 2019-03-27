@@ -23,14 +23,25 @@ Starting metrics server
 
 ```sh
 kubectl apply -f ./metrics-server
-kubectl apply -f ./custom-metrics-api
 ```
- 
+
 Starting Prometheus and Grafana
 
 ```sh
 kubectl apply -f ./prometheus
 kubectl apply -f ./grafana
+```
+
+Generate the TLS certificates needed by the Prometheus adapter:
+
+```bash
+make certs
+```
+
+Start the Prometheus custom metrics API adapter:
+
+```sh
+kubectl apply -f ./custom-metrics-api
 ```
 
 Starting kube-state-metrics
@@ -43,6 +54,13 @@ kubectl apply -f ./kube-state-metrics
 
 ```sh
 kubectl apply -f ./kube-znn
+```
+
+#### Starting Kubow
+
+```sh
+kubectl apply -f ./kubow/config
+kubectl apply -f ./kubow/kubow-deployment.yaml
 ```
 
 #### Make sure if everything is up and running
