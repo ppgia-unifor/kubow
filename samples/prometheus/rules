@@ -1,0 +1,5 @@
+groups:
+  - name: latency_95
+    rules:
+    - record: caddy:caddy_http_request_duration_seconds_bucket:bucket_95p
+      expr: histogram_quantile(0.95, sum(irate(caddy_http_request_duration_seconds_bucket{namespace!="",pod=~"znn.*"}[1m])) by (le))*1000
