@@ -1,5 +1,4 @@
-# Kubow -- An Architecture-Based Self-Adaptation Service for Kubernetes Applications
-
+# Kubow - An Architecture-Based Self-Adaptation Service for Kubernetes Applications
 
 The main goal of Kubow is to provide an architecture-based self-adaptation solution for containerized Kubernetes applications. The proposed solution is a Docker and Kubernetes customization of the Rainbow architecture-based self-adaptation framework, originally developed at Carnegie Mellon University. 
 
@@ -121,10 +120,3 @@ kubectl apply -f ./kubow/kubow-deployment.yaml
 ```sh
 kubectl get all --all-namespaces
 ```
-
-
-...
-
-### Target configurations
-
-... 
