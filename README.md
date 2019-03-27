@@ -7,6 +7,44 @@ Kubow has been preliminarily evaluated both qualitatively and quantitatively. Th
 
 ### Getting started
 
+#### Pre-requisites
+
+- Install kubectl
+- A running Kubernetes Cluster
+
+#### Setting up namespaces
+```sh
+kubectl apply -f ./namespaces.yaml
+```
+
+#### Setting up the Monitoring Stack
+
+Starting metrics server
+
+```sh
+kubectl apply -f ./metrics-server
+kubectl apply -f ./custom-metrics-api
+```
+ 
+Starting Prometheus and Grafana
+
+```sh
+kubectl apply -f ./prometheus
+kubectl apply -f ./grafana
+```
+
+Starting kube-state-metrics
+
+```sh
+kubectl apply -f ./kube-state-metrics
+```
+
+#### Setting up kube-znn 
+
+
+
+#### 
+
 ...
 
 ### Target configurations
