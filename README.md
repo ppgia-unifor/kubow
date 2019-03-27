@@ -41,9 +41,15 @@ kubectl apply -f ./kube-state-metrics
 
 #### Setting up kube-znn 
 
+```sh
+kubectl apply -f ./kube-znn
+```
 
+#### Make sure if everything is up and running
 
-#### 
+```sh
+kubectl get all --all-namespaces
+```
 
 ...
 
