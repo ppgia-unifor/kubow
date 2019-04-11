@@ -24,6 +24,10 @@ public class KubeCommandFactory extends AcmeModelCommandFactory {
     return new KubeLoadModelCommand(modelName, modelsManager, stream, source);
   }
 
+  private static String getName(IAcmeComponent component) {
+    return PropertyHelper.toJavaVal(component.getProperty("name").getValue()).toString();
+  }
+
   private void registerCommand(String name, Class clazz) {
     m_commandMap.put(name, clazz);
   }
@@ -66,9 +70,9 @@ public class KubeCommandFactory extends AcmeModelCommandFactory {
 
     return new RollOutCommand(
         (AcmeModelInstance) m_modelInstance,
-        component.getQualifiedName(),
+            component.getQualifiedName(),
         getNamespace(component),
-        component.getName(),
+            getName(component),
         container,
         image);
   }
@@ -78,9 +82,9 @@ public class KubeCommandFactory extends AcmeModelCommandFactory {
     isDeployment(component);
     return new ScaleUpCommand(
         (AcmeModelInstance) m_modelInstance,
-        component.getQualifiedName(),
+            component.getQualifiedName(),
         getNamespace(component),
-        component.getName(),
+        getName(component),
         desiredReplicas);
   }
 
@@ -89,15 +93,15 @@ public class KubeCommandFactory extends AcmeModelCommandFactory {
     isDeployment(component);
     return new ScaleDownCommand(
         (AcmeModelInstance) m_modelInstance,
-        component.getQualifiedName(),
+            component.getQualifiedName(),
         getNamespace(component),
-        component.getName(),
+        getName(component),
         desiredReplicas);
   }
 
   public LoggerCommand loggerCmd(IAcmeComponent component, String... params) {
     return new LoggerCommand(
-        (AcmeModelInstance) m_modelInstance, component.getQualifiedName(), params);
+        (AcmeModelInstance) m_modelInstance, getName(component), params);
   }
 
   public UpdateConfigCommand updateConfigCmd(
@@ -105,7 +109,7 @@ public class KubeCommandFactory extends AcmeModelCommandFactory {
 
     return new UpdateConfigCommand(
         (AcmeModelInstance) m_modelInstance,
-        component.getQualifiedName(),
+            component.getQualifiedName(),
         namespace,
         configmap,
         values);

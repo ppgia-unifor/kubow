@@ -16,6 +16,8 @@ public class ApiClientFactory {
     ApiClient apiClient = null;
     try {
       apiClient = Config.defaultClient();
+      logger.info(
+          "Available authentication {}", String.join(",", apiClient.getAuthentications().keySet()));
     } catch (IOException e) {
       e.printStackTrace();
     }

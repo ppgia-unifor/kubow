@@ -5,10 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A probe that produces its data in json format
@@ -17,7 +16,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public abstract class AbstractRunnableJsonProbe extends AbstractRunnableProbe {
 
-  private static final Logger logger = getLogger(AbstractRunnableJsonProbe.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractRunnableJsonProbe.class);
   private final ObjectWriter objectWriter;
   private final ObjectReader objectReader;
 
@@ -26,6 +25,7 @@ public abstract class AbstractRunnableJsonProbe extends AbstractRunnableProbe {
     var mapper = new ObjectMapper();
     objectWriter = mapper.writerFor(Map.class);
     objectReader = mapper.reader();
+    logger.info("Probe {} initialized", id);
   }
 
   @Override
@@ -37,7 +37,7 @@ public abstract class AbstractRunnableJsonProbe extends AbstractRunnableProbe {
         logger.info("Probe {} has collected value {}", id(), data);
         reportData(data);
       } else {
-        logger.info("probe {} has collected nothing", id());
+        logger.info("Probe {} has collected nothing", id());
       }
       sleep();
     }

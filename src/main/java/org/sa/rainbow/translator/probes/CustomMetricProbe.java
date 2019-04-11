@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.squareup.okhttp.Request;
 import io.kubernetes.client.ApiException;
+import org.sa.rainbow.core.Rainbow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,7 @@ public class CustomMetricProbe extends KubeAbstractProbe {
   private final String namespace;
   private final String deploymentName;
   private final String selector;
+  private final String adminUser = Rainbow.instance().getProperty("customize.probes.k8suser");
 
   public CustomMetricProbe(String id, long sleepTime, String[] args) {
     super(id, args[1] + "." + args[4] + ".probe", sleepTime, args, defaultClient());
@@ -46,7 +48,8 @@ public class CustomMetricProbe extends KubeAbstractProbe {
   @Override
   protected Map<String, Object> collect() {
     try {
-      var request = buildGetRequest(buildUrl(selector));
+      var url = buildUrl(selector);
+      var request = buildGetRequest(url);
       var response = apiClient().getHttpClient().newCall(request).execute();
       if (response.isSuccessful()) {
         var elements = objectReader().readTree(response.body().string()).get("items").elements();
@@ -55,6 +58,9 @@ public class CustomMetricProbe extends KubeAbstractProbe {
           return ImmutableMap.of(
               metricAlias, avg.getAsDouble(), "namespace", namespace, "name", deploymentName);
         }
+        response.body().close();
+      } else {
+        logger.info("Probe {} query url {} and get no successful response code {}", id(), url, response.code());
       }
     } catch (IOException e) {
       logger.info(
@@ -88,7 +94,7 @@ public class CustomMetricProbe extends KubeAbstractProbe {
               null,
               new HashMap<>(),
               new HashMap<>(),
-              new String[] {},
+              new String[] {"BearerToken"},
               null);
     } catch (ApiException e) {
       logger.error("Cannot get from kubernetes api.", e);

@@ -43,7 +43,7 @@ public class DeploymentInfoProbe extends KubeAbstractProbe {
       Map<String, Object> values = new HashMap<>();
       var d = deployment.get();
       values.put("name", d.getMetadata().getName());
-      values.put("namespace", d.getMetadata().getName());
+      values.put("namespace", d.getMetadata().getNamespace());
       values.put("desiredReplicas", d.getSpec().getReplicas());
       values.put("currentReplicas", d.getStatus().getReplicas());
       values.put("availableReplicas", d.getStatus().getAvailableReplicas());

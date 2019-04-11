@@ -29,7 +29,7 @@ public class UpdateConfigEffector extends KubeEffector {
     try (var client = new DefaultKubernetesClient()) {
       Map<String, String> values = new HashMap<>();
       for (var item : rawValues.split(";")) {
-        var parts = item.split(":");
+        var parts = item.split("=");
         values.put(parts[0], parts[1]);
       }
       client.configMaps().inNamespace(namespace).withName(configMap).edit().withData(values).done();
