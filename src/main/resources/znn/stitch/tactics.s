@@ -13,7 +13,7 @@ tactic addReplicas(int count) {
     M.kubeZnnD.maxReplicas >= M.kubeZnnD.desiredReplicas + count;
   }
   action {
-     M.scaleIn(M.kubeZnn, count);
+     M.scaleUp(M.kubeZnnD, M.kubeZnnD.desiredReplicas + count);
   }
   effect {
     M.kubeZnnD.maxReplicas >= M.kubeZnnD.desiredReplicas;
@@ -44,6 +44,24 @@ tactic lowerFidelity () {
 
     if (lowMode) {
       M.rollOut(M.kubeZnn, "znn", "cmendes/znn:text");
+    }
+  }
+  effect {
+    !highMode;
+  }
+}
+
+tactic lowerFidelityConfig () {
+  condition {
+    lowMode || highMode;
+  }
+  action {
+    if (highMode) {
+      M.updateConfig("default", "fidelity-config", "fidelity=low");
+    }
+
+    if (lowMode) {
+      M.updateConfig("default", "fidelity-config", "fidelity=text");
     }
   }
   effect {
