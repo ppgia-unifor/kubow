@@ -4,7 +4,12 @@ Kubow is service an architecture-based self-adaptation service for kubernetes ap
 
 The main goal of Kubow is to provide an architecture-based self-adaptation solution for containerized Kubernetes applications. The proposed solution is a Docker and Kubernetes customization of the Rainbow architecture-based self-adaptation framework, originally developed at Carnegie Mellon University. 
 
-Rainbow is a framework that separates out the concern of self-adaptation so that it can be engineered, analyzed, and changed more easily than dispersing the cabapilities throughout a system. Rainbow uses model-based self-adaptation, primarly focussing on software architecture models, to help diagnose and localize problems and select adaptations that based on how they fix or improve architectural issues.
+
+The primary goals are:
+
+* separates out the concern of self-adaptation from the system;
+* uses software archiecture models as the basis for reasoning about the state of the system and applicable adaptations;
+* uses utility-based decision making to determine the best adaptation among a set of potentially applicable adaptations;
 
 
 
