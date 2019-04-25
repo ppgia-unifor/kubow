@@ -1,4 +1,4 @@
-# Kubow
+![Kubow Logo](/images/kubow-logo-right.png)
 
 Kubow is an architecture-based self-adaptation service for Kubernetes applications. 
 
