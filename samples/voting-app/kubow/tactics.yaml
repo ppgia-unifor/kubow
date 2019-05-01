@@ -6,24 +6,22 @@ metadata:
 data:
   tactics.s: |
     module kuberainbow.strategies;
-    import model "KubeZnnSystem:Acme" { KubeZnnSystem as M, Kubernetes as K };
+    import model "VotingAppSystem:Acme" { VotingAppSystem as M, Kubernetes as K };
     import op "org.sa.rainbow.stitch.lib.*";
 
-    define boolean lowMode = org.sa.rainbow.stitch.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:low");
-    define boolean highMode = org.sa.rainbow.stitch.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:high");
-    define boolean cHiRespTime = M.kubeZnnS.latency > M.MAX_RESPTIME;
-    define boolean canAddPods = M.kubeZnnD.maxReplicas > M.kubeZnnD.desiredReplicas;
-    define boolean canRemovePods = M.kubeZnnD.minReplicas < M.kubeZnnD.desiredReplicas;
+    define boolean cHiRespTime = M.resultS.latency > M.MAX_RESPTIME;
+    define boolean canAddPods = M.resultD.maxReplicas > M.resultD.desiredReplicas;
+    define boolean canRemovePods = M.resultD.minReplicas < M.resultD.desiredReplicas;
 
     tactic addReplicas(int count) {
       condition {
         cHiRespTime && canAddPods;
       }
       action {
-        M.scaleUp(M.kubeZnnD, M.kubeZnnD.desiredReplicas + count);
+        M.scaleUp(M.resultD, M.resultD.desiredReplicas + count);
       }
       effect {
-        M.kubeZnnD.maxReplicas >= M.kubeZnnD.desiredReplicas;
+        M.resultD.maxReplicas >= M.resultD.desiredReplicas;
       }
     }
 
@@ -32,27 +30,9 @@ data:
         !cHiRespTime && canRemovePods;
       }
       action {
-        M.scaleDown(M.kubeZnnD, M.kubeZnnD.desiredReplicas - count);
+        M.scaleDown(M.resultD, M.resultD.desiredReplicas - count);
       }
       effect {
-        M.kubeZnnD.minReplicas <= M.kubeZnnD.desiredReplicas;
-      }
-    }
-
-    tactic lowerFidelity() {
-      condition {
-        (lowMode || highMode) && cHiRespTime;
-      }
-      action {
-        if (highMode) {
-          M.rollOut(M.kubeZnnD, "znn", "cmendes/znn:low");
-        }
-
-        if (lowMode) {
-          M.rollOut(M.kubeZnnD, "znn", "cmendes/znn:text");
-        }
-      }
-      effect {
-        !highMode;
+        M.resultD.minReplicas <= M.resultD.desiredReplicas;
       }
     }

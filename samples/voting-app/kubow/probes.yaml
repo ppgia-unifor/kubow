@@ -6,31 +6,31 @@ metadata:
 data:
   probes.yaml: |
     vars:
-      _probes.commonPath: "/etc/kubow/targets/kube-znn"
+      _probes.commonPath: "/etc/kubow/targets/voting-app"
       
     probes:
 
       CustomMetricsProbe:
-        alias: kube-znn.latency.probe
+        alias: result.latency.probe
         location: 127.0.0.1
         type: java
         javaInfo:
           class: org.sa.rainbow.translator.probes.CustomMetricProbe
           period: 5000
           args.length: 5
-          args.0: default
-          args.1: kube-znn
-          args.2: selector?app=kube-znn
+          args.0: vote
+          args.1: result
+          args.2: selector?app=result&namespace=vote
           args.3: caddy_http_request_duration_seconds_success_99p
           args.4: latency
 
       DeploymentPropertiesProbe:
-        alias: deployments.default.kube-znn.probe
+        alias: deployments.default.result.probe
         location: 127.0.0.1
         type: java
         javaInfo:
           class: org.sa.rainbow.translator.probes.DeploymentInfoProbe
           period: 5000
           args.length: 2
-          args.0: "default"
-          args.1: "kube-znn"
+          args.0: "vote"
+          args.1: "result"

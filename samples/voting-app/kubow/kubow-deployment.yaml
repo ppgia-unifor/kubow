@@ -64,39 +64,39 @@ spec:
           name: delegate
         env:
         - name: TARGET
-          value: "kube-znn"
+          value: "voting-app"
         - name: TARGET_PATH
           value: "/etc/kubow/targets"
         volumeMounts:
         - name: properties
-          mountPath: /etc/kubow/targets/kube-znn/rainbow.properties
+          mountPath: /etc/kubow/targets/voting-app/rainbow.properties
           subPath: rainbow.properties
         - name: probes
-          mountPath: /etc/kubow/targets/kube-znn/probes.yaml
+          mountPath: /etc/kubow/targets/voting-app/probes.yaml
           subPath: probes.yaml
         - name: gauges
-          mountPath: /etc/kubow/targets/kube-znn/gauges.yaml
+          mountPath: /etc/kubow/targets/voting-app/gauges.yaml
           subPath: gauges.yaml
         - name: effectors
-          mountPath: /etc/kubow/targets/kube-znn/effectors.yaml
+          mountPath: /etc/kubow/targets/voting-app/effectors.yaml
           subPath: effectors.yaml
         - name: tactics
-          mountPath: /etc/kubow/targets/kube-znn/stitch/tactics.s
+          mountPath: /etc/kubow/targets/voting-app/stitch/tactics.s
           subPath: tactics.s
         - name: strategies
-          mountPath: /etc/kubow/targets/kube-znn/stitch/strategies.s
+          mountPath: /etc/kubow/targets/voting-app/stitch/strategies.s
           subPath: strategies.s
         - name: utilities
-          mountPath: /etc/kubow/targets/kube-znn/utilities.yaml
+          mountPath: /etc/kubow/targets/voting-app/utilities.yaml
           subPath: utilities.yaml
         - name: kubernetes-acme-family
-          mountPath: /etc/kubow/targets/kube-znn/model/Kubernetes.acme
+          mountPath: /etc/kubow/targets/voting-app/model/Kubernetes.acme
           subPath: Kubernetes.acme
         - name: target-acme-model
-          mountPath: /etc/kubow/targets/kube-znn/model/target-acme-model.acme
+          mountPath: /etc/kubow/targets/voting-app/model/target-acme-model.acme
           subPath: target-acme-model.acme
         - name: op-map
-          mountPath: /etc/kubow/targets/kube-znn/op.map
+          mountPath: /etc/kubow/targets/voting-app/op.map
           subPath: op.map
         - name: log4j
           mountPath: /usr/share/kubow/log4j.properties

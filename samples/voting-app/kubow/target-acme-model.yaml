@@ -6,45 +6,109 @@ metadata:
 data:
   target-acme-model.acme: |
     import Kubernetes.acme;
-    System KubeZnnSystem : KubernetesFam = new KubernetesFam extended with {
-        Component kubeZnnDbS : ServiceT = new ServiceT extended with {
+    System VotingAppSystem : KubernetesFam = new KubernetesFam extended with {
+        System VotingApp : Kubernetes = new Kubernetes extended with {
+
+        Component dbD = new DeploymentT extended with {
+            Port redirectPort  = { }
+            Property name = "db";
+            Property namespace = "vote";
+        }
+        Component dbS = new ServiceT extended with {
+            Port redirectPort  = { }
             Port sqlPort  = { }
-            Port connectionSqlPort  = { }
-            Property name = "kube-znn-db";
+            Property name = "db";
         }
-        Component kubeZnnDbD : DeploymentT = new DeploymentT extended with {
+        Connector dbSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = db";]>;
+        }
+        Component voteD = new DeploymentT extended with {
+            Port redisPort  = { }
+            Port redirectPort  = { }
+            Property name = "vote";
+            Property namespace = "vote";
+        }
+        Component voteS = new ServiceT extended with {
+            Port redirectPort  = { }
+            Property name = "vote";
+        }
+        Connector votetSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = vote";]>;
+        }
+        Component redisD = new DeploymentT extended with {
+            Port redirectPort = { }
+            Property namespace = "vote";
+            Property name = "redis";
+        }
+        Component redisS  = new ServiceT extended with {
+            Port redisPort  = { }
+            Port redirectPort = { }
+            Property name = "redis";
+        }
+        Connector redisSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = redis";]>;
+        }
+        Component workerD = new DeploymentT extended with {
+            Port redirectPort  = { }
+            Port redisPort  = { }
             Port sqlPort  = { }
-            Property namespace = "default";
-            Property name = "kube-znn-db";
+            Property name = "worker";
+            Property namespace = "vote";
         }
-        Component kubeZnnS : ServiceT = new ServiceT extended with {
-            Port apiPort  = { }
-            Property name = "kube-znn";
+        Component workerS = new ServiceT extended with {
+            Port redirectPort  = { }
+            Property name = "worker";
         }
-        Component kubeZnnD : DeploymentT = new DeploymentT extended with {
-            Port apiPort  = { }
+        Connector workerSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = worker";]>;
+        }
+        Component resultD = new DeploymentT extended with {
             Port sqlPort  = { }
-            Property namespace = "default";
-            Property hasAlternativeImages = true;
-            Property maxReplicas = 3;
-            Property alternativeImages = <"cmendes/kube-znn:text","cmendes/kube-znn:low","cmendes/kube-znn:high">;
-            Property name = "kube-znn";
+            Port redirectPort  = { }
+            Property name = "result";
+            Property namespace = "vote";
         }
-        Connector dbConnection  = new ServiceConnectorT extended with {
-            Property namespace = "default";
-            Property name = "kube-znn-db";
+        Component resultS = new ServiceT extended with {
+            Port redirectPort  = { }
+            Property name = "result";
         }
-        Connector kubeZnnServiceConnector  = new LabelSelectorConnectorT extended with {
-            Property selectors = <[name : string = "app";value : string = "kube-znn";]>;
+        Connector resultSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = result";]>;
         }
-        Connector dbServiceConnector  = new ServiceConnectorT extended with {
-            Property selectors = <[name : string = "app";value : string = "kube-znn-db";]>;
+        Connector voteRedisConn  = new ServiceConnectorT extended with {
+            Property namespace = "vote";
+            Property name = "redis";
         }
-        Property MAX_RESPTIME = 1000;
-        Attachment kubeZnnDbD.sqlPort to dbServiceConnector.selectee;
-        Attachment kubeZnnDbS.sqlPort to dbServiceConnector.selector;
-        Attachment kubeZnnDbS.connectionSqlPort to kubeZnnServiceConnector.callee;
-        Attachment kubeZnnD.sqlPort to kubeZnnServiceConnector.caller;
-        Attachment kubeZnnD.apiPort to dbConnection.selectee;
-        Attachment kubeZnnS.apiPort to dbConnection.selector;
+        Connector workerRedisConn  = new ServiceConnectorT extended with {
+            Property namespace = "vote";
+            Property name = "redis";
+        }
+        Connector workerDbConn  = new ServiceConnectorT extended with {
+            Property namespace = "vote";
+            Property name = "db";
+        }
+        Connector resultDbConn  = new ServiceConnectorT extended with {
+            Property namespace = "vote";
+            Property name = "result";
+        }
+
+        Attachment resultS.redirectPort to resultSC.callee;
+        Attachment resultD.redirectPort to resultSC.caller;
+        Attachment workerS.redirectPort to workerSC.callee;
+        Attachment workerD.redirectPort to workerSC.caller;
+        Attachment redisS.redirectPort to redisSC.callee;
+        Attachment redisD.redirectPort to redisSC.caller;
+        Attachment voteS.redirectPort to voteSC.callee;
+        Attachment voteD.redirectPort to voteSCcaller;
+        Attachment dbS.redirectPort to dbSC.callee;
+        Attachment dbD.redirectPort to dbSC.caller;
+        Attachment voteD.redisPort to voteRedisConn.selector;
+        Attachment redisS.redisPort to voteRedisConn.selectee;
+        Attachment workerD.redisPort to workerRedisConn.selector;
+        Attachment redisS.redisPort to workerRedisConn.selectee;
+        Attachment workerD.sqlPort to workerDbConn.selector;
+        Attachment dbS.sqlPort to workerDbConn.selectee;
+        Attachment resultD.sqlPort to resultDbConn.selector;
+        Attachment dbS.sqlPort to resultDbConn.selectee;
     }
+}
