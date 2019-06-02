@@ -22,13 +22,6 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9180"
     spec:
-      volumes:
-      - name: fidelity-config-volume
-        configMap:
-          name: fidelity-config
-          items:
-          - key: fidelity
-            path: fidelity
       containers:
       - name: znn
         image: cmendes/znn:high
@@ -68,5 +61,3 @@ spec:
           name: kube-znn
         - containerPort: 9180
           name: caddy-exporter
-      nodeSelector:
-        kops.k8s.io/instancegroup: nodes
