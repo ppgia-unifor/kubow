@@ -1,0 +1,35 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus-rules
+  namespace: monitoring
+data:
+  rules.yml: |
+    rules:
+    - seriesQuery: '{__name__="latency_95"}'
+      resources:
+        # skip specifying generic resource<->label mappings, and just
+        # attach only pod and namespace resources by mapping label names to group-resources
+        overrides:
+          namespace: {resource: "namespace"},
+          pod_name: {resource: "pod"},
+      # specify that the `container_` and `_seconds_total` suffixes should be removed.
+      # this also introduces an implicit filter on metric family names
+      name:
+        # we use the value of the capture group implicitly as the API name
+        # we could also explicitly write `as: "$1"`
+        matches: "caddy_http_request_duration_seconds_bucket"
+        # matches: "^container_(.*)_seconds_total$"
+      # specify how to construct a query to fetch samples for a given series
+      # This is a Go template where the `.Series` and `.LabelMatchers` string values
+      # are available, and the delimiters are `<<` and `>>` to avoid conflicts with
+      # the prometheus query language
+      metricsQuery: "histogram_quantile(0.95, sum(irate(caddy_http_request_duration_seconds_bucket{namespace!="",pod=~"znn.*"}[1m])) by (le))"
+    
+    
+    # - name: latency_95
+    #   rules:
+    #   - record: caddy:caddy_http_request_duration_seconds_bucket:bucket_95p
+    #     expr: histogram_quantile(0.95, sum(irate(caddy_http_request_duration_seconds_bucket{namespace!="",pod=~"znn.*"}[1m])) by (le))
