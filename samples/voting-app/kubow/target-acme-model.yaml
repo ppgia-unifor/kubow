@@ -7,12 +7,10 @@ data:
   target-acme-model.acme: |
     import Kubernetes.acme;
     System VotingAppSystem : KubernetesFam = new KubernetesFam extended with {
-        System VotingApp : Kubernetes = new Kubernetes extended with {
-
         Component dbD = new DeploymentT extended with {
             Port redirectPort  = { }
             Property name = "db";
-            Property namespace = "vote";
+            Property namespace = "votingapp";
         }
         Component dbS = new ServiceT extended with {
             Port redirectPort  = { }
@@ -26,7 +24,7 @@ data:
             Port redisPort  = { }
             Port redirectPort  = { }
             Property name = "vote";
-            Property namespace = "vote";
+            Property namespace = "votingapp";
         }
         Component voteS = new ServiceT extended with {
             Port redirectPort  = { }
@@ -37,7 +35,7 @@ data:
         }
         Component redisD = new DeploymentT extended with {
             Port redirectPort = { }
-            Property namespace = "vote";
+            Property namespace = "votingapp";
             Property name = "redis";
         }
         Component redisS  = new ServiceT extended with {
@@ -53,7 +51,7 @@ data:
             Port redisPort  = { }
             Port sqlPort  = { }
             Property name = "worker";
-            Property namespace = "vote";
+            Property namespace = "votingapp";
         }
         Component workerS = new ServiceT extended with {
             Port redirectPort  = { }
@@ -66,7 +64,7 @@ data:
             Port sqlPort  = { }
             Port redirectPort  = { }
             Property name = "result";
-            Property namespace = "vote";
+            Property namespace = "votingapp";
         }
         Component resultS = new ServiceT extended with {
             Port redirectPort  = { }
@@ -76,19 +74,19 @@ data:
             Property selectors = <[name : string = "app";value : string = result";]>;
         }
         Connector voteRedisConn  = new ServiceConnectorT extended with {
-            Property namespace = "vote";
+            Property namespace = "votingapp";
             Property name = "redis";
         }
         Connector workerRedisConn  = new ServiceConnectorT extended with {
-            Property namespace = "vote";
+            Property namespace = "votingapp";
             Property name = "redis";
         }
         Connector workerDbConn  = new ServiceConnectorT extended with {
-            Property namespace = "vote";
+            Property namespace = "votingapp";
             Property name = "db";
         }
         Connector resultDbConn  = new ServiceConnectorT extended with {
-            Property namespace = "vote";
+            Property namespace = "votingapp";
             Property name = "result";
         }
 
@@ -111,4 +109,3 @@ data:
         Attachment resultD.sqlPort to resultDbConn.selector;
         Attachment dbS.sqlPort to resultDbConn.selectee;
     }
-}

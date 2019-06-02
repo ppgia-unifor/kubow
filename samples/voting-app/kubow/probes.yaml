@@ -18,9 +18,9 @@ data:
           class: org.sa.rainbow.translator.probes.CustomMetricProbe
           period: 5000
           args.length: 5
-          args.0: vote
+          args.0: votingapp
           args.1: result
-          args.2: selector?app=result&namespace=vote
+          args.2: selector?app=result&namespace=votingapp
           args.3: caddy_http_request_duration_seconds_success_99p
           args.4: latency
 
@@ -32,5 +32,5 @@ data:
           class: org.sa.rainbow.translator.probes.DeploymentInfoProbe
           period: 5000
           args.length: 2
-          args.0: "vote"
+          args.0: "votingapp"
           args.1: "result"

@@ -50,4 +50,4 @@ data:
         setupValues:
           targetIP: "127.0.0.1"
         configValues:
-          targetProbeType: deployments.vote.result.probe@*
+          targetProbeType: deployments.votingapp.result.probe@*
