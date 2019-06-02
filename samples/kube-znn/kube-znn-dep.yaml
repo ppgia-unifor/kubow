@@ -22,16 +22,6 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9180"
     spec:
-      # affinity:
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #     - labelSelector:
-      #         matchExpressions:
-      #         - key: service
-      #           operator: In
-      #           values:
-      #           - znn-db
-      #       topologyKey: kubernetes.io/hostname
       volumes:
       - name: fidelity-config-volume
         configMap:
@@ -44,8 +34,6 @@ spec:
         image: cmendes/znn:high
         imagePullPolicy: Always
         env:
-        #- name: FIDELITY_FILE
-        #  value: "/www/fidelity/fidelity"
         - name: DB_HOST
           value: "kube-znn-db"
         - name: DB_PORT
@@ -80,15 +68,5 @@ spec:
           name: kube-znn
         - containerPort: 9180
           name: caddy-exporter
-        # volumeMounts:
-        # - name: fidelity-config-volume
-        #   mountPath: /www/fidelity
-      # volumes:
-      # - name: fidelity-config-volume
-      #   configMap:
-      #     name: fidelity-config
-      #     items:
-      #     - key: fidelity
-      #       path: fidelity
       nodeSelector:
         kops.k8s.io/instancegroup: nodes
