@@ -30,13 +30,11 @@ spec:
           protocol: TCP
         resources:
           limits:
-            memory: 2Gi
+            memory: 1Gi
         volumeMounts:
         - mountPath: /etc/prometheus/prometheus.yml
           name: prometheus-config
           subPath: prometheus.yml
-      nodeSelector:
-        kops.k8s.io/instancegroup: monitoring
       volumes:
         - name: prometheus-config
           configMap:
