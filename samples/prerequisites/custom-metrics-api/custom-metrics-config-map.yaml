@@ -16,7 +16,7 @@ data:
       name:
         matches: "^(.*)_bucket"
         as: "${1}_votes_99p"
-      metricsQuery: 'histogram_quantile(0.99997, rate(flask_http_request_duration_seconds_bucket{namespace="votingapp"}[30s]))'
+      metricsQuery: 'histogram_quantile(0.99995, rate(flask_http_request_duration_seconds_bucket{namespace="votingapp"}[30s]))'
     
     - seriesQuery: '{__name__="flask_http_request_total",namespace!="",pod!=""}'
       resources:
