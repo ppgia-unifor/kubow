@@ -6,7 +6,7 @@ metadata:
 data:
   config.yaml: |
     rules:
-    - seriesQuery: '{__name__="caddy_http_request_duration_seconds_bucket",namespace!="",pod!=""}'
+    - seriesQuery: '{__name__="flask_http_request_duration_seconds_bucket",namespace!="",pod!=""}'
       resources:
         overrides:
           pod: 
@@ -15,10 +15,10 @@ data:
             resource: namespace
       name:
         matches: "^(.*)_bucket"
-        as: "${1}_success_99p"
-      metricsQuery: 'histogram_quantile(0.99, rate(caddy_http_request_duration_seconds_bucket{namespace="default",host=~".*elb.amazonaws.com"}[30s]))'
-
-    - seriesQuery: 'caddy_http_request_duration_seconds_sum{namespace!="",pod!=""}'
+        as: "${1}_votes_99p"
+      metricsQuery: 'histogram_quantile(0.99997, rate(flask_http_request_duration_seconds_bucket{namespace="votingapp"}[30s]))'
+    
+    - seriesQuery: '{__name__="flask_http_request_total",namespace!="",pod!=""}'
       resources:
         overrides:
           pod: 
@@ -26,9 +26,10 @@ data:
           namespace:
             resource: namespace
       name:
-        matches: "^(.*)_seconds_sum"
-        as: "${1}_avg"
-      metricsQuery: 'rate(caddy_http_request_duration_seconds_sum{host!="localhost"}[1m]) / rate(caddy_http_request_duration_seconds_count{host!="localhost"}[1m])'
+        matches: "^(.*)flask_http_request_total"
+        as: "${1}votes_per_minute"
+      metricsQuery: 'rate(flask_http_request_total{method="POST"}[1m])'
+
 
     - seriesQuery: '{__name__=~"^container_.*",container_name!="POD",namespace!="",pod_name!=""}'
       seriesFilters: []

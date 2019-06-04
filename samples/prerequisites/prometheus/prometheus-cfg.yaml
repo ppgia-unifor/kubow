@@ -185,10 +185,6 @@ data:
         action: replace
         target_label: kubernetes_name
 
-    - job_name: 'locust'
-      static_configs: 
-      - targets: [ 'ec2-34-231-180-42.compute-1.amazonaws.com:9090' ]
-
     # Example scrape config for pods
     #
     # The relabeling allows the actual pod scrape endpoint to be configured via the

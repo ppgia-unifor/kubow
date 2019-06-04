@@ -9,7 +9,11 @@ spec:
     metadata:
       labels:
         app: vote
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
     spec:
       containers:
-      - image: dockersamples/examplevotingapp_vote:before
+      - image: cmendes/vote:latest
+        imagePullPolicy: Always
         name: vote
