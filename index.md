@@ -19,5 +19,11 @@ Click on the video below to watch a "live" demo of Kubow:
 </div>
 
 <div align="center">
+    <iframe width="995" height="560"
+        src="https://www.youtube.com/embed/embed/tgXI6_gjmUI">
+    </iframe>
+</div>
+
+<div align="center">
   <iframe width="995" height="560" src="https://www.youtube.com/embed/tgXI6_gjmUI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
