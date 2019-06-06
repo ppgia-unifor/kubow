@@ -1,12 +1,3 @@
----
-layout: default
-title: Hank Quinlan, Horrible Cop
----
-<div class="blurb">
-	<h1>Hi there, I'm Hank Quinlan!</h1>
-	<p>I'm best known as the horrible cop from <em>A Touch of Evil</em> Don't trust me. <a href="/about">Read more about my life...</a></p>
-</div><!-- /.blurb -->
-
 ![Kubow Logo](/images/kubow-logo-right.png)
 
 Kubow is an architecture-based self-adaptation service for Kubernetes applications. 
@@ -24,7 +15,3 @@ To getting started with Kubow, see the documentation in the /samples folder in K
 Click on the image below to watch a "live" demo of Kubow:
 
 [![Video](https://img.youtube.com/vi/tgXI6_gjmUI/0.jpg)](https://www.youtube.com/watch?v=tgXI6_gjmUI)
-
-<div class="iframe_container">
-  <iframe src="http://www.youtube.com/embed/tgXI6_gjmUI" frameborder="0" allowfullscreen="allowfullscreen"> </iframe>
-</div>
