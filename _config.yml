@@ -1,2 +1,2 @@
 theme: jekyll-theme-slate
-markdown: markdown2
+markdown: kramdown
