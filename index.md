@@ -14,4 +14,4 @@ To getting started with Kubow, see the documentation in the /samples folder in K
 
 Click on the image below to watch a "live" demo of Kubow:
 
-[![Video](https://img.youtube.com/vi/X_K0Kh_jN2Q/0.jpg)](https://www.youtube.com/watch?v=X_K0Kh_jN2Q)
+[![Video](https://img.youtube.com/vi/_-aLNksiKXI/0.jpg)](https://www.youtube.com/watch?v=_-aLNksiKXI)
