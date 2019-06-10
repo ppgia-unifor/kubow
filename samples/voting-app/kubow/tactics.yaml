@@ -7,32 +7,31 @@ data:
   tactics.s: |
     module kuberainbow.strategies;
     import model "VotingAppSystem:Acme" { VotingAppSystem as M, Kubernetes as K };
-    import op "org.sa.rainbow.stitch.lib.*";
 
-    define boolean cHiRespTime = M.resultS.latency > M.MAX_RESPTIME;
-    define boolean canAddPods = M.resultD.maxReplicas > M.resultD.desiredReplicas;
-    define boolean canRemovePods = M.resultD.minReplicas < M.resultD.desiredReplicas;
+    define boolean hiRespTime = M.voteS.latency > M.MAX_RESPTIME;
+    define boolean canAddPods = M.workerD.maxReplicas > M.workerD.desiredReplicas;
+    define boolean canRemovePods = M.workerD.minReplicas < M.workerD.desiredReplicas;
 
     tactic addReplicas(int count) {
       condition {
-        cHiRespTime && canAddPods;
+        hiRespTime && canAddPods;
       }
       action {
-        M.scaleUp(M.resultD, M.resultD.desiredReplicas + count);
+        M.scaleUp(M.workerD, count);
       }
       effect {
-        M.resultD.maxReplicas >= M.resultD.desiredReplicas;
+        M.workerD.maxReplicas >= M.workerD.desiredReplicas;
       }
     }
 
     tactic removeReplicas(int count) {
       condition {
-        !cHiRespTime && canRemovePods;
+        !hiRespTime && canRemovePods;
       }
       action {
-        M.scaleDown(M.resultD, M.resultD.desiredReplicas - count);
+        M.scaleDown(M.workerD, count);
       }
       effect {
-        M.resultD.minReplicas <= M.resultD.desiredReplicas;
+        M.workerD.minReplicas <= M.workerD.desiredReplicas;
       }
     }

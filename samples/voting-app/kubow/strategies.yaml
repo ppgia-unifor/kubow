@@ -8,22 +8,21 @@ data:
     module kuberainbow.strategies;
     import model "VotingAppSystem:Acme" { VotingAppSystem as M, KubernetesFam as K };
     import lib "tactics.s";
-    import op "org.sa.rainbow.model.stitch.*";
 
-    define boolean cHiRespTime = M.resultS.latency > M.MAX_RESPTIME;
-    define boolean canAddPods = M.resultD.maxReplicas > M.resultD.desiredReplicas;
-    define boolean canRemovePods = M.resultD.minReplicas < M.resultD.desiredReplicas;
+    define boolean hiRespTime = M.voteS.latency > M.MAX_RESPTIME;
+    define boolean canAddPods = M.workerD.maxReplicas > M.workerD.desiredReplicas;
+    define boolean canRemovePods = M.workerD.minReplicas < M.workerD.desiredReplicas;
 
-    strategy ReduceRespTime [ cHiRespTime ] {
-      t0: (cHiRespTime && canAddPods) -> addReplicas(1) @[30000 /*ms*/] {
+    strategy ReduceRespTime [ hiRespTime ] {
+      t0: (hiRespTime && canAddPods) -> addReplicas(1) @[30000 /*ms*/] {
         t0a: (success) -> done;
       }
 
       t2: (default) -> TNULL;
     }
 
-    strategy ReduceCost [ !cHiRespTime ] {
-      t0: (!cHiRespTime && canRemovePods) -> removeReplicas(1) @[30000 /*ms*/] {
+    strategy ReduceCost [ !hiRespTime ] {
+      t0: (!hiRespTime && canRemovePods) -> removeReplicas(1) @[30000 /*ms*/] {
         t0a: (success) -> done;
       }
 

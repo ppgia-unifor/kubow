@@ -5,13 +5,9 @@ metadata:
   name: probes
 data:
   probes.yaml: |
-    vars:
-      _probes.commonPath: "/etc/kubow/targets/voting-app"
-      
     probes:
-
       CustomMetricsProbe:
-        alias: result.latency.probe
+        alias: vote.latency.probe
         location: 127.0.0.1
         type: java
         javaInfo:
@@ -19,13 +15,13 @@ data:
           period: 5000
           args.length: 5
           args.0: votingapp
-          args.1: result
-          args.2: selector?app=result&namespace=votingapp
-          args.3: caddy_http_request_duration_seconds_success_99p
+          args.1: vote
+          args.2: selector?app=vote&namespace=votingapp
+          args.3: flask_http_request_duration_seconds_votes_99p
           args.4: latency
 
       DeploymentPropertiesProbe:
-        alias: deployments.default.result.probe
+        alias: deployments.votingapp.worker.probe
         location: 127.0.0.1
         type: java
         javaInfo:
@@ -33,4 +29,4 @@ data:
           period: 5000
           args.length: 2
           args.0: "votingapp"
-          args.1: "result"
+          args.1: "worker"

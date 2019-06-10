@@ -11,3 +11,5 @@ As with Rainbow, Kubow's primary features are:
 * uses utility-based decision making to determine the best adaptation among a set of potentially applicable adaptations;
 
 To getting started with Kubow, see the documentation in the /samples folder in Kubow's [GitHub repository](https://github.com/ppgia-unifor/kubow/).
+
+To watch a simple example of use, check out this [video](https://youtu.be/_-aLNksiKXI).

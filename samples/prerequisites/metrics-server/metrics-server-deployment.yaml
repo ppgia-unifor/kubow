@@ -38,5 +38,3 @@ spec:
         volumeMounts:
         - name: tmp-dir
           mountPath: /tmp
-      nodeSelector:
-        kops.k8s.io/instancegroup: monitoring
