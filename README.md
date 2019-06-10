@@ -12,4 +12,4 @@ As with Rainbow, Kubow's primary features are:
 
 To getting started with Kubow, see the documentation in the /samples folder in Kubow's [GitHub repository](https://github.com/ppgia-unifor/kubow/).
 
-To watch a simple example of use, check out this [video](https://youtu.be/X_K0Kh_jN2Q).
+To watch a simple example of use, check out this [video](https://youtu.be/_-aLNksiKXI).
