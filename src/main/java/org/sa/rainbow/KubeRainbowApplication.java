@@ -48,11 +48,20 @@ public class KubeRainbowApplication {
       master.initialize();
       master.start();
 
+      var waitingTime = System.getenv("RM_WAITING_TIME");
+      if (waitingTime == null) {
+        waitingTime = "3000";
+      }
+      logger.info("Waiting for {}ms to master to be ready", waitingTime);
+      Thread.sleep(Integer.parseInt(waitingTime));
+      logger.info("Initializing rainbow delegate");
       RainbowDelegate delegate = new RainbowDelegate();
       delegate.initialize();
       delegate.start();
     } catch (RainbowException e) {
       logger.error("Cannot start rainbow.", e);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
   }
 

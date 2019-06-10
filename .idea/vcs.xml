@@ -2,5 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/samples/prerequisites/k8s-prometheus-adapter" vcs="Git" />
   </component>
 </project>

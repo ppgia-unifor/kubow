@@ -16,10 +16,20 @@ public class ScaleUpEffector extends KubeEffector {
   protected Outcome internalExecute(List<String> args) {
     var namespace = args.get(0);
     var deployment = args.get(1);
-    var desiredReplicas = Integer.parseInt(args.get(2));
+    var count = Integer.parseInt(args.get(2));
     var timer = EffectorMonitor.latency().labels("scaleUp", namespace, deployment).startTimer();
 
     try (var client = new DefaultKubernetesClient()) {
+      var replicas =
+              client
+                      .apps()
+                      .deployments()
+                      .inNamespace(namespace)
+                      .withName(deployment)
+                      .get()
+                      .getStatus()
+                      .getReplicas();
+      var desiredReplicas = replicas + count;
       var response =
           client
               .apps()
