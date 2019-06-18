@@ -6,6 +6,18 @@ metadata:
 data:
   config.yaml: |
     rules:
+    - seriesQuery: '{__name__="caddy_http_request_duration_seconds_bucket",namespace!="",pod!=""}'
+      resources:
+        overrides:
+          pod: 
+            resource: pod
+          namespace:
+            resource: namespace
+      name:
+        matches: "^(.*)_bucket"
+        as: "${1}_success_99p"
+      metricsQuery: 'histogram_quantile(0.99, rate(caddy_http_request_duration_seconds_bucket{namespace="default",host=~".*elb.amazonaws.com"}[30s]))'
+      
     - seriesQuery: '{__name__="flask_http_request_duration_seconds_bucket",namespace!="",pod!=""}'
       resources:
         overrides:

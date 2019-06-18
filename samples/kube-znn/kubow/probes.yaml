@@ -5,11 +5,7 @@ metadata:
   name: probes
 data:
   probes.yaml: |
-    vars:
-      _probes.commonPath: "/etc/kubow/targets/kube-znn"
-      
     probes:
-
       CustomMetricsProbe:
         alias: kube-znn.latency.probe
         location: 127.0.0.1

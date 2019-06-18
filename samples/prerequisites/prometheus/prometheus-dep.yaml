@@ -43,3 +43,5 @@ spec:
               - key: prometheus.yml
                 path: prometheus.yml
                 mode: 0644
+      nodeSelector:
+        kops.k8s.io/instancegroup: monitoring

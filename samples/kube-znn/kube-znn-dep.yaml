@@ -61,3 +61,5 @@ spec:
           name: kube-znn
         - containerPort: 9180
           name: caddy-exporter
+      nodeSelector:
+        kops.k8s.io/instancegroup: web

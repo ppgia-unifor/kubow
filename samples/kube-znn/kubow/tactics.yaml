@@ -5,13 +5,15 @@ metadata:
   name: tactics
 data:
   tactics.s: |
-    module kuberainbow.strategies;
-    import model "KubeZnnSystem:Acme" { KubeZnnSystem as M, Kubernetes as K };
-    import op "org.sa.rainbow.stitch.lib.*";
+    module kubow.strategies;
+    import model "KubeZnnSystem:Acme" { KubeZnnSystem as M, KubernetesFam as K };
+    import op "org.sa.rainbow.model.stitch.*";
 
+    define boolean textMode = org.sa.rainbow.stitch.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:text");
     define boolean lowMode = org.sa.rainbow.stitch.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:low");
     define boolean highMode = org.sa.rainbow.stitch.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:high");
     define boolean cHiRespTime = M.kubeZnnS.latency > M.MAX_RESPTIME;
+    define boolean cLoRespTime = M.kubeZnnS.latency < M.MIN_RESPTIME;
     define boolean canAddPods = M.kubeZnnD.maxReplicas > M.kubeZnnD.desiredReplicas;
     define boolean canRemovePods = M.kubeZnnD.minReplicas < M.kubeZnnD.desiredReplicas;
 
@@ -23,19 +25,19 @@ data:
         M.scaleUp(M.kubeZnnD, M.kubeZnnD.desiredReplicas + count);
       }
       effect {
-        M.kubeZnnD.maxReplicas >= M.kubeZnnD.desiredReplicas;
+        !cHiRespTime;
       }
     }
 
     tactic removeReplicas(int count) {
       condition {
-        !cHiRespTime && canRemovePods;
+        cLoRespTime && canRemovePods;
       }
       action {
         M.scaleDown(M.kubeZnnD, M.kubeZnnD.desiredReplicas - count);
       }
       effect {
-        M.kubeZnnD.minReplicas <= M.kubeZnnD.desiredReplicas;
+        !cHiRespTime;
       }
     }
 
@@ -47,12 +49,28 @@ data:
         if (highMode) {
           M.rollOut(M.kubeZnnD, "znn", "cmendes/znn:low");
         }
-
         if (lowMode) {
           M.rollOut(M.kubeZnnD, "znn", "cmendes/znn:text");
         }
       }
       effect {
-        !highMode;
+        !cHiRespTime && (lowMode || highMode);
+      }
+    }
+
+    tactic raiseFidelity() {
+      condition {
+        (textMode || lowMode) && cLoRespTime;
+      }
+      action {
+        if (textMode) {
+          M.rollOut(M.kubeZnnD, "znn", "cmendes/znn:low");
+        }
+        if (lowMode) {
+          M.rollOut(M.kubeZnnD, "znn", "cmendes/znn:high");
+        }
+      }
+      effect {
+        cLoRespTime && (lowMode || highMode);
       }
     }

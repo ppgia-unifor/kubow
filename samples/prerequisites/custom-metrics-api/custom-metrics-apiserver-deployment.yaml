@@ -49,3 +49,5 @@ spec:
       - name: volume-serving-cert
         secret:
           secretName: cm-adapter-serving-certs
+      nodeSelector:
+        kops.k8s.io/instancegroup: monitoring

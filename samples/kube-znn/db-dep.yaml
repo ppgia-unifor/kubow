@@ -42,3 +42,5 @@ spec:
         ports:
         - containerPort: 3306
           name: mysql
+      nodeSelector:
+        kops.k8s.io/instancegroup: db
