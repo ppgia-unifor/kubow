@@ -40,8 +40,10 @@ data:
         Connector dbServiceConnector  = new ServiceConnectorT extended with {
             Property selectors = <[name : string = "app";value : string = "kube-znn-db";]>;
         }
-        Property MAX_RESPTIME = 1000;
-        Property MIN_RESPTIME = 500;
+        
+        Property MAX_RESPTIME = 2000;
+        Property MIN_RESPTIME = 1000;
+
         Attachment kubeZnnDbD.sqlPort to dbServiceConnector.selectee;
         Attachment kubeZnnDbS.sqlPort to dbServiceConnector.selector;
         Attachment kubeZnnDbS.connectionSqlPort to kubeZnnServiceConnector.callee;

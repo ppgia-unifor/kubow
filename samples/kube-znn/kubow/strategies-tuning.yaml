@@ -19,24 +19,24 @@ data:
     define boolean canRemovePod = M.kubeZnnD.minReplicas < M.kubeZnnD.desiredReplicas;
 
     strategy ReduceRespTime [ cHiRespTime ] {
-      t0: (cHiRespTime && canAddPod) -> addReplicas(1) @[30000 /*ms*/] {
+      t0: (cHiRespTime && canAddPod) -> addReplicas(1) @[15000 /*ms*/] {
         t0a: (success) -> done;
       }
-      t1: (cHiRespTime && !canAddPod) -> lowerFidelity() @[30000 /*ms*/] {
+      t1: (cHiRespTime && !canAddPod) -> lowerFidelity() @[15000 /*ms*/] {
         t1a: (success) -> done;
       }
       t2: (default) -> TNULL;
     }
 
     strategy ReduceCost [ cLoRespTime && highMode ] {
-      t0: (cLoRespTime && canRemovePod && highMode) -> removeReplicas(1) @[30000 /*ms*/] {
+      t0: (cLoRespTime && canRemovePod && highMode) -> removeReplicas(1) @[15000 /*ms*/] {
         t0a: (success) -> done;
       }
       t1: (default) -> TNULL;
     }
 
     strategy ImproveFidelity [ cLoRespTime && (textMode || lowMode) ] {
-      t0: (cLoRespTime && (textMode || lowMode)) -> raiseFidelity() @[30000 /*ms*/] {
+      t0: (cLoRespTime && (textMode || lowMode)) -> raiseFidelity() @[15000 /*ms*/] {
         t0a: (success) -> done;
       }
       t1: (default) -> TNULL;

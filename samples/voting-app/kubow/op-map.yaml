@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  creationTimestamp: null
-  name: op-map
-data:
-  op.map: |

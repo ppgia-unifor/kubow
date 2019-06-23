@@ -25,7 +25,7 @@ data:
         M.scaleUp(M.kubeZnnD, M.kubeZnnD.desiredReplicas + count);
       }
       effect {
-        !cHiRespTime;
+        M.kubeZnnD.desiredReplicas == M.kubeZnnD.availableReplicas;
       }
     }
 
@@ -37,7 +37,7 @@ data:
         M.scaleDown(M.kubeZnnD, M.kubeZnnD.desiredReplicas - count);
       }
       effect {
-        !cHiRespTime;
+        M.kubeZnnD.desiredReplicas == M.kubeZnnD.availableReplicas;
       }
     }
 
