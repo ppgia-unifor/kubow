@@ -30,7 +30,7 @@ spec:
           protocol: TCP
         resources:
           limits:
-            memory: 1Gi
+            memory: 2Gi
         volumeMounts:
         - mountPath: /etc/prometheus/prometheus.yml
           name: prometheus-config
