@@ -19,7 +19,7 @@ public class ApiClientFactory {
       logger.info(
           "Available authentication {}", String.join(",", apiClient.getAuthentications().keySet()));
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Error during the K8s client.", e);
     }
     return apiClient;
   }
