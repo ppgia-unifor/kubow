@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: locust-master
+  name: locust-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust-master
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: locust-master
+    spec:
+      containers:
+      - name: locust
+        image: cmendes/locust
+        imagePullPolicy: Always
+        env:
+        - name: LOCUST_MODE
+          value: "master"
+        - name: ATTACKED_HOST
+          value: "kube-znn"
+        - name: LOCUST_FILE
+          value: "/locustfile.py"
+        ports:
+        - containerPort: 5557
+          name: comm
+        - containerPort: 5558
+          name: comm-plus-1
+        - containerPort: 8089
+          name: web-ui
+        volumeMounts:
+        - name: locustfile
+          mountPath: /locustfile.py
+          subPath: locustfile.py
+      volumes:
+      - name: locustfile
+        configMap:
+          name: locustfile
+      # nodeSelector:
+      #   kops.k8s.io/instancegroup: load-test

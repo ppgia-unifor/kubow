@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: pumbakill
+spec:
+  template:
+    metadata:
+      labels:
+        app: pumbak
+        com.gaiaadm.pumba: "true"
+      name: pumbak
+    spec:
+      nodeSelector:
+        kops.k8s.io/instancegroup: kubow
+      containers:
+      - image: gaiaadm/pumba:master
+        imagePullPolicy: Always
+        name: pumbak
+        args:
+          - --random
+          - --interval
+          - "1m"
+          - kill
+          - --signal
+          - "SIGKILL"
+          - "re2:^k8s_POD_pumba-delay"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 5M
+          limits:
+            cpu: 100m
+            memory: 20M
+        volumeMounts:
+          - name: dockersocket
+            mountPath: /var/run/docker.sock
+      volumes:
+        - hostPath:
+            path: /var/run/docker.sock
+          name: dockersocket

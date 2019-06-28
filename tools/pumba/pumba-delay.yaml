@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: pumbad
+spec:
+  template:
+    metadata:
+      labels:
+        app: pumbad
+      name: pumbad
+    spec:
+      nodeSelector:
+        kops.k8s.io/instancegroup: kubow
+      containers:
+      - image: gaiaadm/pumba:master
+        imagePullPolicy: Always
+        name: pumbad
+        args:
+          - netem
+          - --duration
+          - "30s"
+          - delay
+          - --time
+          - "1000"
+          - --jitter
+          - "1000"
+          - --distribution
+          - "normal"
+          - "re2:^k8s_kubow_kubow-"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 5M
+          limits:
+            cpu: 100m
+            memory: 20M
+        volumeMounts:
+          - name: dockersocket
+            mountPath: /var/run/docker.sock
+      volumes:
+        - hostPath:
+            path: /var/run/docker.sock
+          name: dockersocket
