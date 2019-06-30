@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: locust-master
+  name: locust-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust-master
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: locust-master
+    spec:
+      containers:
+      - image: cmendes/locust
+        imagePullPolicy: IfNotPresent
+        name: locust-master
+        env:
+          - name: ATTACKED_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: locust-cm
+                key: ATTACKED_HOST
+          - name: LOCUST_MODE
+            value: MASTER
+        volumeMounts:
+          - mountPath: /locust
+            name: locust-scripts
+        ports:
+        - containerPort: 5557
+          name: comm
+        - containerPort: 5558
+          name: comm-plus-1
+        - containerPort: 8089
+          name: web-ui
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: locust-scripts
+        configMap:
+          name: scripts-cm
