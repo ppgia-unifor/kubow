@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Secret
+data:
+  #znn_pass
+  password: em5uX3Bhc3M=
+metadata:
+  name: mysql-pass
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-znn-db
+  labels:
+    app: kube-znn-db
+spec:
+  ports:
+    - name: tcp
+      port: 3306
+  selector:
+    app: kube-znn-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-znn-db
+  labels:
+    app: kube-znn-db
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      app: kube-znn-db
+      version: v1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: kube-znn-db
+        version: v1
+    spec:
+      volumes:
+      - name: mysql-initdb
+        configMap:
+          name: mysql-initdb
+      serviceAccountName: kubeznn
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        volumeMounts:
+        - name: mysql-initdb
+          mountPath: /docker-entrypoint-initdb.d
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+        ports:
+        - containerPort: 3306
+      # nodeSelector:
+      #   kops.k8s.io/instancegroup: db

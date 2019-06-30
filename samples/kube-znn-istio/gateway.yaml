@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: kube-znn-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kube-znn
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - kube-znn-gateway
+  http:
+  - match:
+    - uri:
+        exact: /news.php
+    route:
+    - destination:
+        host: kube-znn
+        port:
+          number: 80
