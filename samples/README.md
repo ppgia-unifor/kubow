@@ -5,12 +5,10 @@ This repository contains example projects to showcase Kubow and how to use the f
 We have separate folders for the samples of individual projects and versions. Each folder has the deployment files for project itself
 and a folder for kubow customizations. There is a Kubow folder with Kubow`s default for all projects.
 
-* `kube-znn`:
+* `kube-znn`: K8s deployment files for kube-znn. It contains pod auto scaling and pod auto tuning (rollout versions) features. 
 
-* `kube-znn-multi-nodes`:
+* `kube-znn-istio`: K8s deployment files for kube-znn, running on service mesh layer provided by Istio. 
 
-* `voting-app`:
+* `voting-app`: K8s deployment files for voting-app
 
-* `podinfo`:
-
-* `kube-znn-istio`:
+* `podinfo`: Configuration files for podinfo, to be used in development mode. 
