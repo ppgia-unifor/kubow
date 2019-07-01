@@ -34,7 +34,7 @@ public abstract class AbstractRunnableJsonProbe extends AbstractRunnableProbe {
     while (thread() == currentThread && isActive()) {
       var data = collect();
       if (data != null) {
-        logger.info("Probe {} has collected value {}", id(), data);
+        logger.debug("Probe {} has collected value {}", id(), data);
         reportData(data);
       } else {
         logger.info("Probe {} has collected nothing", id());

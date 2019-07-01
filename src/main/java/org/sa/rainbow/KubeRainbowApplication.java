@@ -1,6 +1,7 @@
 package org.sa.rainbow;
 
 import io.prometheus.client.exporter.HTTPServer;
+import org.sa.rainbow.api.Server;
 import org.sa.rainbow.core.RainbowDelegate;
 import org.sa.rainbow.core.RainbowMaster;
 import org.sa.rainbow.core.error.RainbowAbortException;
@@ -19,7 +20,11 @@ public class KubeRainbowApplication {
 
   private static final Logger logger = LoggerFactory.getLogger(KubeRainbowApplication.class);
 
+  private static boolean delegateStarted = false;
+  private static boolean masterStarted = false;
+
   public static void main(String[] args) {
+    Server.init();
     startCofig();
 
     var master = startMaster();
@@ -32,6 +37,10 @@ public class KubeRainbowApplication {
     } catch (RainbowException e) {
       throw new KubowException("Cannot start Delegate component", e);
     }
+  }
+
+  public static boolean isReady() {
+    return delegateStarted && masterStarted;
   }
 
   static void startCofig() {
@@ -64,6 +73,7 @@ public class KubeRainbowApplication {
       master.initialize();
       master.start();
       logger.info("Initialized rainbow master");
+      masterStarted = true;
       return master;
     } catch (RainbowException e) {
       logger.error("Cannot start rainbow master.", e);
@@ -90,6 +100,7 @@ public class KubeRainbowApplication {
         }
       }
     }
+    delegateStarted = true;
   }
 
   static void startPrometheus() throws IOException {
