@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: custom-metrics-apiserver
+    version: v1
   name: custom-metrics-apiserver
   namespace: monitoring
 spec:
@@ -10,10 +11,12 @@ spec:
   selector:
     matchLabels:
       app: custom-metrics-apiserver
+      version: v1
   template:
     metadata:
       labels:
         app: custom-metrics-apiserver
+        version: v1
       name: custom-metrics-apiserver
     spec:
       serviceAccountName: custom-metrics-apiserver

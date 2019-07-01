@@ -12,10 +12,14 @@ metadata:
   namespace: kube-system
   labels:
     k8s-app: metrics-server
+    app: metrics-server
+    version: v1
 spec:
   selector:
     matchLabels:
       k8s-app: metrics-server
+      app: metrics-server
+      version: v1
   template:
     metadata:
       name: metrics-server
@@ -34,6 +38,8 @@ spec:
         - --kubelet-preferred-address-types=InternalIP
         name: metrics-server
         image: k8s.gcr.io/metrics-server-amd64:v0.3.1
+        ports:
+        - containerPort: 443
         imagePullPolicy: Always
         volumeMounts:
         - name: tmp-dir
