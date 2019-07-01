@@ -10,6 +10,6 @@ As with Rainbow, Kubow's primary features are:
 * uses software archiecture models as the basis for reasoning about the state of the system and applicable adaptations;
 * uses utility-based decision making to determine the best adaptation among a set of potentially applicable adaptations;
 
-To getting started with Kubow, see the documentation in the /samples folder in Kubow's [GitHub repository](https://github.com/ppgia-unifor/kubow/).
+To getting started with Kubow, see the documentation in the /samples folder. 
 
 To watch a simple example of use, check out this [video](https://youtu.be/_-aLNksiKXI).
