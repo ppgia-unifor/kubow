@@ -14,3 +14,5 @@ This directory contains tools applications and its deployment files to support K
 * [prometheus](https://github.com/prometheus/prometheus): A monitoring system and time series database.
 
 * [pumba](https://github.com/alexei-led/pumba): Chaos testing and network emulation tool for Docker.
+
+* [istio](https://github.com/istio/istio): Istio (v 1.2.0) installation files.
