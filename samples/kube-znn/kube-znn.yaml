@@ -17,16 +17,14 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kube-znn-v1
+  name: kube-znn
   labels:
     app: kube-znn
-    version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: kube-znn
-      version: v1
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -36,11 +34,9 @@ spec:
     metadata:
       labels:
         app: kube-znn
-        version: v1
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9180"
-        # sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       serviceAccountName: kubeznn
       containers:
@@ -84,5 +80,5 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 9180
-      # nodeSelector:
-      #   kops.k8s.io/instancegroup: web
+      nodeSelector:
+        kops.k8s.io/instancegroup: web

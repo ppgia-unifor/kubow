@@ -26,19 +26,16 @@ metadata:
   name: kube-znn-db
   labels:
     app: kube-znn-db
-    version: v1
 spec:
   selector:
     matchLabels:
       app: kube-znn-db
-      version: v1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: kube-znn-db
-        version: v1
     spec:
       volumes:
       - name: mysql-initdb
@@ -67,5 +64,5 @@ spec:
             port: 3306
         ports:
         - containerPort: 3306
-      # nodeSelector:
-      #   kops.k8s.io/instancegroup: db
+      nodeSelector:
+        kops.k8s.io/instancegroup: db

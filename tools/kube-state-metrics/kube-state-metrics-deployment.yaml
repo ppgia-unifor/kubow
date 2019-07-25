@@ -8,14 +8,12 @@ metadata:
 spec:
   selector:
     matchLabels:
-      k8s-app: kube-state-metrics
       app: kube-state-metrics
       version: v1
   replicas: 1
   template:
     metadata:
       labels:
-        k8s-app: kube-state-metrics
         app: kube-state-metrics
         version: v1
       annotations:
@@ -27,10 +25,8 @@ spec:
       - name: kube-state-metrics
         image: quay.io/coreos/kube-state-metrics:v1.5.0
         ports:
-        - name: http-metrics
-          containerPort: 8080
-        - name: telemetry
-          containerPort: 8081
+        - containerPort: 8080
+        - containerPort: 8081
         readinessProbe:
           httpGet:
             path: /healthz
