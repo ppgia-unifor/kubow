@@ -4,7 +4,7 @@ This repository contains the files used to showcase Kubow for [ECSA 2019 Posters
 
 To illustrate Kubow's use, we selected a simple web-based voting app from the set of sample applications distributed with [Docker](https://github.com/dockersamples/example-voting-app). This application was chosen because its architecture is simple enough to be used for illustrative purposes, and complex enough to be representative of typical Kubernetes applications deployed in real production environments.
 
-If you are interested in read the paper, you can find the author's version [here](https://www.researchgate.net/publication/334279777_Kubow_An_Architecture-Based_Self-Adaptation_Service_for_Cloud_Native_Applications) and the bibtex citation below.
+If you are interested in reading the paper, you can find the author's version [here](https://www.researchgate.net/publication/334279777_Kubow_An_Architecture-Based_Self-Adaptation_Service_for_Cloud_Native_Applications) and the BibTeX citation below.
 
 ```
 @inproceedings{Aderaldo:2019:KAS:3344948.3344963,
@@ -21,9 +21,7 @@ If you are interested in read the paper, you can find the author's version [here
  publisher = {ACM},
 }
 ```
-
-We have separate folders for the samples of individual projects and versions. Each folder has the deployment files for project itself
-and a folder for kubow customizations. There is a Kubow folder with Kubow`s default for all projects.
+Each folder has a tool that is a part of this demostration.
 
 * [voting-app](https://github.com/dockersamples/example-voting-app): K8s deployment files for voting-app
 
