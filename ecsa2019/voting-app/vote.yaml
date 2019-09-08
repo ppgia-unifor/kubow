@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: vote
+  name: vote
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vote
+  template:
+    metadata:
+      labels:
+        app: vote
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+    spec:
+      containers:
+      - image: cmendes/vote:latest
+        imagePullPolicy: Always
+        name: vote
+        ports:
+        - containerPort: 8081
+          name: vote
+      nodeSelector:
+        kops.k8s.io/instancegroup: web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: vote
+  name: vote
+spec:
+  type: LoadBalancer
+  ports:
+  - name: "vote-service"
+    port: 80
+    targetPort: 8081
+  selector:
+    app: vote
