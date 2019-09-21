@@ -10,9 +10,13 @@ As with Rainbow, Kubow's primary features are:
 * uses software archiecture models as the basis for reasoning about the state of the system and applicable adaptations;
 * uses utility-based decision making to determine the best adaptation among a set of potentially applicable adaptations;
 
-To getting started with Kubow, see the documentation in the [samples](./samples) folder. 
-
 To watch a simple example of use, check out this [video](https://youtu.be/_-aLNksiKXI).
+
+## Getting started
+
+To get started with Kubow, go to [samples](./samples) folder and choose one application. Each application has a specific Kubow's configuration in its folder.
+
+Before go to samples, install some the metrics-server, custom-metrics-api, prometheus and kube-state-metrics in your Kubernetes cluster. The deployments files of them are avaliable in [tools](./tools) folder.
 
 ## Publications
 
