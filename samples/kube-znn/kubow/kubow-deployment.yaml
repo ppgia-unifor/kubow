@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubow
+spec:
+  selector:
+    matchLabels:
+      app: kubow
+      tier: kubow
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: kubow
+        tier: kubow
+    spec:
+      serviceAccountName: admin-user
+      volumes:
+        - name: probes
+          configMap:
+            name: probes
+        - name: gauges
+          configMap:
+            name: gauges
+        - name: effectors
+          configMap:
+            name: effectors
+        - name: properties
+          configMap:
+            name: rainbow-properties
+        - name: tactics
+          configMap:
+            name: tactics
+        - name: strategies
+          configMap:
+            name: strategies
+        - name: utilities
+          configMap:
+            name: utilities
+        - name: kubernetes-acme-family
+          configMap:
+            name: kubernetes-acme-family
+        - name: target-acme-model
+          configMap:
+            name: target-acme-model
+        - name: op-map
+          configMap:
+            name: op-map
+        - name: log4j
+          configMap:
+            name: log4j
+      containers:
+      - image: cmendes/kubow:1.0.0-SNAPSHOT
+        name: kubow
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 1111
+          name: delegate
+        env:
+        - name: TARGET
+          value: "target"
+        - name: TARGET_PATH
+          value: "/etc/kubow"
+        volumeMounts:
+        - name: properties
+          mountPath: /etc/kubow/target/rainbow.properties
+          subPath: rainbow.properties
+        - name: probes
+          mountPath: /etc/kubow/target/probes.yaml
+          subPath: probes.yaml
+        - name: gauges
+          mountPath: /etc/kubow/target/gauges.yaml
+          subPath: gauges.yaml
+        - name: effectors
+          mountPath: /etc/kubow/target/effectors.yaml
+          subPath: effectors.yaml
+        - name: tactics
+          mountPath: /etc/kubow/target/stitch/tactics.s
+          subPath: tactics.s
+        - name: strategies
+          mountPath: /etc/kubow/target/stitch/strategies.s
+          subPath: strategies.s
+        - name: utilities
+          mountPath: /etc/kubow/target/utilities.yaml
+          subPath: utilities.yaml
+        - name: kubernetes-acme-family
+          mountPath: /etc/kubow/target/model/Kubernetes.acme
+          subPath: Kubernetes.acme
+        - name: target-acme-model
+          mountPath: /etc/kubow/target/model/target-acme-model.acme
+          subPath: target-acme-model.acme
+        - name: op-map
+          mountPath: /etc/kubow/target/op.map
+          subPath: op.map
+        - name: log4j
+          mountPath: /usr/share/kubow/log4j.properties
+          subPath: log4j.properties

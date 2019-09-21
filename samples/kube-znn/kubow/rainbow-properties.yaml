@@ -32,7 +32,7 @@ data:
 
     #Rainbow adaptation & stitch components
     rainbow.adaptation.manager.size=1
-    rainbow.adaptation.manager.class_0=org.sa.rainbow.adaptation.KubowAdaptationManager
+    rainbow.adaptation.manager.class_0=org.sa.rainbow.adaptation.AdaptationManager
     rainbow.adaptation.manager.model_0=KubeZnnSystem:Acme
 
     rainbow.adaptation.executor.size=1

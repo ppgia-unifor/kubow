@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: effectors
+data:
+  effectors.yaml: |
+    vars:
+    effector-types:
+      RollOutT:
+        command: "M.rollOut ($<deployment>,$<container>,$<image>)"
+        location: "127.0.0.1"
+        type: java
+        javaInfo:
+          class: org.sa.rainbow.translator.effectors.RollOutEffector
+      ScaleUpT:
+        command: "M.scaleUp ($<deployment>,$<desiredReplicas>)"
+        location: "127.0.0.1"
+        type: java
+        javaInfo:
+          class: org.sa.rainbow.translator.effectors.ScaleUpEffector
+      ScaleDownT:
+        command: "M.scaleDown ($<deployment>,$<desiredReplicas>)"
+        location: "127.0.0.1"
+        type: java
+        javaInfo:
+          class: org.sa.rainbow.translator.effectors.ScaleDownEffector
+      UpdateConfigT:
+        command: "M.updateConfig ($<namespace>,$<configmap>,$<values>)"
+        location: "127.0.0.1"
+        type: java
+        javaInfo:
+          class: org.sa.rainbow.translator.effectors.UpdateConfigEffector
+
+    effectors:
+      rollOut:
+        effector-type: RollOutT
+        command: "M.rollOut ($<deployment>,$<container>,$<image>)"
+      scaleUp:
+        effector-type: ScaleUpT
+        command: "M.scaleUp ($<deployment>,$<desiredReplicas>)"
+      scaleDown:
+        effector-type: ScaleDownT
+        command: "M.scaleDown ($<deployment>,$<desiredReplicas>)"
+      updateConfig:
+        effector-type: UpdateConfigT
+        command: "M.updateConfig ($<namespace>,$<configmap>,$<values>)"

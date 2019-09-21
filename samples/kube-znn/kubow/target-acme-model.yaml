@@ -41,8 +41,8 @@ data:
             Property selectors = <[name : string = "app";value : string = "kube-znn-db";]>;
         }
         
-        Property MAX_RESPTIME = 2000;
-        Property MIN_RESPTIME = 1000;
+        Property MAX_RESPTIME = 1000;
+        Property MIN_RESPTIME = 800;
 
         Attachment kubeZnnDbD.sqlPort to dbServiceConnector.selectee;
         Attachment kubeZnnDbS.sqlPort to dbServiceConnector.selector;
