@@ -1,18 +1,22 @@
 
 # Kubow tools
 
-This directory contains tools applications and its deployment files to support Kubow's various features.
+This directory contains several required and opiotional tools (and their respective deployment files) necessary to support Kubow's various features.
 
-* [custom-metrics-api](https://github.com/DirectXMan12/k8s-prometheus-adapter): An implementation of the Kubernetes [resource metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/resource-metrics-api.md) API and [custom metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/custom-metrics-api.md) API.
+Required tools:
 
-* [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics): Service that listens to the Kubernetes API server and generates metrics about the state of the objects.
+* [custom-metrics-api](https://github.com/DirectXMan12/k8s-prometheus-adapter): an implementation of the Kubernetes [resource metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/resource-metrics-api.md) API and [custom metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/custom-metrics-api.md) API.
 
-* [locust](https://github.com/locustio/locust): A distributed user load testing tool.
+* [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics): a service that preiodically polls the Kubernetes API and generates metrics about the state of its objects.
 
-* [metrics-server](https://github.com/kubernetes-incubator/metrics-server): An implementation of the Kubernetes [Metrics Server](https://kubernetes.io/docs/tasks/debug-application-cluster/resource-metrics-pipeline/#metrics-server).
+* [metrics-server](https://github.com/kubernetes-incubator/metrics-server): an implementation of the Kubernetes [Metrics Server](https://kubernetes.io/docs/tasks/debug-application-cluster/resource-metrics-pipeline/#metrics-server).
 
-* [prometheus](https://github.com/prometheus/prometheus): A monitoring system and time series database.
+* [prometheus](https://github.com/prometheus/prometheus): a monitoring system and time series database.
 
-* [pumba](https://github.com/alexei-led/pumba): Chaos testing and network emulation tool for Docker.
+Optional tools:
 
-* [istio](https://github.com/istio/istio): Istio (v 1.2.0) installation files.
+* [locust](https://github.com/locustio/locust): A distributed load generation and testing tool.
+
+* [pumba](https://github.com/alexei-led/pumba): chaos testing and network emulation tool for Docker containers.
+
+* [istio](https://github.com/istio/istio): a service mesh tool.
