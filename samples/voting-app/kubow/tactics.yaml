@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tactics
+data:
+  tactics.s: |
+    module kuberainbow.strategies;
+    import model "VotingAppSystem:Acme" { VotingAppSystem as M, Kubernetes as K };
+
+    define boolean hiRespTime = M.voteS.latency > M.MAX_RESPTIME;
+    define boolean canAddPods = M.workerD.maxReplicas > M.workerD.desiredReplicas;
+    define boolean canRemovePods = M.workerD.minReplicas < M.workerD.desiredReplicas;
+
+    tactic addReplicas(int count) {
+      condition {
+        hiRespTime && canAddPods;
+      }
+      action {
+        M.scaleUp(M.workerD, count);
+      }
+      effect {
+        M.workerD.maxReplicas >= M.workerD.desiredReplicas;
+      }
+    }
+
+    tactic removeReplicas(int count) {
+      condition {
+        !hiRespTime && canRemovePods;
+      }
+      action {
+        M.scaleDown(M.workerD, count);
+      }
+      effect {
+        M.workerD.minReplicas <= M.workerD.desiredReplicas;
+      }
+    }

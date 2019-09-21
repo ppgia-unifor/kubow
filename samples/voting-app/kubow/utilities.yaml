@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: utilities
+data:
+  utilities.yaml: |
+    model:
+      name: KubeZnnSystem
+      type: Acme
+    utilities:
+      uR:
+        label: "None"
+        mapping: "AcmeExpression"
+        description: "Description"
+        utility:
+          0: 1.00
+          1000: 0.00
+    weights:
+      scenario 1:
+        uR: 1
+      scenario 2:
+        uR: 1
+      scenario 3:
+        uR: 1
+
+    # Tactic quality attribute vectors
+    vectors:
+      addReplica:
+        uR: 1

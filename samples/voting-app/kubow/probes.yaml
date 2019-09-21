@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: probes
+data:
+  probes.yaml: |
+    probes:
+      CustomMetricsProbe:
+        alias: vote.latency.probe
+        location: 127.0.0.1
+        type: java
+        javaInfo:
+          class: org.sa.rainbow.translator.probes.CustomMetricProbe
+          period: 5000
+          args.length: 5
+          args.0: default
+          args.1: vote
+          args.2: selector?app=vote&namespace=default
+          args.3: flask_http_request_duration_seconds_votes_99p
+          args.4: latency
+
+      DeploymentPropertiesProbe:
+        alias: deployments.votingapp.worker.probe
+        location: 127.0.0.1
+        type: java
+        javaInfo:
+          class: org.sa.rainbow.translator.probes.DeploymentInfoProbe
+          period: 5000
+          args.length: 2
+          args.0: "default"
+          args.1: "worker"

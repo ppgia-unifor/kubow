@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: target-acme-model
+data:
+  target-acme-model.acme: |
+    import Kubernetes.acme;
+    System VotingAppSystem : KubernetesFam = new KubernetesFam extended with {
+        Component dbD = new DeploymentT extended with {
+            Port redirectPort  = { }
+            Property name = "db";
+            Property namespace = "default";
+        }
+        Component dbS = new ServiceT extended with {
+            Port redirectPort  = { }
+            Port sqlPort  = { }
+            Property name = "db";
+        }
+        Connector dbSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = "db";]>;
+        }
+        Component voteD = new DeploymentT extended with {
+            Port redisPort  = { }
+            Port redirectPort  = { }
+            Property name = "vote";
+            Property namespace = "default";
+        }
+        Component voteS : ServiceT = new ServiceT extended with {
+            Port redirectPort  = { }
+            Property name = "vote";
+        }
+        Connector voteSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = "vote";]>;
+        }
+        Component redisD = new DeploymentT extended with {
+            Port redirectPort = { }
+            Property namespace = "default";
+            Property name = "redis";
+        }
+        Component redisS  = new ServiceT extended with {
+            Port redisPort  = { }
+            Port redirectPort = { }
+            Property name = "redis";
+        }
+        Connector redisSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = "redis";]>;
+        }
+        Component workerD : DeploymentT = new DeploymentT extended with {
+            Port redirectPort  = { }
+            Port redisPort  = { }
+            Port sqlPort  = { }
+            Property name = "worker";
+            Property namespace = "default";
+            Property maxReplicas = 5;
+            Property minReplicas = 1;
+        }
+        Component workerS = new ServiceT extended with {
+            Port redirectPort  = { }
+            Property name = "worker";
+        }
+        Connector workerSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = "worker";]>;
+        }
+        Component resultD = new DeploymentT extended with {
+            Port sqlPort  = { }
+            Port redirectPort  = { }
+            Property name = "result";
+            Property namespace = "default";
+        }
+        Component resultS = new ServiceT extended with {
+            Port redirectPort  = { }
+            Property name = "result";
+        }
+        Connector resultSC = new LabelSelectorConnectorT extended with {
+            Property selectors = <[name : string = "app";value : string = "result";]>;
+        }
+        Connector voteRedisConn  = new ServiceConnectorT extended with {
+            Property namespace = "default";
+            Property name = "redis";
+        }
+        Connector workerRedisConn  = new ServiceConnectorT extended with {
+            Property namespace = "default";
+            Property name = "redis";
+        }
+        Connector workerDbConn  = new ServiceConnectorT extended with {
+            Property namespace = "default";
+            Property name = "db";
+        }
+        Connector resultDbConn  = new ServiceConnectorT extended with {
+            Property namespace = "default";
+            Property name = "result";
+        }
+
+        Property MAX_RESPTIME = 1000;
+
+        Attachment resultS.redirectPort to resultSC.callee;
+        Attachment resultD.redirectPort to resultSC.caller;
+        Attachment workerS.redirectPort to workerSC.callee;
+        Attachment workerD.redirectPort to workerSC.caller;
+        Attachment redisS.redirectPort to redisSC.callee;
+        Attachment redisD.redirectPort to redisSC.caller;
+        Attachment voteS.redirectPort to voteSC.callee;
+        Attachment voteD.redirectPort to voteSC.caller;
+        Attachment dbS.redirectPort to dbSC.callee;
+        Attachment dbD.redirectPort to dbSC.caller;
+        Attachment voteD.redisPort to voteRedisConn.selector;
+        Attachment redisS.redisPort to voteRedisConn.selectee;
+        Attachment workerD.redisPort to workerRedisConn.selector;
+        Attachment redisS.redisPort to workerRedisConn.selectee;
+        Attachment workerD.sqlPort to workerDbConn.selector;
+        Attachment dbS.sqlPort to workerDbConn.selectee;
+        Attachment resultD.sqlPort to resultDbConn.selector;
+        Attachment dbS.sqlPort to resultDbConn.selectee;
+    }
