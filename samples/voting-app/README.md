@@ -32,7 +32,7 @@ result       LoadBalancer   10.106.173.182   localhost     8080:30561/TCP   3m52
 vote         LoadBalancer   10.108.30.199    localhost     8081:31761/TCP   6m17s
 ```
 
-The vote app is running on [8081](http://localhost:8081) port and result app is running on [8080](http://localhost:8080) port.
+The vote app is running on port [8081](http://localhost:8081) and result app is running on port [8080](http://localhost:8080).
 
 ## Architecture
 
