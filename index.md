@@ -1,5 +1,7 @@
 ![Kubow Logo](/images/kubow-logo-right.png)
 
+**\[News\]**: Kubow received the Best Demo award at [ECSA 2019](https://ecsa2019.univ-lille.fr/)!  
+
 Kubow is an architecture-based self-adaptation service for Kubernetes applications. 
 
 Kubow was implemented as a Docker and Kubernetes customization of the [Rainbow](https://github.com/cmu-able/rainbow) self-adaptive framework, originally developed at Carnegie Mellon University's [ABLE research group](https://www.cs.cmu.edu/~able/). 
