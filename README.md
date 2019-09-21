@@ -13,3 +13,9 @@ As with Rainbow, Kubow's primary features are:
 To getting started with Kubow, see the documentation in the /samples folder. 
 
 To watch a simple example of use, check out this [video](https://youtu.be/_-aLNksiKXI).
+
+## Publications
+
+ADERALDO, C. M., MENDONÇA, N. C. Kubow: Um Serviço de Autoadaptação Baseada em Arquitetura para Aplicações Nativas da Nuvem. In: Sessão de Ferramentas do X Congresso Brasileiro de Software: Teoria e Prática (CBSoft), 2019, Salvador, BA. [[PDF]](https://www.researchgate.net/publication/335627220_Kubow_Um_Servico_de_Autoadaptacao_Baseada_em_Arquitetura_para_Aplicacoes_Nativas_da_Nuvem)
+
+ADERALDO, C. M., MENDONÇA, N. C., SCHMERL, B., GARLAN, D. Kubow: An Architecture-Based Self-Adaptation Service for Cloud Native Applications. In: 13th European Conference on Software Architecture (ECSA), Tools, Demos and Posters Track, 2019, Paris, France. [[DOI]](https://doi.org/10.1145/3344948.3344963) [[PDF]](https://www.researchgate.net/publication/334279777_Kubow_An_Architecture-Based_Self-Adaptation_Service_for_Cloud_Native_Applications) **Best Demo Award!**
