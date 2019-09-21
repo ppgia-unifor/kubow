@@ -1,9 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: redis
   name: redis
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: redis
   template:
     metadata:
       labels:
@@ -12,12 +17,6 @@ spec:
       containers:
       - image: redis:alpine
         name: redis
-        volumeMounts:
-        - mountPath: /data
-          name: redis-data
-      volumes:
-      - name: redis-data
-        emptyDir: {} 
 ---
 apiVersion: v1
 kind: Service

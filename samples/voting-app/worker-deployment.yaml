@@ -1,8 +1,9 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: worker
   name: worker
-  namespace: votingapp
 spec:
   replicas: 1
   strategy:
@@ -10,10 +11,13 @@ spec:
       maxSurge: 1
       maxUnavailable: 0
     type: RollingUpdate
+  selector:
+    matchLabels:
+      app: worker
   template:
     metadata:
       labels:
-        app: worker
+        app: worker      
     spec:
       containers:
       - image: dockersamples/examplevotingapp_worker

@@ -19,7 +19,6 @@ spec:
     spec:
       containers:
       - image: cmendes/vote:latest
-        imagePullPolicy: Always
         name: vote
         ports:
         - containerPort: 8081

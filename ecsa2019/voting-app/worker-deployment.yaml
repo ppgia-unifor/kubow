@@ -17,5 +17,3 @@ spec:
       containers:
       - image: dockersamples/examplevotingapp_worker
         name: worker
-      nodeSelector:
-        kops.k8s.io/instancegroup: web
