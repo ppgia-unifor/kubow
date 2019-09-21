@@ -1,6 +1,6 @@
 # voting-app
 
-A simple distributed application running across multiple Docker containers developed by [Docker Team](https://github.com/dockersamples/example-voting-app).
+A simple distributed application running across multiple Docker containers.
 
 ## Run the app in Kubernetes
 
@@ -32,9 +32,7 @@ result       LoadBalancer   10.106.173.182   localhost     8080:30561/TCP   3m52
 vote         LoadBalancer   10.108.30.199    localhost     8081:31761/TCP   6m17s
 ```
 
-The vote app is running on **8081** port. Open [http://localhost:8081/](http://localhost:8081/) to choose between cats and dogs!
-
-The result app is running on **8080** port. Open [http://localhost:8080/](http://localhost:8080/) to see the result.
+The vote app is running on [8081](http://localhost:8081) port and result app is running on [8080](http://localhost:8080) port.
 
 ## Architecture
 
@@ -48,4 +46,8 @@ The result app is running on **8080** port. Open [http://localhost:8080/](http:/
 
 ## Note
 
-The [original voting](https://github.com/dockersamples/example-voting-app) application only accepts one vote per client, however, this version registers votes even if a vote has already been submitted from a client.
+The [original voting](https://github.com/dockersamples/example-voting-app) application only accepts one vote per client. However, this version registers votes even if a vote has already been submitted from a client.
+
+## Acknowledges
+
+Voting app was originally developed by the Docker Team. The source code is available [here](https://github.com/dockersamples/example-voting-app).
