@@ -11,20 +11,19 @@ metadata:
   name: metrics-server
   namespace: kube-system
   labels:
-    k8s-app: metrics-server
     app: metrics-server
     version: v1
 spec:
   selector:
     matchLabels:
-      k8s-app: metrics-server
       app: metrics-server
       version: v1
   template:
     metadata:
       name: metrics-server
       labels:
-        k8s-app: metrics-server
+        app: metrics-server
+        version: v1
     spec:
       serviceAccountName: metrics-server
       volumes:
@@ -44,5 +43,3 @@ spec:
         volumeMounts:
         - name: tmp-dir
           mountPath: /tmp
-      nodeSelector:
-        kops.k8s.io/instancegroup: monitoring

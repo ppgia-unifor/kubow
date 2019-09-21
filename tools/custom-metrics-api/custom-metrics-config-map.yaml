@@ -16,7 +16,7 @@ data:
       name:
         matches: "^(.*)_bucket"
         as: "${1}_success_99p"
-      metricsQuery: 'histogram_quantile(0.99, rate(caddy_http_request_duration_seconds_bucket{namespace="default",host=~".*elb.amazonaws.com"}[30s]))'
+      metricsQuery: 'histogram_quantile(0.99, rate(caddy_http_request_duration_seconds_bucket{namespace="default",host=~"localhost"}[30s]))'
       
     - seriesQuery: '{__name__="flask_http_request_duration_seconds_bucket",namespace!="",pod!=""}'
       resources:
