@@ -1,8 +1,7 @@
 apiVersion: v1
 kind: Secret
 data:
-  #znn_pass
-  password: em5uX3Bhc3M=
+  password: em5uX3Bhc3M= #znn_pass
 metadata:
   name: mysql-pass
 type: Opaque
@@ -64,5 +63,3 @@ spec:
             port: 3306
         ports:
         - containerPort: 3306
-      nodeSelector:
-        kops.k8s.io/instancegroup: db

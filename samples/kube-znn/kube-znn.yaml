@@ -80,5 +80,3 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 9180
-      nodeSelector:
-        kops.k8s.io/instancegroup: web
