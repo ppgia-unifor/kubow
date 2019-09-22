@@ -1,7 +1,7 @@
 
 # Kubow tools
 
-This directory contains several required and opiotional tools (and their respective deployment files) necessary to support Kubow's various features.
+This directory contains the deployment files for several tools that support or complement Kubow's various features.
 
 Required tools:
 
@@ -20,3 +20,5 @@ Optional tools:
 * [pumba](https://github.com/alexei-led/pumba): chaos testing and network emulation tool for Docker containers.
 
 * [istio](https://github.com/istio/istio): a service mesh tool.
+
+To download and deploy those tools in your cluster, follow the intructions provided in each tool's folder. 
