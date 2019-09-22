@@ -15,7 +15,7 @@ Required tools:
 
 Optional tools:
 
-* [locust](https://github.com/locustio/locust): A distributed load generation and testing tool.
+* [locust](https://github.com/locustio/locust): a distributed load generation and testing tool.
 
 * [pumba](https://github.com/alexei-led/pumba): chaos testing and network emulation tool for Docker containers.
 
