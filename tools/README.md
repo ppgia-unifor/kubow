@@ -21,4 +21,4 @@ Optional tools:
 
 * [istio](https://github.com/istio/istio): a service mesh tool.
 
-To download and deploy those tools in your cluster, follow the intructions provided in each tool's folder. 
+To download and deploy each of those tools in your cluster, follow the intructions provided in the tools' respective folder. 
