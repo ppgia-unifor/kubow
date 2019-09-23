@@ -30,7 +30,7 @@ public class Server {
   private static final Gson gson = new Gson();
 
   public static RainbowMaster master() {
-    return Rainbow.instance().getRainbowMaster();
+    return (RainbowMaster) Rainbow.instance().getRainbowMaster();
   }
 
   public static ResponseTransformer json() {

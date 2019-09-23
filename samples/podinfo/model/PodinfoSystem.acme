@@ -12,7 +12,7 @@ System PodinfoSystem : KubernetesFam = new KubernetesFam extended with {
 
         Property namespace = "default";
         Property hasAlternativeImages = false;
-        Property maxReplicas = 3;
+        Property maxReplicas = 5;
         Property name = "podinfo";
     }
 

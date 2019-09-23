@@ -25,7 +25,7 @@ public class KubeRainbowApplication {
 
   public static void main(String[] args) {
     Server.init();
-    startCofig();
+    startConfig();
 
     var master = startMaster();
     if (master == null) {
@@ -37,13 +37,15 @@ public class KubeRainbowApplication {
     } catch (RainbowException e) {
       throw new KubowException("Cannot start Delegate component", e);
     }
+
+    master.startProbes();
   }
 
   public static boolean isReady() {
     return delegateStarted && masterStarted;
   }
 
-  static void startCofig() {
+  static void startConfig() {
     var target = System.getenv("TARGET");
     var config = System.getenv("TARGET_PATH");
 
@@ -72,6 +74,7 @@ public class KubeRainbowApplication {
       var master = new RainbowMaster();
       master.initialize();
       master.start();
+
       logger.info("Initialized rainbow master");
       masterStarted = true;
       return master;

@@ -27,12 +27,12 @@
         <dependency>
             <groupId>rainbow</groupId>
             <artifactId>rainbow-core</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>rainbow</groupId>
             <artifactId>rainbow-acme-model</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>org.acmestudio</groupId>
@@ -53,12 +53,22 @@
         <dependency>
             <groupId>rainbow</groupId>
             <artifactId>rainbow-stitch</artifactId>
-            <version>2.1.1-SNAPSHOT</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>rainbow</groupId>
             <artifactId>rainbow-utility-model</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>rainbow</groupId>
+            <artifactId>rainbow-mem-comms</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>27.0-jre</version>
         </dependency>
         <!--/rainbow -->
 

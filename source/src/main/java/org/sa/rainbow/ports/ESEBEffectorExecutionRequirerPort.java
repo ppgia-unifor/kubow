@@ -2,7 +2,6 @@ package org.sa.rainbow.ports;
 
 import edu.cmu.cs.able.eseb.rpc.OperationTimedOutException;
 import org.sa.rainbow.core.ports.eseb.rpc.IESEBEffectorExecutionRemoteInterface;
-import org.sa.rainbow.core.ports.local.EffectorExecutionRegister;
 import org.sa.rainbow.translator.effectors.IEffectorExecutionPort;
 import org.sa.rainbow.translator.effectors.IEffectorIdentifier;
 

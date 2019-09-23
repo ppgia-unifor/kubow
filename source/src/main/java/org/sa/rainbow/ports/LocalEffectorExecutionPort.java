@@ -1,6 +1,5 @@
 package org.sa.rainbow.ports;
 
-import org.sa.rainbow.core.ports.local.EffectorExecutionRegister;
 import org.sa.rainbow.translator.effectors.IEffector;
 import org.sa.rainbow.translator.effectors.IEffectorExecutionPort;
 

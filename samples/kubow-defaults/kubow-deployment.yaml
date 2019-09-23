@@ -19,8 +19,8 @@ spec:
         tier: kubow
     spec:
       serviceAccountName: admin-user
-      nodeSelector:
-        kops.k8s.io/instancegroup: kubow
+      # nodeSelector:
+      #   kops.k8s.io/instancegroup: kubow
       volumes:
         - name: probes
           configMap:
