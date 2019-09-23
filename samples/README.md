@@ -23,6 +23,12 @@ The easiest way to run a sample is running this following command. It'll deploy 
 sh deploy-samples.sh <folder-name> # eg: sh deploy-samples.sh voting-app
 ```
 
+To destroy/undeploy tools, run this following command.
+
+```sh
+sh destroy-samples.sh <folder-name> # eg: sh destroy-samples.sh voting-app
+```
+
 **The longest way**
 
 Kubow has some dependencies that should be installed in the cluster before running it. In `tools` folder you can find these applications. I recommend you start the process from there and after came here again and choose one of the samples above and follow the instructions in its readme file. For each samples, there is a kubow folder inside. 
