@@ -1,6 +1,7 @@
 package org.sa.rainbow.ports;
 
 import edu.cmu.cs.able.eseb.participant.ParticipantException;
+import org.sa.rainbow.core.IRainbowMaster;
 import org.sa.rainbow.core.Identifiable;
 import org.sa.rainbow.core.RainbowDelegate;
 import org.sa.rainbow.core.RainbowMaster;
@@ -8,14 +9,12 @@ import org.sa.rainbow.core.adaptation.IEvaluable;
 import org.sa.rainbow.core.error.RainbowConnectionException;
 import org.sa.rainbow.core.gauges.IGauge;
 import org.sa.rainbow.core.gauges.IGaugeIdentifier;
+import org.sa.rainbow.core.models.IModelUpdater;
 import org.sa.rainbow.core.models.IModelsManager;
 import org.sa.rainbow.core.models.ModelReference;
 import org.sa.rainbow.core.ports.*;
 import org.sa.rainbow.core.ports.eseb.*;
 import org.sa.rainbow.core.ports.eseb.rpc.*;
-import org.sa.rainbow.core.ports.local.EffectorExecutionRegister;
-import org.sa.rainbow.core.ports.local.LocalEffectorExecutionPort;
-import org.sa.rainbow.core.ports.local.LocalModelDSBusPort;
 import org.sa.rainbow.translator.effectors.IEffector;
 import org.sa.rainbow.translator.effectors.IEffectorExecutionPort;
 import org.sa.rainbow.translator.effectors.IEffectorIdentifier;
@@ -83,14 +82,19 @@ public class StandaloneRainbowConnectionFactory implements IRainbowConnectionPor
   }
 
   @Override
-  public IModelUSBusPort createModelsManagerUSPort(IModelsManager m)
-      throws RainbowConnectionException {
-    try {
-      return new ESEBModelManagerModelUpdatePort(m);
-    } catch (IOException e) {
-      throw new RainbowConnectionException("Failed to connect", e);
-    }
+  public IModelUSBusPort createModelsManagerUSPort(IModelUpdater iModelUpdater) throws RainbowConnectionException {
+    return null;
   }
+
+//  @Override
+//  public IModelUSBusPort createModelsManagerUSPort(IModelsManager m)
+//      throws RainbowConnectionException {
+//    try {
+//      return new ESEBModelManagerModelUpdatePort(m);
+//    } catch (IOException e) {
+//      throw new RainbowConnectionException("Failed to connect", e);
+//    }
+//  }
 
   @Override
   public IModelUSBusPort createModelsManagerClientUSPort(Identifiable client)
@@ -370,14 +374,19 @@ public class StandaloneRainbowConnectionFactory implements IRainbowConnectionPor
   }
 
   @Override
-  public IMasterCommandPort createMasterCommandProviderPort(RainbowMaster rainbowMaster)
-      throws RainbowConnectionException {
-    try {
-      return new ESEBMasterCommandProviderPort(rainbowMaster);
-    } catch (IOException | ParticipantException e) {
-      throw new RainbowConnectionException("Failed to connect", e);
-    }
+  public IMasterCommandPort createMasterCommandProviderPort(IRainbowMaster iRainbowMaster) throws RainbowConnectionException {
+    return null;
   }
+
+//  @Override
+//  public IMasterCommandPort createMasterCommandProviderPort(RainbowMaster rainbowMaster)
+//      throws RainbowConnectionException {
+//    try {
+//      return new ESEBMasterCommandProviderPort(rainbowMaster);
+//    } catch (IOException | ParticipantException e) {
+//      throw new RainbowConnectionException("Failed to connect", e);
+//    }
+//  }
 
   @Override
   public IMasterCommandPort createMasterCommandRequirerPort() throws RainbowConnectionException {

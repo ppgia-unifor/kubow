@@ -189,6 +189,11 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   }
 
   @Override
+  public ModelReference getManagedModel() {
+    return ModelReference.fromString(m_modelRef);
+  }
+
+  @Override
   public boolean isEnabled() {
     return m_adaptEnabled;
   }

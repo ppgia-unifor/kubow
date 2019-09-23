@@ -1,11 +1,10 @@
 module kubow.tactics;
 
 import model "PodinfoSystem:Acme" { PodinfoSystem as M, Kubernetes as K};
-import op "org.sa.rainbow.stitch.lib.*";
 
 tactic addReplicas(int count) {
   condition {
-    M.podinfoD.maxReplicas >= M.podinfoD.desiredReplicas + count;
+    M.podinfoD.maxReplicas >= M.podinfoD.desiredReplicas;
   }
   action {
      M.scaleUp(M.podinfoD, M.podinfoD.desiredReplicas + count);
