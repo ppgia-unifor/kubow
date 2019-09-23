@@ -1,0 +1,42 @@
+vars:
+  _probes.commonPath: "opt/rainbow/target/znn/system/probes"
+  
+probes:
+
+  CustomMetricsProbe:
+    alias: kube-znn.latency.probe
+    location: 127.0.0.1
+    type: java
+    javaInfo:
+      class: org.sa.rainbow.translator.probes.CustomMetricProbe
+      period: 5000
+      args.length: 5
+      args.0: default
+      args.1: kube-znn
+      args.2: selector?app=kube-znn
+      args.3: caddy_http_request_duration_seconds_success_99p
+      args.4: latency
+
+  DeploymentPropertiesProbe:
+    alias: deployments.default.kube-znn.probe
+    location: 127.0.0.1
+    type: java
+    javaInfo:
+      class: org.sa.rainbow.translator.probes.DeploymentInfoProbe
+      period: 5000
+      args.length: 2
+      args.0: "default"
+      args.1: "kube-znn"
+
+#  LatencyPrometheusProbe:
+#    alias: default-znn-latency
+#    location: 127.0.0.1
+#    type: java
+#    javaInfo:
+#      class: org.sa.rainbow.translator.probes.PrometheusProbe
+#      period: 2000
+#      args.length: 4
+#      args.0: "default"
+#      args.1: "znn"
+#      args.2: "latency"
+#      args.3: "histogram_quantile(0.95, sum(irate(caddy_http_request_duration_seconds_bucket{namespace!=\"\",pod=~\"znn.*\"}[1m])) by (le))*1000"
