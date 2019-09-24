@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: locust-cm
 data:
-  ATTACKED_HOST: http://kube-znn
+  ATTACKED_HOST: http://vote

@@ -39,8 +39,6 @@ spec:
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
-      # nodeSelector:
-      #   kops.k8s.io/instancegroup: locust
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
