@@ -1,7 +1,5 @@
 ## Deployment instructions
 
-To deploy this tool, just run 
-
 `kubectl apply -f namespace.yaml`
 
 `helm template istio-init --name istio-init --namespace istio-system | kubectl apply -f -`
