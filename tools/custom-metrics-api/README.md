@@ -3,4 +3,4 @@ Custom metrics api is an implementation of the Kubernetes resource metrics API a
 
 ## Deployment instructions
 
-To deploy this tool, just run `kubectl apply -f .` in this folder.
+`kubectl apply -f .`
