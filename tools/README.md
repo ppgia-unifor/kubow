@@ -22,11 +22,11 @@ Optional tools:
 * [istio](./istio): a service mesh tool.
 
 
-## Getting started 
+## Deployment instructions
 
 To deploy each of those tools in your cluster, follow the intructions provided in the tools' respective folder.
 
-To deploy all required tools, just run `sh deploy-tools.sh`
+To deploy all the required tools, just run `sh deploy-tools.sh`
 
-To destroy/undeploy required tools, just run `sh destroy-tools.sh`
+To destroy/undeploy the required tools, just run `sh destroy-tools.sh`
 
