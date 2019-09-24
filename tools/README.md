@@ -7,13 +7,13 @@ Required tools:
 
 * [custom-metrics-api](./custom-metrics-api): an implementation of the Kubernetes [resource metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/resource-metrics-api.md) API and [custom metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/custom-metrics-api.md) API.
 
-* [kube-state-metrics](./kube-state-metrics): a service that periodically polls the Kubernetes API and generates metrics about the state of its objects.
-
 * [metrics-server](./metrics-server): an implementation of the Kubernetes [Metrics Server](https://kubernetes.io/docs/tasks/debug-application-cluster/resource-metrics-pipeline/#metrics-server).
 
 * [prometheus](./prometheus): a monitoring system and time series database.
 
 Optional tools:
+
+* [kube-state-metrics](./kube-state-metrics): a service that periodically polls the Kubernetes API and generates metrics about the state of its objects.
 
 * [locust](./locust): a distributed load generation and testing tool.
 
