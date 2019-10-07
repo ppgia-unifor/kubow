@@ -1,0 +1,42 @@
+probes:
+
+#  CustomMetricsProbe:
+#    alias: podinfo.latency.probe
+#    location: 127.0.0.1
+#    type: java
+#    javaInfo:
+#      class: org.sa.rainbow.translator.probes.CustomMetricProbe
+#      period: 5000
+#      args.length: 5
+#      args.0: default
+#      args.1: podinfo
+#      args.2: selector?app=podinfo
+#      args.3: caddy_http_request_duration_seconds_success_99p
+#      args.4: latency
+
+  DeploymentPropertiesProbe:
+    alias: deployments.default.podinfo.probe
+    location: 127.0.0.1
+    type: java
+    javaInfo:
+      class: br.unifor.kubow.probes.DeploymentInfoProbe
+      period: 5000
+      args.length: 2
+      args.0: "default"
+      args.1: "podinfo"
+
+  PrometheusProbe:
+    alias: sample_probe
+    location: 127.0.0.1
+    type: java
+    javaInfo:
+      class: br.unifor.kubow.probes.PrometheusProbe
+      period: 5000
+      args.length: 4
+      args.0: "default"
+      args.1: "podinfo"
+      args.2: "latency"
+      args.3: "histogram_quantile(0.99, rate(prometheus_http_request_duration_seconds_bucket{handler='/metrics'}[10s]))"
+
+
+
