@@ -7,11 +7,10 @@ data:
   tactics.s: |
     module kubow.strategies;
     import model "KubeZnnSystem:Acme" { KubeZnnSystem as M, KubernetesFam as K };
-    import op "org.sa.rainbow.model.stitch.*";
 
-    define boolean textMode = org.sa.rainbow.stitch.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:text");
-    define boolean lowMode = org.sa.rainbow.stitch.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:low");
-    define boolean highMode = org.sa.rainbow.stitch.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:high");
+    define boolean textMode = br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:text");
+    define boolean lowMode = br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:low");
+    define boolean highMode = br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:high");
     define boolean cHiRespTime = M.kubeZnnS.latency > M.MAX_RESPTIME;
     define boolean cLoRespTime = M.kubeZnnS.latency < M.MIN_RESPTIME;
     define boolean canAddPods = M.kubeZnnD.maxReplicas > M.kubeZnnD.desiredReplicas;

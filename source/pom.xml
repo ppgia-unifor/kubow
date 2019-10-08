@@ -1,28 +1,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>rainbow</groupId>
+    <groupId>br.unifor</groupId>
     <artifactId>kubow</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>3.0.0-RC</version>
     <properties>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <jib-maven-version>1.0.0</jib-maven-version>
-        <dockerfile-maven-version>1.4.10</dockerfile-maven-version>
+        <dockerfile-maven-version>1.4.12</dockerfile-maven-version>
     </properties>
 
     <developers>
         <developer>
             <id>cmendesce</id>
             <name>Carlos Mendes</name>
+            <organization>Unifor - University of Fortaleza</organization>
             <email>cmendesce@gmail.com</email>
         </developer>
     </developers>
 
     <dependencies>
-
         <!-- rainbow -->
         <dependency>
             <groupId>rainbow</groupId>
@@ -34,6 +33,23 @@
             <artifactId>rainbow-acme-model</artifactId>
             <version>3.0</version>
         </dependency>
+        <dependency>
+            <groupId>rainbow</groupId>
+            <artifactId>rainbow-stitch</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>rainbow</groupId>
+            <artifactId>rainbow-utility-model</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>rainbow</groupId>
+            <artifactId>rainbow-mem-comms</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <!--/rainbow-->
+
         <dependency>
             <groupId>org.acmestudio</groupId>
             <artifactId>acme-lib</artifactId>
@@ -51,26 +67,10 @@
             <version>1.4.1</version>
         </dependency>
         <dependency>
-            <groupId>rainbow</groupId>
-            <artifactId>rainbow-stitch</artifactId>
-            <version>3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>rainbow</groupId>
-            <artifactId>rainbow-utility-model</artifactId>
-            <version>3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>rainbow</groupId>
-            <artifactId>rainbow-mem-comms</artifactId>
-            <version>3.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>27.0-jre</version>
         </dependency>
-        <!--/rainbow -->
 
         <!-- kubernetes -->
         <dependency>
@@ -122,12 +122,6 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.8.11.1</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.google.guava</groupId>-->
-            <!--<artifactId>guava</artifactId>-->
-            <!--<version>27.0.1-jre</version>-->
-        <!--</dependency>-->
-
 
         <!-- testing -->
         <dependency>
@@ -201,7 +195,7 @@
                 </executions>
                 <configuration>
                     <repository>cmendes/kubow</repository>
-                    <tag>development</tag>
+                    <tag>yellow</tag>
                     <buildArgs>
                         <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>

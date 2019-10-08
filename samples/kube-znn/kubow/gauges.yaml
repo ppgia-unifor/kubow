@@ -6,7 +6,7 @@ metadata:
 data:
   gauges.yaml: |
     gauge-types:
-      KubeRainbowGaugeT:
+      KubowGaugeT:
         commands:
           setServiceProperty: ServiceT.setServiceProperty (Object)
           setDeploymentInfo: DeploymentT.setDeploymentInfo (Object)
@@ -26,7 +26,7 @@ data:
             default: 3000
           javaClass:
             type: String
-            default: "org.sa.rainbow.translator.gauges.KubeGauge"
+            default: "br.unifor.kubow.gauges.KubowGauge"
         configParams:
           targetProbeType:
             type: String
@@ -34,7 +34,7 @@ data:
         comment: ""
     gauge-instances:
       G1:
-        type: KubeRainbowGaugeT
+        type: KubowGaugeT
         model: "KubeZnnSystem:Acme"
         commands:
           "setServiceProperty()": "kubeZnnS.setServiceProperty($<jsonValue>,<latency>)"
@@ -43,7 +43,7 @@ data:
         configValues:
           targetProbeType: kube-znn.latency.probe@*
       G2:
-        type: KubeRainbowGaugeT
+        type: KubowGaugeT
         model: "KubeZnnSystem:Acme"
         commands:
           "setDeploymentInfo()": kubeZnnD.setDeploymentInfo($<jsonValue>)
