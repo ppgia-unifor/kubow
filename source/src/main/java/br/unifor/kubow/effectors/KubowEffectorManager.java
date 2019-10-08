@@ -13,7 +13,7 @@ import static org.sa.rainbow.translator.effectors.IEffectorExecutionPort.Outcome
 public class KubowEffectorManager extends EffectorManager {
 
   public KubowEffectorManager() {
-    super("KubeRainbow RollOutEffector Manager");
+    super("Kubow EffectorManager");
   }
 
   /** This method is called when an event is published by the by a publisher */

@@ -54,7 +54,7 @@ spec:
           configMap:
             name: log4j
       containers:
-      - image: cmendes/kubow:1.0.0-SNAPSHOT
+      - image: cmendes/kubow:yellow
         name: kubow
         imagePullPolicy: Always
         ports:
@@ -62,40 +62,40 @@ spec:
           name: delegate
         env:
         - name: TARGET
-          value: "target"
+          value: "kube-znn"
         - name: TARGET_PATH
-          value: "/etc/kubow"
+          value: "targets"
         volumeMounts:
         - name: properties
-          mountPath: /etc/kubow/target/rainbow.properties
+          mountPath: /usr/share/kubow/targets/kube-znn/rainbow.properties
           subPath: rainbow.properties
         - name: probes
-          mountPath: /etc/kubow/target/probes.yaml
+          mountPath: /usr/share/kubow/targets/kube-znn/probes.yaml
           subPath: probes.yaml
         - name: gauges
-          mountPath: /etc/kubow/target/gauges.yaml
+          mountPath: /usr/share/kubow/targets/kube-znn/gauges.yaml
           subPath: gauges.yaml
         - name: effectors
-          mountPath: /etc/kubow/target/effectors.yaml
+          mountPath: /usr/share/kubow/targets/kube-znn/effectors.yaml
           subPath: effectors.yaml
         - name: tactics
-          mountPath: /etc/kubow/target/stitch/tactics.s
+          mountPath: /usr/share/kubow/targets/kube-znn/stitch/tactics.s
           subPath: tactics.s
         - name: strategies
-          mountPath: /etc/kubow/target/stitch/strategies.s
+          mountPath: /usr/share/kubow/targets/kube-znn/stitch/strategies.s
           subPath: strategies.s
         - name: utilities
-          mountPath: /etc/kubow/target/utilities.yaml
+          mountPath: /usr/share/kubow/targets/kube-znn/utilities.yaml
           subPath: utilities.yaml
         - name: kubernetes-acme-family
-          mountPath: /etc/kubow/target/model/Kubernetes.acme
+          mountPath: /usr/share/kubow/targets/kube-znn/model/Kubernetes.acme
           subPath: Kubernetes.acme
         - name: target-acme-model
-          mountPath: /etc/kubow/target/model/target-acme-model.acme
+          mountPath: /usr/share/kubow/targets/kube-znn/model/target-acme-model.acme
           subPath: target-acme-model.acme
         - name: op-map
-          mountPath: /etc/kubow/target/op.map
+          mountPath: /usr/share/kubow/targets/kube-znn/op.map
           subPath: op.map
         - name: log4j
-          mountPath: /usr/share/kubow/log4j.properties
+          mountPath: /usr/share/kubow/targets/kube-znn/log4j.properties
           subPath: log4j.properties

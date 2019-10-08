@@ -8,4 +8,4 @@ ADD target/${JAR_FILE} /usr/share/kubow/kubow.jar
 EXPOSE 1111
 EXPOSE 4567
 
-ENTRYPOINT ["/usr/bin/java", "-jar", "/usr/share/kubow/kubow.jar", "-Dlog4j.configuration=file:log4j.properties"]
+ENTRYPOINT ["java", "-jar", "/usr/share/kubow/kubow.jar", "-Dlog4j.configuration=file:log4j.properties"]

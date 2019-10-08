@@ -46,6 +46,7 @@ public class KubowApplication {
   }
 
   static void startConfig() {
+    System.setProperty("user.dir", "/usr/share/kubow");
     var target = System.getenv("TARGET");
     var config = System.getenv("TARGET_PATH");
 
