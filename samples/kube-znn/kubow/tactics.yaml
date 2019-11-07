@@ -22,7 +22,7 @@ data:
         cHiRespTime && canAddPods;
       }
       action {
-        M.scaleUp(M.kubeZnnD, M.kubeZnnD.desiredReplicas + count);
+        M.scaleUp(M.kubeZnnD, count);
       }
       effect {
         M.kubeZnnD.desiredReplicas == M.kubeZnnD.availableReplicas;
@@ -34,7 +34,7 @@ data:
         cLoRespTime && canRemovePods;
       }
       action {
-        M.scaleDown(M.kubeZnnD, M.kubeZnnD.desiredReplicas - count);
+        M.scaleDown(M.kubeZnnD, count);
       }
       effect {
         M.kubeZnnD.desiredReplicas == M.kubeZnnD.availableReplicas;
