@@ -46,7 +46,11 @@ public class KubowApplication {
   }
 
   static void startConfig() {
-    System.setProperty("user.dir", "/usr/share/kubow");
+    var userDir = System.getenv("USER_DIR");
+    if (userDir != null) {
+      System.setProperty("user.dir", userDir);
+    }
+
     var target = System.getenv("TARGET");
     var config = System.getenv("TARGET_PATH");
 
@@ -93,7 +97,7 @@ public class KubowApplication {
         var delegate = new RainbowDelegate();
         delegate.initialize();
         delegate.start();
-        Thread.sleep(5000); //wait for delegate is ready
+        Thread.sleep(5000); //waiting for delegate to be ready
         delegate.startProbes();
         logger.info("Initialized rainbow delegate with ID {}", delegate.getId());
         retries = maxRetries;

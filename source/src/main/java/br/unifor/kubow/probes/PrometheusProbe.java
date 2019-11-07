@@ -19,10 +19,10 @@ public class PrometheusProbe extends KubowProbe {
 
   public PrometheusProbe(String id, long sleepTime, String[] args) {
     super(id, probeType(args[0], args[1], args[2]), sleepTime, args);
-    var host = Rainbow.instance().getProperty("customize.prometheus.url");
+    var host = Rainbow.instance().getProperty("kubow.prometheus.url");
     if (host == null) {
       throw new InvalidParameterException(
-          "Property {customize.prometheus.url} not defined in rainbow.properties file");
+          "Property {kubow.prometheus.url} not defined in rainbow.properties file");
     }
     client = new PrometheusClient(host);
     namespace = args[0];

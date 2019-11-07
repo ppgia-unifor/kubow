@@ -58,4 +58,5 @@ data:
     customize.utility.trackStrategy=uSF
     customize.utility.score.minimum.threshold=0.33
     customize.utility.scenario=scenario 1
-    customize.prometheus.url=http://prometheus.monitoring:9090
+    kubow.prometheus.url=http://prometheus.monitoring:9090
+    kubow.kubernetes.url=http://k8s-proxy.default:8081
