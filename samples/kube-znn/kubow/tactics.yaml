@@ -7,33 +7,33 @@ data:
     module kubow.strategies;
     import model "KubeZnnSystem:Acme" { KubeZnnSystem as M, KubernetesFam as K };
 
-    define boolean textMode = br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:text");
-    define boolean lowMode = br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:low");
-    define boolean highMode = br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:high");
+    define boolean textMode = br.unifor.kubow.adaptation.KubernetesUtils.getContainerImage(M.kubeZnnD, "znn") == "cmendes/znn:text";
+    define boolean lowMode = br.unifor.kubow.adaptation.KubernetesUtils.getContainerImage(M.kubeZnnD, "znn") == "cmendes/znn:low";
+    define boolean highMode = br.unifor.kubow.adaptation.KubernetesUtils.getContainerImage(M.kubeZnnD, "znn") == "cmendes/znn:high";
 
     tactic addReplicas(int count) {
+      int replicas = M.kubeZnnD.desiredReplicas;
       condition {
-        int replicas = M.kubeZnnD.desiredReplicas;
         M.kubeZnnD.maxReplicas > M.kubeZnnD.desiredReplicas;
       }
       action {
         M.scaleUp(M.kubeZnnD, count);
       }
-      effect {
-        @[10000] replicas' + count == M.kubeZnnD.desiredReplicas;
+      effect @[10000] {
+        replicas' + count == M.kubeZnnD.desiredReplicas;
       }
     }
 
     tactic removeReplicas(int count) {
+      int replicas = M.kubeZnnD.desiredReplicas;
       condition {
-        int replicas = M.kubeZnnD.desiredReplicas;
         M.kubeZnnD.minReplicas < M.kubeZnnD.desiredReplicas;
       }
       action {
         M.scaleDown(M.kubeZnnD, count);
       }
-      effect {
-        @[10000] replicas' - count == M.kubeZnnD.desiredReplicas;
+      effect @[10000] {
+        replicas' - count == M.kubeZnnD.desiredReplicas;
       }
     }
 
@@ -49,8 +49,8 @@ data:
           M.rollOut(M.kubeZnnD, "znn", "cmendes/znn:text");
         }
       }
-      effect {
-        @[10000] br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:low") || br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:text");
+      effect @[10000] {
+        br.unifor.kubow.adaptation.KubernetesUtils.containerImage(M.kubeZnnD, "znn") == "cmendes/znn:low" || br.unifor.kubow.adaptation.KubernetesUtils.containerImage(M.kubeZnnD, "znn") == "cmendes/znn:text";
       }
     }
 
@@ -66,7 +66,7 @@ data:
           M.rollOut(M.kubeZnnD, "znn", "cmendes/znn:high");
         }
       }
-      effect {
-        @[10000] br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:low") || br.unifor.kubow.adaptation.Operators.containerImage(M.kubeZnnD, "znn", "cmendes/znn:high");
+      effect @[10000] {
+        br.unifor.kubow.adaptation.KubernetesUtils.containerImage(M.kubeZnnD, "znn") == "cmendes/znn:low" || br.unifor.kubow.adaptation.KubernetesUtils.containerImage(M.kubeZnnD, "znn") == "cmendes/znn:high";
       }
     }
