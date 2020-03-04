@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: db
   labels:
     app: db
-  name: db
 spec:
   replicas: 1
   selector:
@@ -15,8 +15,16 @@ spec:
         app: db
     spec:
       containers:
-      - image: postgres:9.4
-        name: db
+      - name: db
+        image: postgres:9.4
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        ports:
+        - containerPort: 5432
+          name: db
 ---
 apiVersion: v1
 kind: Service
