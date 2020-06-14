@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /** @author Carlos Mendes (cmendesce@gmail.com) */
-public class KubernetesUtils {
+public abstract class KubernetesUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(KubernetesUtils.class);
 

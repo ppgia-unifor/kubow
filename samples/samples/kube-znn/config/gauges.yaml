@@ -1,0 +1,77 @@
+gauge-types:
+  KubowGaugeT:
+    commands:
+      setServiceProperty: ServiceT.setServiceProperty (Object)
+      setDeploymentInfo: DeploymentT.setDeploymentInfo (Object)
+      setDeploymentProperty: DeploymentT.setDeploymentProperty (Object)
+    setupParams:
+      targetIP:
+        type: String
+        default: "127.0.0.1"
+      propertyPath:
+        type: String
+        default: ""
+      propertyName:
+        type: String
+        default: ""
+      beaconPeriod:
+        type: long
+        default: 3000
+      javaClass:
+        type: String
+        default: "br.unifor.kubow.gauges.KubowGauge"
+    configParams:
+      targetProbeType:
+        type: String
+        default: ~
+    comment: ""
+gauge-instances:
+  SloGauge:
+    type: KubowGaugeT
+    model: "KubeZnnSystem:Acme"
+    commands:
+      "setServiceProperty()": "kubeZnnS.setServiceProperty($<jsonValue>,<slo>)"
+    setupValues:
+      targetIP: "127.0.0.1"
+    configValues:
+      targetProbeType: kube-znn.slo.probe@*
+  
+  ReplicasHighGauge:
+    type: KubowGaugeT
+    model: "KubeZnnSystem:Acme"
+    commands:
+      "setDeploymentProperty()": "kubeZnnD.setDeploymentProperty($<jsonValue>,<replicasHigh>)"
+    setupValues:
+      targetIP: "127.0.0.1"
+    configValues:
+      targetProbeType: kube-znn.replicasHigh.probe@*
+  
+  ReplicasMidGauge:
+    type: KubowGaugeT
+    model: "KubeZnnSystem:Acme"
+    commands:
+      "setDeploymentProperty()": "kubeZnnD.setDeploymentProperty($<jsonValue>,<replicasMid>)"
+    setupValues:
+      targetIP: "127.0.0.1"
+    configValues:
+      targetProbeType: kube-znn.replicasMid.probe@*
+  
+  ReplicasLowGauge:
+    type: KubowGaugeT
+    model: "KubeZnnSystem:Acme"
+    commands:
+      "setDeploymentProperty()": "kubeZnnD.setDeploymentProperty($<jsonValue>,<replicasLow>)"
+    setupValues:
+      targetIP: "127.0.0.1"
+    configValues:
+      targetProbeType: kube-znn.replicasLow.probe@*
+
+  KubeZnnInfoGauge:
+    type: KubowGaugeT
+    model: "KubeZnnSystem:Acme"
+    commands:
+      "setDeploymentInfo()": kubeZnnD.setDeploymentInfo($<jsonValue>)
+    setupValues:
+      targetIP: "127.0.0.1"
+    configValues:
+      targetProbeType: deployments.default.kube-znn.probe@*

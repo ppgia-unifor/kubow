@@ -12,10 +12,7 @@ import org.sa.rainbow.core.adaptation.IAdaptationManager;
 import org.sa.rainbow.core.error.RainbowConnectionException;
 import org.sa.rainbow.core.event.IRainbowMessage;
 import org.sa.rainbow.core.health.IRainbowHealthProtocol;
-import org.sa.rainbow.core.models.IModelInstance;
 import org.sa.rainbow.core.models.ModelReference;
-import org.sa.rainbow.core.models.UtilityFunction;
-import org.sa.rainbow.core.models.UtilityPreferenceDescription;
 import org.sa.rainbow.core.ports.*;
 import org.sa.rainbow.core.ports.IModelChangeBusSubscriberPort.IRainbowChangeBusSubscription;
 import org.sa.rainbow.core.ports.IModelChangeBusSubscriberPort.IRainbowModelChangeCallback;
@@ -23,15 +20,14 @@ import org.sa.rainbow.model.acme.AcmeModelInstance;
 import org.sa.rainbow.model.acme.AcmeRainbowOperationEvent.CommandEventT;
 import org.sa.rainbow.stitch.Ohana;
 import org.sa.rainbow.stitch.core.Strategy;
-import org.sa.rainbow.stitch.core.Tactic;
 import org.sa.rainbow.stitch.error.DummyStitchProblemHandler;
 import org.sa.rainbow.stitch.error.IStitchProblem;
 import org.sa.rainbow.stitch.visitor.Stitch;
 import org.sa.rainbow.util.Beacon;
 import org.sa.rainbow.util.Util;
 
-import java.io.*;
-import java.nio.channels.FileChannel;
+import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -57,9 +53,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
           .labelNames("available_strategies", "applicable_strategies", "selected_strategy")
           .register();
 
-  private static final String NAME = "Kube Rainbow Adaptation Manager";
   private static final double FAILURE_RATE_THRESHOLD = 0.95;
-  private static final double MIN_UTILITY_THRESHOLD = 0.40;
   private static final long FAILURE_EFFECTIVE_WINDOW = 2000 /* ms */;
   private static final long FAILURE_WINDOW_CHUNK = 1000 /* ms */;
   /**
@@ -77,10 +71,9 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   private static final int I_FAIL = 2;
   private static final int I_OTHER = 3;
   private static final int CNT_I = 4;
-  private static double m_minUtilityThreshold = 0.0;
+
   private final List<Strategy> availableStrategies;
   private AcmeModelInstance m_model;
-  private boolean m_adaptNeeded;
   // constraint being violated
   private boolean m_adaptEnabled;
   private List<Stitch> m_repertoire;
@@ -92,7 +85,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   private IModelChangeBusSubscriberPort m_modelChangePort;
   private IModelsManagerPort m_modelsManagerPort;
   private String m_modelRef;
-  private FileChannel m_strategyLog = null;
   private IRainbowChangeBusSubscription m_modelTypecheckingChanged =
       new IRainbowChangeBusSubscription() {
 
@@ -112,11 +104,9 @@ public final class AdaptationManager extends AbstractRainbowRunnable
           }
         }
       };
-  private UtilityPreferenceDescription m_utilityModel;
 
-  /** Default constructor. */
   public AdaptationManager() {
-    super(NAME);
+    super("Kubow Adaptation Manager");
     availableStrategies = new ArrayList<>();
     m_adaptEnabled = true;
     m_repertoire = new ArrayList<>();
@@ -127,13 +117,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
       m_historyCnt = new HashMap<>();
       m_failTimer = new HashMap<>();
     }
-    String thresholdStr =
-        Rainbow.instance().getProperty(RainbowConstants.PROPKEY_UTILITY_MINSCORE_THRESHOLD);
-    if (thresholdStr == null) {
-      m_minUtilityThreshold = MIN_UTILITY_THRESHOLD;
-    } else {
-      m_minUtilityThreshold = Double.valueOf(thresholdStr);
-    }
+
     setSleepTime(SLEEP_TIME);
   }
 
@@ -152,17 +136,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   @Override
   public void setModelToManage(ModelReference model) {
     m_modelRef = model.getModelName() + ":" + model.getModelType();
-    try {
-      m_strategyLog =
-          new FileOutputStream(
-                  new File(
-                      new File(Rainbow.instance().getTargetPath(), "log"),
-                      model.getModelName() + "-adaptation.log"))
-              .getChannel();
-    } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
     m_model = (AcmeModelInstance) m_modelsManagerPort.<IAcmeSystem>getModelInstance(model);
     if (m_model == null) {
       m_reportingPort.error(
@@ -170,21 +143,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
           MessageFormat.format("Could not find reference to {0}", model.toString()));
     }
     m_enqueuePort = RainbowPortFactory.createAdaptationEnqueuePort(model);
-    ModelReference utilityModelRef = new ModelReference(model.getModelName(), "UtilityModel");
-    IModelInstance<UtilityPreferenceDescription> modelInstance =
-        m_modelsManagerPort.getModelInstance(utilityModelRef);
-    if (modelInstance == null) {
-      m_reportingPort.error(
-          ADAPTATION_MANAGER,
-          MessageFormat.format(
-              "There is no utility model associated with this model. Expecting to find "
-                  + "''{0}''. Perhaps it is not specified in the rainbow.properties "
-                  + "file?",
-              utilityModelRef.toString()));
 
-    } else {
-      m_utilityModel = modelInstance.getModelInstance();
-    }
     initAdaptationRepertoire();
   }
 
@@ -208,14 +167,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
           getComponentType(), "There is an adaptation in progress. This will finish.");
     }
     m_adaptEnabled = enabled;
-  }
-
-  public void setAdaptationEnabled(boolean b) {
-    m_adaptEnabled = b;
-  }
-
-  public boolean adaptationInProgress() {
-    return m_adaptNeeded;
   }
 
   /**
@@ -250,7 +201,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     }
     if (m_pendingStrategies.isEmpty()) {
       Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_END);
-      m_adaptNeeded = false;
     }
   }
 
@@ -273,19 +223,7 @@ public final class AdaptationManager extends AbstractRainbowRunnable
       m_pendingStrategies.add(adaptation);
       m_enqueuePort.offerAdaptation(adaptation, null);
       String logMessage = selectedStrategy.getName();
-      strategyLog(logMessage);
-    }
-  }
-
-  private void strategyLog(String logMessage) {
-    if (m_strategyLog != null) {
-      Date d = new Date();
-      String log = MessageFormat.format("{0,number,#},queuing,{1}\n", d.getTime(), logMessage);
-      try {
-        m_strategyLog.write(java.nio.ByteBuffer.wrap(log.getBytes()));
-      } catch (IOException e) {
-        reportingPort().error(getComponentType(), "Failed to write " + log + " to log file");
-      }
+      log(logMessage);
     }
   }
 
@@ -345,12 +283,8 @@ public final class AdaptationManager extends AbstractRainbowRunnable
       }
     }
 
-    Optional<Strategy> selected;
-    if (Rainbow.instance().getProperty("customize.utility.enabled", false)) {
-      selected = ofNullable(selectByUtilityFunction(appSubsetByName));
-    } else {
-      selected = ofNullable(appSubsetByName.get(appSubsetByName.keySet().iterator().next()));
-    }
+    Optional<Strategy> selected = ofNullable(appSubsetByName.get(appSubsetByName.keySet().iterator().next()));
+
     if (selected.isPresent()) {
       adaptationsCycles
           .labels(
@@ -362,126 +296,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     }
     adaptationsCycles.labels(valueOf(availableStrategies.size()), valueOf(appSubsetByName.size()), "").inc();
     return null;
-  }
-
-  private Strategy selectByUtilityFunction(Map<String, Strategy> appSubsetByName) {
-    SortedMap<Double, Strategy> scoredStrategies = scoreStrategies(appSubsetByName);
-    if (Util.dataLogger().isInfoEnabled()) {
-      StringBuilder buf = new StringBuilder();
-      buf.append("  [\n");
-      for (Map.Entry<Double, Strategy> entry : scoredStrategies.entrySet()) {
-        buf.append("   ").append(entry.getValue().getName()).append(":");
-        buf.append(entry.getKey()).append("\n");
-      }
-      buf.append("  ]\n");
-      log(buf.toString());
-      Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_SCORE + buf.toString());
-    }
-
-    if (scoredStrategies.size() > 0) {
-      return scoredStrategies.get(scoredStrategies.lastKey());
-    } else {
-      Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_END);
-      log("<< NO applicable strategy, adaptation cycle ended.");
-      return null;
-    }
-  }
-
-  /**
-   * Iterate through the supplied set of strategies, compute aggregate attributes, and use the
-   * aggregate values plus stakeholder utility preferences to compute an integer score for each
-   * Strategy, between 0 and 100.
-   *
-   * @param subset the subset of condition-applicable Strategies to score, in the form of a
-   *     name-strategy map
-   * @return a map of score-strategy pairs, sorted in increasing order by score.
-   */
-  private SortedMap<Double, Strategy> scoreStrategies(Map<String, Strategy> subset) {
-    String scenario = Rainbow.instance().getProperty(RainbowConstants.PROPKEY_SCENARIO);
-    return scoreForScenario(scenario, subset);
-  }
-
-  private SortedMap<Double, Strategy> scoreForScenario(
-      String scenario, Map<String, Strategy> subset) {
-    Map<String, Double> weights = m_utilityModel.weights.get(scenario);
-    SortedMap<Double, Strategy> scored = new TreeMap<>();
-    double[] conds = null; // store the conditions to output for diagnosis
-
-    // find the weights of the applicable scenario
-    log("Scoring for " + scenario);
-    for (Strategy strategy : subset.values()) {
-      SortedMap<String, Double> aggAtt = strategy.computeAggregateAttributes();
-      // add the strategy failure history as another attribute
-      accountForStrategyHistory(aggAtt, strategy);
-      String s = strategy.getName() + aggAtt;
-      Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_STRATEGY_ATTR + s);
-      log("aggAttr: " + s);
-      /*
-       * compute utility values from attributes that combines values
-       * representing current condition, then accumulate the weighted
-       * utility sum
-       */
-      double[] items = new double[aggAtt.size()];
-      double[] utilityOfItem = new double[aggAtt.size()];
-      double[] currentUtility = new double[aggAtt.size()];
-      if (conds == null) {
-        conds = new double[aggAtt.size()];
-      }
-      int i = 0;
-      double score = 0.0;
-      for (String k : aggAtt.keySet()) {
-        double v = aggAtt.get(k);
-        // find the applicable utility function
-        UtilityFunction u = m_utilityModel.getUtilityFunctions().get(k);
-        if (u == null) {
-          log("Error: attempting to calculate for not existent function: " + k);
-          continue;
-        }
-        Object condVal;
-        // add attribute value from CURRENT condition to accumulated agg
-        // value
-        condVal = m_model.getProperty(u.mapping());
-        items[i] = v;
-        if (condVal != null) {
-          double val = 0.0;
-          if (condVal instanceof Double) {
-            val = (Double) condVal;
-          } else if (condVal instanceof Float) {
-            val = ((Float) condVal).doubleValue();
-          } else if (condVal instanceof Integer) {
-            val = ((Integer) condVal).doubleValue();
-          }
-
-          m_reportingPort.trace(
-              getComponentType(), "Avg value of prop: " + u.mapping() + " == " + condVal);
-          conds[i] = val;
-          items[i] += conds[i];
-        }
-        // now compute the utility, apply weight, and accumulate to sum
-        utilityOfItem[i] = u.f(items[i]);
-        currentUtility[i] = u.f(conds[i]);
-        score += weights.get(k) * utilityOfItem[i];
-        ++i;
-      }
-
-      // log this
-      s = Arrays.toString(items);
-      if (score < m_minUtilityThreshold) {
-        // utility score too low, don't consider for adaptation
-        log("score " + score + " below threshold, discarding: " + s);
-      } else {
-        scored.put(score, strategy);
-      }
-      log("current model properties: " + Arrays.toString(conds));
-      log("current model utilities: " + Arrays.toString(currentUtility));
-      log(strategy.getName() + ": predicted utilities: " + Arrays.toString(utilityOfItem));
-      log(strategy.getName() + ": score = " + score);
-      Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_STRATEGY_ATTR2 + s);
-      log("aggAtt': " + s);
-    }
-    log("cond   : " + Arrays.toString(conds));
-
-    return scored;
   }
 
   /**
@@ -496,9 +310,8 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     if (stitchPath == null) {
       m_reportingPort.error(ADAPTATION_MANAGER, "The stitchState path is not set!");
     } else if (stitchPath.exists() && stitchPath.isDirectory()) {
-      // find only ".s" files
-      FilenameFilter ff = (dir, name) -> name.endsWith(".s");
-      for (File f : stitchPath.listFiles(ff)) {
+
+      for (File f : stitchPath.listFiles((dir, name) -> name.endsWith(".s"))) {
         try {
           // don't duplicate loading of script files
           Stitch stitch = Ohana.instance().findStitch(f.getCanonicalPath());
@@ -508,8 +321,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
             Ohana.instance().parseFile(stitch);
             reportProblems(f, stitchProblemHandler);
 
-            // apply attribute vectors to tactics, if available
-            defineAttributes(stitch, m_utilityModel.attributeVectors);
             if (stitch.script.isApplicableForSystem(m_model)) {
               m_repertoire.add(stitch);
               availableStrategies.addAll(stitch.script.strategies);
@@ -557,22 +368,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     sph.clearProblems();
   }
 
-  private void defineAttributes(Stitch stitch, Map<String, Map<String, Object>> attrVectorMap) {
-    for (Tactic t : stitch.script.tactics) {
-      Map<String, Object> attributes = attrVectorMap.get(t.getName());
-      if (attributes != null) {
-        // found attribute def for tactic, save all key-value pairs
-        m_reportingPort.trace(
-            getComponentType(), "Found attributes for tactic " + t.getName() + ", saving pairs...");
-        for (Map.Entry<String, Object> e : attributes.entrySet()) {
-          t.putAttribute(e.getKey(), e.getValue());
-          m_reportingPort.trace(
-              getComponentType(), " - (" + e.getKey() + ", " + e.getValue() + ")");
-        }
-      }
-    }
-  }
-
   private void tallyStrategyOutcome(Strategy s) {
     if (m_historyTrackUtilName == null) return;
 
@@ -612,18 +407,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     Util.dataLogger().info(IRainbowHealthProtocol.DATA_ADAPTATION_STAT + str);
   }
 
-  private void accountForStrategyHistory(Map<String, Double> aggAtt, Strategy s) {
-    if (m_historyTrackUtilName == null) return;
-
-    if (m_historyCnt.containsKey(s.getName())) {
-      // consider failure only
-      aggAtt.put(m_historyTrackUtilName, getFailureRate(s));
-    } else {
-      // consider no failure
-      aggAtt.put(m_historyTrackUtilName, 0.0);
-    }
-  }
-
   private double getFailureRate(Strategy s) {
     double rv = 0.0;
     if (m_historyTrackUtilName == null) return rv;
@@ -658,18 +441,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
   }
 
   @Override
-  protected void doTerminate() {
-    if (m_strategyLog != null) {
-      try {
-        m_strategyLog.close();
-      } catch (IOException ignore) {
-      }
-      m_strategyLog = null;
-    }
-    super.doTerminate();
-  }
-
-  @Override
   protected void log(String txt) {
     m_reportingPort.info(ADAPTATION_MANAGER, txt);
   }
@@ -699,12 +470,6 @@ public final class AdaptationManager extends AbstractRainbowRunnable
     m_pendingStrategies = null;
     m_historyTrackUtilName = null;
     m_model = null;
-    if (m_strategyLog != null) {
-      try {
-        m_strategyLog.close();
-      } catch (IOException ignored) {
-      }
-    }
   }
 
   private class StrategyAdaptationResultsVisitor
