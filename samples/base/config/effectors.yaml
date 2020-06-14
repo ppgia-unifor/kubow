@@ -1,0 +1,32 @@
+vars:
+effector-types:
+  RollOutT:
+    command: "M.rollOut ($<deployment>,$<container>,$<image>)"
+    location: "127.0.0.1"
+    type: java
+    javaInfo:
+      class: br.unifor.kubow.effectors.RollOutEffector
+  ScaleUpT:
+    command: "M.scaleUp ($<deployment>,$<desiredReplicas>)"
+    location: "127.0.0.1"
+    type: java
+    javaInfo:
+      class: br.unifor.kubow.effectors.ScaleUpEffector
+  ScaleDownT:
+    command: "M.scaleDown ($<deployment>,$<desiredReplicas>)"
+    location: "127.0.0.1"
+    type: java
+    javaInfo:
+      class: br.unifor.kubow.effectors.ScaleDownEffector
+
+effectors:
+  rollOut:
+    effector-type: RollOutT
+    command: "M.rollOut ($<deployment>,$<container>,$<image>)"
+  scaleUp:
+    effector-type: ScaleUpT
+    command: "M.scaleUp ($<deployment>,$<desiredReplicas>)"
+  scaleDown:
+    effector-type: ScaleDownT
+    command: "M.scaleDown ($<deployment>,$<desiredReplicas>)"
+  
