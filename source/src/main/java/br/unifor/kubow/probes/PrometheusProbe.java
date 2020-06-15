@@ -17,6 +17,13 @@ public class PrometheusProbe extends KubowProbe {
   private final String deploymentName;
   private final String promQl;
 
+  /**
+   * Constructs a probe to collect data from prometheus. The prometheus host is configured by `kubow.prometheus.url`
+   * parameter defined in `rainbow.properties` file.
+   * @param id The unique identifier
+   * @param sleepTime The pause time
+   * @param args An array that represents the namespace, the deployment`s name, the metric`s name, and the prometheus` query
+   */
   public PrometheusProbe(String id, long sleepTime, String[] args) {
     super(id, probeType(args[0], args[1], args[2]), sleepTime, args);
     var host = Rainbow.instance().getProperty("kubow.prometheus.url");

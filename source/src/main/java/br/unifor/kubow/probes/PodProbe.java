@@ -3,8 +3,8 @@ package br.unifor.kubow.probes;
 import br.unifor.kubow.services.kubernetes.KubernetesClientFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
-import com.squareup.okhttp.Request;
-import io.kubernetes.client.ApiException;
+import io.kubernetes.client.openapi.ApiException;
+import okhttp3.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +16,7 @@ import java.util.Map;
 import static com.google.common.collect.Streams.stream;
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static java.util.Collections.emptyList;
 
 /** @author Carlos Mendes (cmendesce@gmail.com) */
 public class PodProbe extends KubernetesProbe {
@@ -79,16 +80,16 @@ public class PodProbe extends KubernetesProbe {
 
   Request buildGetRequest(String path) {
     try {
-      return apiClient()
-          .buildRequest(
+      return apiClient().buildRequest(
               path,
               "GET",
-              new ArrayList<>(),
-              new ArrayList<>(),
+              emptyList(),
+              emptyList(),
               null,
-              new HashMap<>(),
-              new HashMap<>(),
-              new String[] {},
+              Map.of(),
+              Map.of(),
+              Map.of(),
+              new String[] {"BearerToken"},
               null);
     } catch (ApiException e) {
       logger.error("Cannot get from kubernetes api.", e);

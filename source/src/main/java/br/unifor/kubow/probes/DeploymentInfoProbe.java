@@ -1,10 +1,10 @@
 package br.unifor.kubow.probes;
 
 import br.unifor.kubow.services.kubernetes.KubernetesClientFactory;
-import io.kubernetes.client.ApiException;
-import io.kubernetes.client.apis.AppsV1Api;
-import io.kubernetes.client.models.V1Container;
-import io.kubernetes.client.models.V1Deployment;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.apis.AppsV1Api;
+import io.kubernetes.client.openapi.models.V1Container;
+import io.kubernetes.client.openapi.models.V1Deployment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

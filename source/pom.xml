@@ -74,15 +74,15 @@
 
         <!-- kubernetes -->
         <dependency>
-            <groupId>io.kubernetes</groupId>
-            <artifactId>client-java</artifactId>
-            <version>4.0.0-beta1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>4.1.0</version>
+            <version>4.10.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.kubernetes</groupId>
+            <artifactId>client-java</artifactId>
+            <version>8.0.2</version>
+            <scope>compile</scope>
         </dependency>
         <!--/kubernetes-->
 
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.2.1</version>
+            <version>4.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -120,7 +120,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.10.4</version>
+            <version>2.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.11.0</version>
         </dependency>
 
         <!-- testing -->
