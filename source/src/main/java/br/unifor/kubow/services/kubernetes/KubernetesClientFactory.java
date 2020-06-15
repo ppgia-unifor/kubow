@@ -1,6 +1,6 @@
 package br.unifor.kubow.services.kubernetes;
 
-import io.kubernetes.client.ApiClient;
+import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.util.Config;
 import org.sa.rainbow.core.Rainbow;
 import org.slf4j.Logger;

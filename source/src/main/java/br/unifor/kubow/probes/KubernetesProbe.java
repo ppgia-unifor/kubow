@@ -2,7 +2,7 @@ package br.unifor.kubow.probes;
 
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.kubernetes.client.ApiClient;
+import io.kubernetes.client.openapi.ApiClient;
 
 /**
  * Base probe to get values from kubernetes API
