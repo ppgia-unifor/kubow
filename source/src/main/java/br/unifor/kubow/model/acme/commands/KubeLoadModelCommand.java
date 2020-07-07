@@ -16,7 +16,7 @@ import org.sa.rainbow.core.models.IModelInstance;
 import org.sa.rainbow.core.models.IModelsManager;
 import org.sa.rainbow.core.models.ModelReference;
 import org.sa.rainbow.core.models.commands.AbstractLoadModelCmd;
-import br.unifor.kubow.model.acme.KubeModelUpdateOperatorsImpl;
+import br.unifor.kubow.model.acme.KubowModelUpdateOperatorsImpl;
 import org.sa.rainbow.util.Util;
 
 import java.io.File;
@@ -28,7 +28,7 @@ import java.util.List;
 public class KubeLoadModelCommand extends AbstractLoadModelCmd<IAcmeSystem> {
 
   private String systemName;
-  private KubeModelUpdateOperatorsImpl result;
+  private KubowModelUpdateOperatorsImpl result;
 
   public KubeLoadModelCommand(String systemName, IModelsManager mm, InputStream is, String source) {
     super("loadKubeModel", mm, systemName, is, source);
@@ -47,7 +47,7 @@ public class KubeLoadModelCommand extends AbstractLoadModelCmd<IAcmeSystem> {
           StandaloneResourceProvider.instance()
               .acmeResourceForObject(new File(getOriginalSource()));
       result =
-          new KubeModelUpdateOperatorsImpl(
+          new KubowModelUpdateOperatorsImpl(
                   resource.getModel().getSystem(systemName), getOriginalSource());
 
       // Do property substitution
