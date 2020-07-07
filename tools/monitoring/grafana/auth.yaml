@@ -1,0 +1,59 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    app: grafana
+  name: grafana-clusterrole
+rules: []
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: grafana-clusterrolebinding
+  namespace: default
+  labels:
+    app: grafana
+subjects:
+  - kind: ServiceAccount
+    name: grafana
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: grafana-clusterrole
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+rules:
+- apiGroups:      ['extensions']
+  resources:      ['podsecuritypolicies']
+  verbs:          ['use']
+  resourceNames:  [grafana]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: grafana
+subjects:
+- kind: ServiceAccount
+  name: grafana
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: grafana
+    chart: grafana-4.0.4
+    heritage: Tiller
+    release: grafana
+  name: grafana

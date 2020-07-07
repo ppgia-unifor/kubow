@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubow
+spec:
+  selector:
+    matchLabels:
+      app: kubow
+  template:
+    metadata:
+      labels:
+        app: kubow
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: localhost.k8s.io/layer
+                operator: In
+                values:
+                - kubow
+      serviceAccountName: kubow-user
+      volumes:
+      - name: kubow-config
+        configMap:
+          name: kubow-config
+      - name: kubow-model
+        configMap:
+          name: kubow-model
+      - name: kubow-adaptation
+        configMap:
+          name: kubow-adaptation
+      containers:
+      - image: cmendes/kubow:yellow
+        name: kubow
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        env:
+        - name: USER_DIR
+          value: "/usr/share/kubow"
+        - name: TARGET
+          value: "system"
+        - name: TARGET_PATH
+          value: "targets"
+        volumeMounts:
+        - name: kubow-config
+          mountPath: /usr/share/kubow/targets/system/rainbow.properties
+          subPath: rainbow.properties
+        - name: kubow-config
+          mountPath: /usr/share/kubow/targets/system/probes.yaml
+          subPath: probes.yaml
+        - name: kubow-config
+          mountPath: /usr/share/kubow/targets/system/gauges.yaml
+          subPath: gauges.yaml
+        - name: kubow-config
+          mountPath: /usr/share/kubow/targets/system/effectors.yaml
+          subPath: effectors.yaml
+        - name: kubow-adaptation
+          mountPath: /usr/share/kubow/targets/system/adaptation/tactics.s
+          subPath: tactics.s
+        - name: kubow-adaptation
+          mountPath: /usr/share/kubow/targets/system/adaptation/strategies.s
+          subPath: strategies.s
+        - name: kubow-adaptation
+          mountPath: /usr/share/kubow/targets/system/utilities.yaml
+          subPath: utilities.yaml
+        - name: kubow-model
+          mountPath: /usr/share/kubow/targets/system/model/kubernetes-family.acme
+          subPath: kubernetes-family.acme
+        - name: kubow-model
+          mountPath: /usr/share/kubow/targets/system/model/target-system.acme
+          subPath: target-system.acme
+        - name: kubow-config
+          mountPath: /usr/share/kubow/targets/system/op.map
+          subPath: op.map
+        - name: kubow-config
+          mountPath: /usr/share/kubow/log4j.properties
+          subPath: log4j.properties

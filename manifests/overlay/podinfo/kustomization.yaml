@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+  - name: kubow-config
+    behavior: merge
+    files:
+    - config/rainbow.properties
+    - config/probes.yaml
+    - config/gauges.yaml
+
+  - name: kubow-model
+    behavior: merge
+    files:
+    - model/target-system.acme
+    
+  - name: kubow-adaptation
+    behavior: merge
+    files:
+    - adaptation/strategies.s
+    - adaptation/tactics.s
+bases:
+- ../../base

@@ -1,0 +1,25 @@
+probes:
+ 
+  TrafficProbe:
+    alias: podinfo.traffic.probe
+    location: 127.0.0.1
+    type: java
+    javaInfo:
+      class: br.unifor.kubow.probes.PrometheusProbe
+      period: 5000
+      args.length: 4
+      args.0: "default"
+      args.1: "podinfo"
+      args.2: "traffic"
+      args.3: "sum (rate(http_requests_total{status=\"200\"}[30s]))"
+
+  DeploymentPropertiesProbe:
+    alias: deployments.default.podinfo.probe
+    location: 127.0.0.1
+    type: java
+    javaInfo:
+      class: br.unifor.kubow.probes.DeploymentInfoProbe
+      period: 5000
+      args.length: 2
+      args.0: "default"
+      args.1: "podinfo"

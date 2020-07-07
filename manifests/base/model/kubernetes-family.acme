@@ -1,0 +1,39 @@
+Family KubernetesFam = {
+  Property Type ContainerT = Record [image : string; name : string;];
+  Property Type SelectorT = Record [name : string; value : string;];
+  Connector Type LabelSelectorConnectorT = {
+    Role caller;
+    Role callee;
+    Property selectors : Sequence<SelectorT>;
+  }
+  Connector Type ServiceConnectorT = {
+    Role selector;
+    Role selectee;
+    Property namespace : string;
+    Property name : string;
+  }
+  Component Type DeploymentT = {
+    Property name : string;
+    Property namespace : string;
+    Property desiredReplicas : int << default : int = 1; >>;
+    Property currentReplicas : int << default : int = 0; >>;
+    Property availableReplicas : int;
+    Property minReplicas : int << default : int = 1; >>;
+    Property maxReplicas : int << default : int = 100000; >> ;
+    Property containers : Sequence<ContainerT>;
+    Property hasAlternativeImages : boolean << default : boolean = false; >> ;
+    Property alternativeImages : Sequence<string>;
+    Property status : string;
+    Property lastUpdate : int;
+    rule maxReplicasRule = invariant self.maxReplicas >= self.desiredReplicas;
+    rule minReplicasRule = invariant self.minReplicas <= self.desiredReplicas;
+  }
+  Component Type ServiceT = {
+    Property name : string;
+    Property latency : float << default : float = 0.0; >> ;
+    Property traffic : float << default : float = 0.0; >> ;
+    Property errors : float << default : float = 0.0; >> ;
+    Property saturation : float << default : float = 0.0; >> ;
+    Property slo : float << default : float = 1.0; >> ;
+  }
+}

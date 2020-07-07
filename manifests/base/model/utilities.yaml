@@ -1,0 +1,5 @@
+model:
+  name: MySystem
+  type: Acme
+utilities:
+  

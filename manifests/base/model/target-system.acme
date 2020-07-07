@@ -1,0 +1,3 @@
+import kubernetes-family.acme;
+System MySystem : KubernetesFam = new KubernetesFam extended with {
+}

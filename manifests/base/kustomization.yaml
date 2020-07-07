@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+  - name: kubow-config
+    files:
+    - config/rainbow.properties
+    - config/probes.yaml
+    - config/gauges.yaml
+    - config/effectors.yaml
+    - config/log4j.properties
+
+  - name: kubow-model
+    files:
+    - model/kubernetes-family.acme
+    
+  - name: kubow-adaptation
+    files:
+    - adaptation/strategies.s
+    - adaptation/tactics.s
+  
+resources:
+- deployment.yaml
+- kubow-user.yaml
