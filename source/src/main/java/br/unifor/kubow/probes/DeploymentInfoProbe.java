@@ -5,6 +5,8 @@ import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.models.V1Container;
 import io.kubernetes.client.openapi.models.V1Deployment;
+import io.kubernetes.client.openapi.models.V1DeploymentCondition;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toMap;
+import static org.joda.time.Seconds.secondsBetween;
 
 /**
  * A probe to collect data from a deployment and report as json
@@ -47,10 +51,18 @@ public class DeploymentInfoProbe extends KubernetesProbe {
       values.put("currentReplicas", d.getStatus().getReplicas());
       values.put("availableReplicas", d.getStatus().getAvailableReplicas());
       values.put("containers", extractContainers(d));
-      values.put("labels", d.getMetadata().getLabels());
+      var latest = extractLatestStatus(d);
+      values.put("status", latest.getType());
+      values.put("lastUpdate", secondsBetween(latest.getLastUpdateTime(), DateTime.now()).getSeconds());
       return values;
     }
     return null;
+  }
+
+  public static V1DeploymentCondition extractLatestStatus(V1Deployment d) {
+    var conditions = d.getStatus().getConditions();
+    conditions.sort(comparing(V1DeploymentCondition::getLastUpdateTime));
+    return conditions.get(conditions.size() - 1);
   }
 
   private Map<String, String> extractContainers(V1Deployment deployment) {
@@ -63,7 +75,7 @@ public class DeploymentInfoProbe extends KubernetesProbe {
       return of(appsV1Api.readNamespacedDeployment(deploymentName, namespace, null, false, false));
     } catch (ApiException ex) {
       logger.error(
-          "An error occurred when trying to collect data from {}.{}", namespace, deploymentName, ex);
+          "An error occurred when trying to collect data from {}.{}. Response Body: {}", namespace, deploymentName, ex.getResponseBody(), ex);
       return empty();
     }
   }
