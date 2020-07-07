@@ -1,0 +1,26 @@
+import kubernetes-family.acme;
+
+System PodinfoSystem : KubernetesFam = new KubernetesFam extended with {
+
+    Component podinfoS : ServiceT = new ServiceT extended with {
+        Port apiPort  = { }
+        Property name = "podinfo";
+    }
+
+    Component podinfoD : DeploymentT = new DeploymentT extended with {
+        Port apiPort  = { }
+
+        Property namespace = "default";
+        Property maxReplicas = 3;
+        Property name = "podinfo";
+    }
+
+    Connector podinfoServiceConnector  = new LabelSelectorConnectorT extended with {
+        Property selectors = <[name : string = "app";value : string = "podinfo";]>;
+    }
+
+    Property MAX_RESPTIME = 1000;
+    Attachment podinfoD.apiPort to podinfoServiceConnector.caller;
+    Attachment podinfoS.apiPort to podinfoServiceConnector.callee;
+}
+

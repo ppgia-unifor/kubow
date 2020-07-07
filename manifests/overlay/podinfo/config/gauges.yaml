@@ -1,0 +1,48 @@
+gauge-types:
+  KubowGaugeT:
+    commands:
+      setServiceProperty: ServiceT.setServiceProperty (Object)
+      setDeploymentInfo: DeploymentT.setDeploymentInfo (Object)
+      setDeploymentProperty: DeploymentT.setDeploymentProperty (Object)
+    setupParams:
+      targetIP:
+        type: String
+        default: "127.0.0.1"
+      propertyPath:
+        type: String
+        default: ""
+      propertyName:
+        type: String
+        default: ""
+      beaconPeriod:
+        type: long
+        default: 3000
+      javaClass:
+        type: String
+        default: "br.unifor.kubow.gauges.KubowGauge"
+    configParams:
+      targetProbeType:
+        type: String
+        default: ~
+    comment: ""
+gauge-instances:
+
+  TrafficGauge:
+    type: KubowGaugeT
+    model: "PodinfoSystem:Acme"
+    commands:
+      "setServiceProperty()": "podinfoS.setServiceProperty($<jsonValue>,<traffic>)"
+    setupValues:
+      targetIP: "127.0.0.1"
+    configValues:
+      targetProbeType: default-podinfo-traffic@*
+
+  KubeZnnInfoGauge:
+    type: KubowGaugeT
+    model: "PodinfoSystem:Acme"
+    commands:
+      "setDeploymentInfo()": podinfoD.setDeploymentInfo($<jsonValue>)
+    setupValues:
+      targetIP: "127.0.0.1"
+    configValues:
+      targetProbeType: deployments.default.podinfoD.probe@*

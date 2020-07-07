@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+  - name: prometheus-config
+    files: 
+    - prometheus/prometheus.yaml
+  - name: grafana
+    literals:
+    - plugins=grafana-kubernetes-app
+    files: 
+    - grafana/grafana.ini
+    - grafana/datasources.yaml
+    - grafana/dashboardproviders.yaml
+secretGenerator:
+  - name: grafana
+    literals:
+    - admin-user=admin
+    - admin-password=admin
+    - ldap-toml=""
+resources:
+- prometheus/deployment.yaml
+- prometheus/service.yaml
+- prometheus/auth.yaml
+- grafana/deployment.yaml
+- grafana/service.yaml
+- grafana/auth.yaml
+- metrics-server/deployment.yaml
+- metrics-server/service.yaml
+- metrics-server/apiservice.yaml
+- metrics-server/auth.yaml
+- kube-state-metrics/deployment.yaml
+- kube-state-metrics/service.yaml
+- kube-state-metrics/auth.yaml

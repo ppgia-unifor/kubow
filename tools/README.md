@@ -5,7 +5,7 @@ This directory contains the deployment files for several tools that support or c
 
 Required tools:
 
-* [custom-metrics-api](./custom-metrics-api): an implementation of the Kubernetes [resource metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/resource-metrics-api.md) API and [custom metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/custom-metrics-api.md) API.
+To install the required tools just run `kubectl apply -k monitoring` in this folder.
 
 * [metrics-server](./metrics-server): an implementation of the Kubernetes [Metrics Server](https://kubernetes.io/docs/tasks/debug-application-cluster/resource-metrics-pipeline/#metrics-server).
 
@@ -14,6 +14,10 @@ Required tools:
 Optional tools:
 
 * [kube-state-metrics](./kube-state-metrics): a service that periodically polls the Kubernetes API and generates metrics about the state of its objects.
+
+Other tools:
+
+* [custom-metrics-api](./custom-metrics-api): an implementation of the Kubernetes [resource metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/resource-metrics-api.md) API and [custom metrics](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/custom-metrics-api.md) API.
 
 * [locust](./locust): a distributed load generation and testing tool.
 
