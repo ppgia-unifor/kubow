@@ -81,7 +81,7 @@
         <dependency>
             <groupId>io.kubernetes</groupId>
             <artifactId>client-java</artifactId>
-            <version>8.0.2</version>
+            <version>9.0.2</version>
             <scope>compile</scope>
         </dependency>
         <!--/kubernetes-->
