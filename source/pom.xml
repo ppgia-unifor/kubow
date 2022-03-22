@@ -147,7 +147,7 @@
         <repository>
             <id>able.maven.repository</id>
             <url>
-                http://acme.able.cs.cmu.edu/maven-repository
+                https://acme.able.cs.cmu.edu/maven-repository
             </url>
         </repository>
     </repositories>
