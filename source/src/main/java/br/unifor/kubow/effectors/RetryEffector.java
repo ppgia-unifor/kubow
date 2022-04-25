@@ -1,11 +1,9 @@
 package br.unifor.kubow.effectors;
 
+import br.unifor.kubow.services.kubernetes.KubernetesClientFactory;
 import com.google.gson.JsonParser;
-import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.util.ClientBuilder;
 
-import java.io.IOException;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -22,19 +20,28 @@ public class RetryEffector extends KubowEffector {
   protected Outcome internalExecute(List<String> args) {
     var namespace = args.get(0);
     var virtualService = args.get(1);
-    var attempts = args.get(2);
-    var perTryTimeout = args.get(3);
+    var host = args.get(2);
+    var subset = args.get(3);
+    var attempts = args.get(4);
+    var perTryTimeout = args.get(5);
 
     try {
-      ApiClient client = ClientBuilder.standard().build();
+      var client = KubernetesClientFactory.defaultClient();
       var json =
-          "{\"spec\":{\"hosts\":[\"httpbin\"],\"http\":[{\"retries\":{\"attempts\":"
-              + attempts
-              + ",\"perTryTimeout\":\""
-              + perTryTimeout
-              + "s\"},\"route\":[{\"destination\":{\"host\":\"httpbin\",\"subset\":\"v1\"}}]}]}}";
+              "{\"spec\":{\"hosts\":[\"" +
+                      host +
+                      "\"],\"http\":[{\"retries\":{\"attempts\":" +
+                      attempts +
+                      ",\"perTryTimeout\":\"" +
+                      perTryTimeout +
+                      "\"},\"route\":[{\"destination\":{\"host\":\"" +
+                      host +
+                      "\",\"subset\":\"" +
+                      subset +
+                      "\"}}]}]}}";
+
       var body = new JsonParser().parse(json).getAsJsonObject();
-      var call =
+      var patchRequest =
           client.buildCall(
               "/apis/networking.istio.io/v1beta1/namespaces/"
                   + namespace
@@ -47,12 +54,17 @@ public class RetryEffector extends KubowEffector {
               of("Content-Type", "application/merge-patch+json"),
               emptyMap(),
               emptyMap(),
-              new String[] {},
+              new String[] {"BearerToken"},
               null);
 
-      var response = client.execute(call);
-      return Outcome.SUCCESS;
-    } catch (ApiException | IOException e) {
+      var response = client.execute(patchRequest);
+      if (response.getStatusCode() == 200) {
+        return Outcome.SUCCESS;
+      } else {
+        return Outcome.FAILURE;
+      }
+    } catch (ApiException e) {
+      // TODO logging
       return Outcome.FAILURE;
     }
   }

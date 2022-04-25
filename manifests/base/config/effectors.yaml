@@ -18,6 +18,12 @@ effector-types:
     type: java
     javaInfo:
       class: br.unifor.kubow.effectors.ScaleDownEffector
+  UpdateRetryPolicyT:
+    command: "M.updateRetryPolicy ($<virtualService>,$<attempts>,$<timeout>)"
+    location: "127.0.0.1"
+    type: java
+    javaInfo:
+      class: br.unifor.kubow.effectors.RetryEffector
 
 effectors:
   rollOut:
@@ -29,4 +35,7 @@ effectors:
   scaleDown:
     effector-type: ScaleDownT
     command: "M.scaleDown ($<deployment>,$<desiredReplicas>)"
+  updateRetryPolicy:
+    effector-type: UpdateRetryPolicyT
+    command: "M.updateRetryPolicy ($<virtualService>,$<attempts>,$<timeout>)"
   
