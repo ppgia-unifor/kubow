@@ -69,7 +69,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0-jre</version>
+            <version>29.0-jre</version>
         </dependency>
 
         <!-- kubernetes -->
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>io.kubernetes</groupId>
             <artifactId>client-java</artifactId>
-            <version>8.0.2</version>
+            <version>11.0.1</version>
             <scope>compile</scope>
         </dependency>
         <!--/kubernetes-->
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.4</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -147,7 +147,7 @@
         <repository>
             <id>able.maven.repository</id>
             <url>
-                http://acme.able.cs.cmu.edu/maven-repository
+                https://acme.able.cs.cmu.edu/maven-repository
             </url>
         </repository>
     </repositories>
